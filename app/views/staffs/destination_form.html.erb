@@ -1,0 +1,10 @@
+<!--<h1>4.4.4.1.1. 参集場所報告画面（スマートフォン/タブレット）</h1>-->
+
+<%= form_tag :action => 'save_destination' do %>
+  参集場所（これから向かう場所）を、地図上のマーカーから選択してください。<br>
+  <div id="map_canvas" style="height:350px;"></div> <!-- マップ表示 -->
+  <%= check_box "destination", "place" %>
+  <label for="destination_place">参集場所に向かうのが困難</label>
+  <%= text_field :destination, :reason, :placeholder => '理由を入力して下さい。' %>
+  <%= submit_tag "送信" %>
+<% end %>

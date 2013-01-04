@@ -1,0 +1,216 @@
+//= require jquery
+//= require jquery_ujs
+
+var map; // GoogleMapを格納する変数
+
+var shelters = new google.maps.MVCArray(); // 参集先マーカを格納する配列
+var bigs     = new google.maps.MVCArray(); // 参集先拡大時のマーカを格納する配列
+
+var before = -1;       // 前回拡大した参集先マーカの位置を記憶する配列（初期値は-1）
+var currentInfoWindow; // 前回表示した吹き出しを格納する変数
+
+var staffs   = new Array(); // 職員マーカを格納する配列
+
+var destinations   = new Array(); // 職員の参集場所を格納する配列
+var names          = new Array(); // 参集場所名を格納する配列
+
+// フィールドの切替
+function toggleFieldset(el) {
+  var fieldset = $(el).parents('fieldset').first();
+  fieldset.toggleClass('collapsed');
+  fieldset.children('div').toggle();
+}
+
+// ページ読み込み時にマップを作成する。
+function iniMap() {
+
+  // マップの作成
+  map = new google.maps.Map(
+    document.getElementById("map_canvas"),{
+    zoom : 12,
+    center : new google.maps.LatLng(38.4344802,141.3029167),
+    mapTypeId : google.maps.MapTypeId.ROADMAP
+  });
+
+}
+
+// 参集先のマーカ作成
+function iniShelters(pos, name, lat, lng) {
+
+  // 参集先のマーカ作成
+  shelters[pos] = new google.maps.Marker({
+    position: new google.maps.LatLng(lat, lng),
+    map: map,
+    flat: true,
+    icon: "<%=asset_path('mm_20_red.png') %>"
+  });
+
+  // 拡大時のマーカ作成（最初は非表示）
+  bigs[pos] = new google.maps.Marker({
+    position: new google.maps.LatLng(lat, lng),
+    map: map,
+    flat: true,
+    visible: false,
+    icon: "<%=asset_path('red-dot.png') %>"
+  });
+
+  // 拡大されていないマーカをクリックしたときの処理
+  google.maps.event.addDomListener(shelters[pos], 'click', function(){
+    showShelter(pos, name);
+  });
+
+  // 拡大されたマーカをクリックしたときの処理
+  google.maps.event.addDomListener(bigs[pos], 'click', function(){
+    infoShelter(pos, name);
+  });
+
+  // 参集場所名を記憶
+  names[pos] = name;
+
+}
+
+// 職員の現在位置と参集場所の記録
+function iniStaffs(pos, name, lat, lng, mail, destination, status, reason) {
+
+  // 職員マーカ作成（最初は非表示）
+  staffs[pos] = new google.maps.Marker({
+    position: new google.maps.LatLng(lat, lng),
+    map: map,
+    flat: true,
+    visible: false,
+    icon: "<%=asset_path('blue-dot.png') %>"
+  });
+
+  // 職員マーカをクリックしたときの処理
+  google.maps.event.addDomListener(staffs[pos], 'click', function(){
+    showStaff(pos, name, mail, destination, status, reason);
+  });
+
+  // 現在位置不明ではないときのみ参集場所を記録
+  if (destination != "現在位置不明") {
+    destinations[pos] = destination;
+  }
+
+}
+
+// 参集先マーカの吹き出し表示
+function infoShelter(pos, name) {
+
+  //先に開いた情報ウィンドウがあれば、closeする
+  if (currentInfoWindow) {
+    currentInfoWindow.close();
+  }
+
+  // 吹き出しに表示する内容を決定する。
+  var infowindow = new google.maps.InfoWindow({
+    content: '参集場所：' + name
+  })
+
+  // 吹き出しを表示する。
+  infowindow.open(map, bigs[pos]);
+
+  // 開いた情報ウィンドウを記録
+  currentInfoWindow = infowindow;
+
+  // 拡大したマーカを記録
+  before = pos;
+
+}
+
+// 職員マーカの吹き出し表示
+function infoStaff(pos, name, mail, status, reason) {
+
+  //先に開いた情報ウィンドウがあれば、closeする
+  if (currentInfoWindow) {
+    currentInfoWindow.close();
+  }
+
+  // 吹き出しに表示する内容を決定する。
+  if (status == false) {
+    var infowindow = new google.maps.InfoWindow({
+      content: '氏名：' + name + '<br>メール：' + mail + '<br>参集できない理由：' + reason
+    });
+  } else {
+    var infowindow = new google.maps.InfoWindow({
+      content: '氏名：' + name + '<br>メール：' + mail
+    });
+  }
+
+  // 吹き出しを表示する。
+  infowindow.open(map, staffs[pos]);
+
+  // 開いた情報ウィンドウを記録
+  currentInfoWindow = infowindow;
+
+}
+
+// 参集先リンク押下時の処理
+function showShelter(pos, name) {
+
+  // クリックしたマーカを非表示
+  shelters[pos].setVisible(false);
+
+  // 以前に拡大したマーカを元に戻す処理
+  // 前回と違うマーカをクリックしたときのみ実行
+  if (before != -1 && pos != before) {
+    bigs[before].setVisible(false);
+    shelters[before].setVisible(true);
+  }
+
+  // 参集先マーカ拡大
+  bigs[pos].setVisible(true);
+
+  // 職員マーカの非表示
+  for(i = 0; i < destinations.length; i++){
+    staffs[i].setVisible(false);
+  }
+
+  // 参集先に属する職員マーカの表示
+  for(i = 0; i < destinations.length; i++){
+    if (name == destinations[i]) {
+      staffs[i].setVisible(true);
+    }
+  }
+
+  // 吹き出し表示
+  infoShelter(pos, name);
+}
+
+// 職員リンク押下時の処理
+function showStaff(pos, name, mail, destination, status, reason) {
+
+  // 以前に拡大したマーカを元に戻す処理
+  if (before != -1) {
+    bigs[before].setVisible(false);
+    shelters[before].setVisible(true);
+  }
+
+  // 職員を非表示にする処理
+  for(i = 0; i < destinations.length; i++){
+    staffs[i].setVisible(false);
+  }
+
+  // 参集先に属する職員マーカの表示
+  for(i = 0; i < destinations.length; i++){
+    if (destination == destinations[i]) {
+      staffs[i].setVisible(true);
+    }
+  }
+
+  // 参集先のマーカを拡大する処理
+  for(i = 0; i < names.length; i++){
+    if (destination == names[i]) {
+      shelters[i].setVisible(false);
+      bigs[i].setVisible(true);
+      // 拡大したマーカを記録
+      before = i;
+    }
+  }
+
+  infoStaff(pos, name, mail, status, reason);
+}
+
+// 現在位置不明ボタン押下時、表示処理
+function unknownStaff(pos, name, mail) {
+   alert('氏名：' + name + '\nメール：' + mail + '\n現在位置不明');
+}

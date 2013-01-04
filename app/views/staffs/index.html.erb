@@ -1,0 +1,68 @@
+<!--<h1>4.4.4.1.1. 職員位置確認画面（PC）</h1>-->
+
+<% #左のリスト部分 %>
+<div id="list">
+
+<!-- 現在位置不明, 参集先不明, 参集不可 -->
+<% names = ["現在位置不明", "参集先不明", "参集不可"] %>
+<% names.each do |name| %>
+<% count = 0 %>
+<fieldset class="collapsible collapsed">
+  <legend onclick="toggleFieldset(this);"><%= name %>
+    <% @staffs.each do |staff| %>
+      <% if staff.destination == name %>
+        <% count += 1 %>
+      <% end %>
+    <% end %>
+    <span class="num"><%= count %>名</span>
+  </legend>
+
+  <div style="display: none;">
+    <ul class="person_list">
+      <% @staffs.each_with_index do |staff, pos| %>
+        <% if staff.destination == name %>
+          <% if name == "現在位置不明" %>
+            <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;" %></li>
+          <% else %>
+            <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;" %></li>
+          <% end %>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+</fieldset>
+<% end %>
+
+<!-- 職員参集先情報 -->
+<% pos = 0 %>
+<% @shelters.each do |shelter| %>
+  <% count = 0 %>
+  <fieldset class="collapsible collapsed">
+  <legend onclick="toggleFieldset(this);">
+    <%= link_to shelter.name, {}, :onclick=> "showShelter(#{pos}, '#{shelter.name}'); return false;" %>
+    <% pos += 1 %>
+    <% @staffs.each do |staff| %>
+      <% if staff.destination == shelter.name %>
+        <% count += 1 %>
+      <% end %>
+    <% end %>
+    <span class="num"><%= count %>名</span>
+  </legend>
+
+  <div style="display: none;">
+    <ul class="person_list">
+      <% @staffs.each_with_index do |staff, pos2| %>
+        <% if staff.destination == shelter.name %>
+          <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;" %></li>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+  </fieldset>
+<% end %>
+
+</div>
+
+<% #右のMAP部分 %>
+<div id="map_canvas">
+</div>

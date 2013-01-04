@@ -1,0 +1,49 @@
+<div id="wrapper">
+  <div id="wrapper2">
+
+    <div id="top-menu">
+      <div id="account">
+        <ul>
+        </ul>
+      </div>
+    </div>
+
+    <div id="header">
+      <h1>石巻市 Staff Finder</h1>
+    </div>
+
+    <div id="main" class="nosidebar">
+      <!-- エラーメッセージ表示 class="notice" class="alert"  -->
+      <div>
+        <p class="flash error" style="background-color: red;"><%= notice %></p>
+        <p class="alert"><%= alert %></p>
+      </div>
+      <div id="login-form">
+        <table>
+          <tr>
+            <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+            <td align="right"><%= f.label 'ログイン:' %></td>
+            <td align="left"><%= f.text_field :email %></td>
+          </tr>
+          <tr>
+            <td align="right"><%= f.label 'パスワード:' %></td>
+            <td align="left"><%= f.password_field :password %></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td align="left">
+            </td>
+          </tr>
+          <tr>
+            <td align="left"></td>
+            <td align="right">
+              <%= f.submit "ログイン" %>
+            <% end %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

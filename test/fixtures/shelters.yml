@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  id: 1
+  staff_id: MyString
+  staff_name: MyString
+  latitude: 
+  longitude: 
+
+two:
+  id: 1
+  staff_id: MyString
+  staff_name: MyString
+  latitude: 
+  longitude: 
