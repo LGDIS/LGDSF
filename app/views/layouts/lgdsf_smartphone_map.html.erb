@@ -16,5 +16,20 @@
 
 <%= yield %>
 
+<script type="text/javascript">
+setTimeout(function(){
+
+<% if @shelters %>
+<%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+  <% count = 0 %>
+  <% @shelters.each do |shelter| %>
+    <%= "iniShelters(#{count}, #{shelter.id}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
+    <% count += 1 %>
+  <% end %>
+<% end %>
+
+}, 1);
+</script>
+
 </body>
 </html>

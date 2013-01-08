@@ -22,13 +22,13 @@ function toggleFieldset(el) {
 }
 
 // ページ読み込み時にマップを作成する。
-function iniMap() {
+function iniMap(lat, lng, zoom) {
 
   // マップの作成
   map = new google.maps.Map(
     document.getElementById("map_canvas"),{
-    zoom : 12,
-    center : new google.maps.LatLng(38.4344802,141.3029167),
+    zoom : zoom,
+    center : new google.maps.LatLng(lat, lng),
     mapTypeId : google.maps.MapTypeId.ROADMAP
   });
 
@@ -104,7 +104,7 @@ function infoShelter(pos, name) {
   // 吹き出しに表示する内容を決定する。
   var infowindow = new google.maps.InfoWindow({
     content: '参集場所：' + name
-  })
+  });
 
   // 吹き出しを表示する。
   infowindow.open(map, bigs[pos]);

@@ -18,7 +18,7 @@ Spf::Application.routes.draw do
   match '/staffs/save_destination'
   match '/staffs' => 'staffs#index'
   match '/staffs/mail' => 'staffs#mail'
-  match '/staffs/send' => 'staffs#send_form'
+  match '/staffs/send/:mail_id' => 'staffs#send_form'
   match '/staffs/save_send'
 
   # The priority is based upon order of creation:

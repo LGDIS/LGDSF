@@ -7,6 +7,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+User.create(:email => 'test@test.jp', :password => 'test@test.jp')
+
 Shelter.create(:name => '湊小学校', :latitude => 38.427020, :longitude => 141.350269)
 Shelter.create(:name => '市立女子商業高校', :latitude => 38.416584, :longitude => 141.350269)
 Shelter.create(:name => '総合運動公園', :latitude => 38.455713, :longitude => 141.307869)
@@ -142,7 +144,7 @@ PredefinedPosition.create(:agent_id => 45, :shelter_id => 19)
 Staff.create(:name => '佐藤', :agent_id => 1, :destination => '市立女子商業高校', :status => true, :latitude => 38.415643, :longitude => 141.325893)
 Staff.create(:name => '鈴木', :agent_id => 2, :destination => '湊小学校', :status => true, :latitude => 38.452352, :longitude => 141.312504)
 Staff.create(:name => '三重野', :agent_id => 3, :destination => '総合運動公園', :status => true, :latitude => 38.43084, :longitude => 141.267872)
-Staff.create(:name => '中村', :agent_id => 4, :destination => '参集不可', :status => true, :latitude => 38.403133, :longitude => 141.290016)
+Staff.create(:name => '中村', :agent_id => 4, :destination => '参集不可', :status => false, :reason => '自宅倒壊', :latitude => 38.403133, :longitude => 141.290016)
 Staff.create(:name => '林', :agent_id => 5, :destination => '市立女子商業高校', :status => true, :latitude => 38.418602, :longitude => 141.367607)
 
 Staff.create(:name => '片本', :agent_id => 6, :destination => '参集先不明', :status => true, :latitude => 38.437388, :longitude => 141.339458)
