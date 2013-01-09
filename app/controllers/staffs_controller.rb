@@ -35,12 +35,14 @@ class StaffsController < ApplicationController
 
   def save_send
     @mail = params[:mail]
+    #@mail_id = params[:mail_id]
+    @mail_id = "20130108151823.978961"
     @agent = Agent.find_by_mail_address(@mail['mail_address'])
 
     # メールアドレス認証
     if @agent.present?
       @agent_id = @agent.id
-      redirect_to :controller =>"staffs", :action  =>"position_form", :mail => @mail, :agent_id => @agent_id
+      redirect_to :controller =>"staffs", :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent_id
     else
       # メールアドレス認証失敗時の処理
       #render text: "認証に失敗しました"
@@ -49,6 +51,7 @@ class StaffsController < ApplicationController
 
   def position_form
     @shelters = Shelter.find(:all)
+    @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
 
     if request.mobile?
@@ -59,6 +62,8 @@ class StaffsController < ApplicationController
   end
 
   def save_position
+    #agent_id = params[:agent_id]
+    #@mail_id = params[:mail_id]
     #@latitude = params[:latitude]
     #@longitude = params[:longitude]
 
@@ -76,15 +81,28 @@ class StaffsController < ApplicationController
 
     # 職員ID、現在位置が取得できていないので定数を代入
     @agent_id = 1
+    @mail_id = "20130108151823.978963"
     @latitude  = 38.4344802
     @longitude = 141.3029167
 
-    if @latitude.present? && @longitude.present?
-      # 現在位置送信成功時の処理
-      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
+    @predefine_position = PredefinedPosition.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
+
+    if @predefine_position.present?
+      # 上書き
+      @staff = Staff.find_by_predefined_position_id(@predefine_position['id'])
+      @staff.latitude = @latitude
+      @staff.longitude = @longitude
+      if @staff.save
+        # 現在位置送信成功時の処理
+        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
+      else
+        # 現在位置送信失敗時の処理
+        #render text: "現在位置の送信に失敗しました"
+      end
     else
-      # 現在位置取得失敗時の処理
-      #render text: "現在位置の送信に失敗しました"
+      # 挿入
+      p "存在しない"
+      p @staff = Staff.new(:name => "佐藤", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :created_at => )
     end
 
   end
@@ -97,8 +115,8 @@ class StaffsController < ApplicationController
     @zoom = 15
 
     # 参集場所の取得
-    place = PredefinedPosition.find(@agent_id)
-    @predefinedposition = Shelter.find(place.shelter_id)
+    place = PredefinedPosition.find_by_shelter_id(@agent_id)
+    @predefinedposition = Shelter.find(place)
 
     # 近くの参集場所の計算
     diffs = []
@@ -153,9 +171,27 @@ class StaffsController < ApplicationController
 
   def save_destination
     @destination = params[:destination]
-  
+    @staffs = Staff.find(:all)
+    #@mail_id = params[:mail_id]
+    @mail_id = "20130108151823.978961"
+    obj = PredefinedPosition.find_by_mail_id(@mail_id)
+
     p "----------"
-    p @destination
+
+    if obj.present?
+      # 上書き
+      
+    else
+      # 挿入
+      
+    end
+
+    if @destination['place'] == 1
+      p @destination['reason']
+    else
+      p "false"
+    end
+
     p "----------"
 
     redirect_to :action => "mail"

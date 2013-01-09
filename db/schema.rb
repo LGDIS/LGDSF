@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130108050822) do
+ActiveRecord::Schema.define(:version => 20130109073829) do
 
   create_table "agents", :force => true do |t|
     t.string   "name"
@@ -42,10 +42,11 @@ ActiveRecord::Schema.define(:version => 20130108050822) do
     t.string   "destination"
     t.boolean  "status"
     t.text     "reason"
-    t.decimal  "latitude",    :precision => 10, :scale => 6
-    t.decimal  "longitude",   :precision => 10, :scale => 6
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
+    t.decimal  "latitude",               :precision => 10, :scale => 6
+    t.decimal  "longitude",              :precision => 10, :scale => 6
+    t.datetime "created_at",                                            :null => false
+    t.datetime "updated_at",                                            :null => false
+    t.integer  "predefined_position_id"
   end
 
   create_table "users", :force => true do |t|
