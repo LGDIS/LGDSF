@@ -4,6 +4,7 @@
 
   <%= hidden_field_tag "mail_id", @mail_id %>
   <%= hidden_field_tag "agent_id", @agent_id %>
+  <%= hidden_field "destination", "position", :value => "" %>
 
   参集場所（これから向かう場所）を、地図上のマーカーから選択してください。<br>
   <div id="map_canvas" style="height:350px;"></div> <!-- マップ表示 -->

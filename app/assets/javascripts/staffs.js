@@ -1,3 +1,5 @@
+// 参集先報告画面マップ処理
+
 var map;  // GoogleMapを格納する変数
 
 var shelters = new google.maps.MVCArray(); // 参集先マーカを格納する配列
@@ -49,7 +51,7 @@ function iniShelters(pos, id, name, lat, lng) {
 
   // 拡大されていないマーカをクリックしたときの処理
   google.maps.event.addDomListener(shelters[pos], 'click', function() {
-    showShelter(pos, name);
+    showShelter(pos, id, name);
   });
 
   // 拡大されたマーカをクリックしたときの処理
@@ -84,12 +86,12 @@ function infoShelter(pos, name) {
 }
 
 // 参集先リンク押下時の処理
-function showShelter(pos, name) {
+function showShelter(pos, id, name) {
+
+  // value の値の書き換え
+  $("#destination_position").attr("value", id);
 
   // クリックしたマーカを非表示にする。
-  shelters[pos].setVisible(false);
-
-  // クリックしたマーカを非表示
   shelters[pos].setVisible(false);
 
   // 以前に拡大したマーカを元に戻す処理

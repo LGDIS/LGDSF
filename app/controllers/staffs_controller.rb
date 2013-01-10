@@ -175,14 +175,14 @@ class StaffsController < ApplicationController
 
     if @staff.present?
       # 上書き
-      if @destination['place'].to_i == 1
-        @staff.status = false
-        @staff.reason = @destination['reason']
-      else
-        @staff.status = true
+      @staff.status = @destination['place'].to_i == 1 ? false : true
+      if @destination['position'].present?
+        shelter = Shelter.find(@destination['position'])
+        @staff.destination = shelter.name
       end
+      @staff.reason = @destination['reason']
     else
-      # 挿入
+      # 挿入（エラー処理）
       #@staff = Staff.new(:name => @name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
     end
 
@@ -198,7 +198,8 @@ class StaffsController < ApplicationController
 
   def index
     @shelters = Shelter.find(:all)
-    @staffs   = Staff.find(:all)
+    new = Staff.maximum(:mail_id) # 最新の災害番号データ
+    @staffs = Staff.find(:all, :conditions => { :mail_id => new })
     @zoom = 15
     @shelters.each_with_index do |shelter, count|
       lat = shelter.latitude - LATITUDE
