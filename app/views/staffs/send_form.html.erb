@@ -3,6 +3,7 @@
 <p>受け取ったメールのメールアドレスを入力し、送信してください。</p>
 
 <%= form_tag :action => 'save_send' do %>
+  <%= hidden_field_tag "mail_id", @mail_id %>
   <%= text_field :mail, :mail_address , :placeholder => 'メールアドレスを入力して下さい。' %>
   <%= submit_tag 'メールアドレスを送信', :id => 'send' %>
 <% end %>

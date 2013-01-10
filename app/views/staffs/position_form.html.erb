@@ -1,12 +1,16 @@
 下記のボタンから、現在位置を送信してください。
 <br><br>
 <%= form_tag :action => 'save_position' do %>
-<%= hidden_field_tag :latitude %>
-<%= hidden_field_tag :longitude %>
-<%= submit_tag '現在位置を送信', :id => 'send' %>
+  <%= hidden_field_tag "mail_id", @mail_id %>
+  <%= hidden_field_tag "agent_id", @agent_id %>
+  <%= hidden_field_tag "name", @name %>
+  <%= hidden_field_tag :latitude %>
+  <%= hidden_field_tag :longitude %>
+  <%= submit_tag '現在位置を送信', :id => 'send' %>
 <% end %>
 <br>
 ※ボタン押下後に、確認を求められますが、全て承諾してください。
+
 <% content_for :header_tags do %>
 <script>
 $(function(){

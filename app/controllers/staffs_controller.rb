@@ -35,14 +35,12 @@ class StaffsController < ApplicationController
 
   def save_send
     @mail = params[:mail]
-    #@mail_id = params[:mail_id]
-    @mail_id = "20130108151823.978961"
+    @mail_id = params[:mail_id]
     @agent = Agent.find_by_mail_address(@mail['mail_address'])
 
     # メールアドレス認証
     if @agent.present?
-      @agent_id = @agent.id
-      redirect_to :controller =>"staffs", :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent_id
+      redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id, :name => @agent.name
     else
       # メールアドレス認証失敗時の処理
       #render text: "認証に失敗しました"
@@ -50,9 +48,9 @@ class StaffsController < ApplicationController
   end
 
   def position_form
-    @shelters = Shelter.find(:all)
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
+    @name = params[:name]
 
     if request.mobile?
       render "position_form_mobile"
@@ -62,8 +60,9 @@ class StaffsController < ApplicationController
   end
 
   def save_position
-    #agent_id = params[:agent_id]
-    #@mail_id = params[:mail_id]
+    @mail_id = params[:mail_id]
+    @agent_id = params[:agent_id]
+    @name = params[:name]
     #@latitude = params[:latitude]
     #@longitude = params[:longitude]
 
@@ -79,36 +78,34 @@ class StaffsController < ApplicationController
     #p @longitude
     #p "++++++++++"
 
-    # 職員ID、現在位置が取得できていないので定数を代入
-    @agent_id = 1
-    @mail_id = "20130108151823.978963"
+    # 現在位置が取得できていないので定数を代入
     @latitude  = 38.4344802
     @longitude = 141.3029167
 
-    @predefine_position = PredefinedPosition.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
+    @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
-    if @predefine_position.present?
+    if @staff.present?
       # 上書き
-      @staff = Staff.find_by_predefined_position_id(@predefine_position['id'])
       @staff.latitude = @latitude
       @staff.longitude = @longitude
-      if @staff.save
-        # 現在位置送信成功時の処理
-        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
-      else
-        # 現在位置送信失敗時の処理
-        #render text: "現在位置の送信に失敗しました"
-      end
     else
       # 挿入
-      p "存在しない"
-      p @staff = Staff.new(:name => "佐藤", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :created_at => )
+      @staff =Staff.new(:name => @name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
+    end
+
+    if @staff.save
+      # 現在位置送信成功時の処理
+      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
+    else
+      # 現在位置送信失敗時の処理
+      #render text: "現在位置の送信に失敗しました"
     end
 
   end
 
   def destination_form
     @all_shelters = Shelter.find(:all)
+    @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
     @latitude = params[:latitude].to_f
     @longitude = params[:longitude].to_f
@@ -171,30 +168,32 @@ class StaffsController < ApplicationController
 
   def save_destination
     @destination = params[:destination]
-    @staffs = Staff.find(:all)
-    #@mail_id = params[:mail_id]
-    @mail_id = "20130108151823.978961"
-    obj = PredefinedPosition.find_by_mail_id(@mail_id)
+    @agent_id = params[:agent_id]
+    @mail_id = params[:mail_id]
 
-    p "----------"
+    @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
-    if obj.present?
+    if @staff.present?
       # 上書き
-      
+      if @destination['place'].to_i == 1
+        @staff.status = false
+        @staff.reason = @destination['reason']
+      else
+        @staff.status = true
+      end
     else
       # 挿入
-      
+      #@staff = Staff.new(:name => @name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
     end
 
-    if @destination['place'] == 1
-      p @destination['reason']
+    if @staff.save
+      # 参集先情報送信成功時の処理
+      # render text: "送信しました"
+      redirect_to :action => "mail"
     else
-      p "false"
+      # 参集先情報送信失敗時の処理
+      # render text: "参集先情報の送信に失敗しました"
     end
-
-    p "----------"
-
-    redirect_to :action => "mail"
   end
 
   def index
