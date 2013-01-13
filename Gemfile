@@ -1,81 +1,67 @@
 source 'http://rubygems.org'
 
 gem 'rails', '3.2.11'
-gem "jquery-rails", "~> 2.0.2"
-gem "i18n", "~> 0.6.0"
-gem "coderay", "~> 1.0.6"
-gem "fastercsv", "~> 1.5.0", :platforms => [:mri_18, :mingw_18, :jruby]
-gem "builder", "3.0.0"
 
-# Optional gem for LDAP authentication
-group :ldap do
-  gem "net-ldap", "~> 0.3.1"
+# Bundle edge Rails instead:
+# gem 'rails', :git => 'git://github.com/rails/rails.git'
+
+# Pg is the Ruby interface to the PostgreSQL RDBMS.
+# It works with PostgreSQL 8.3 and later.
+gem 'pg'
+
+# ActiveRecord extension to get more from PostgreSQL.
+gem 'pg_power'
+
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails',   '~> 3.2.3'
+  gem 'coffee-rails', '~> 3.2.1'
+
+  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
+  gem 'therubyracer', :platforms => :ruby
+
+  gem 'uglifier', '>= 1.0.3'
 end
 
-# Optional gem for OpenID authentication
-group :openid do
-  gem "ruby-openid", "~> 2.1.4", :require => "openid"
-  gem "rack-openid"
-end
+gem 'jquery-rails'
 
-# Optional gem for exporting the gantt to a PNG file, not supported with jruby
-platforms :mri, :mingw do
-  group :rmagick do
-    # RMagick 2 supports ruby 1.9
-    # RMagick 1 would be fine for ruby 1.8 but Bundler does not support
-    # different requirements for the same gem on different platforms
-    gem "rmagick", ">= 2.0.0"
-  end
-end
+# To use ActiveModel has_secure_password
+# gem 'bcrypt-ruby', '~> 3.0.0'
 
-# Database gems
-platforms :mri, :mingw do
-  group :postgresql do
-    gem "pg", ">= 0.11.0"
-  end
+# To use Jbuilder templates for JSON
+# gem 'jbuilder'
 
-  group :sqlite do
-    gem "sqlite3"
-  end
-end
+# Use unicorn as the app server. LGDPF default Rack HTTP Server.
+gem 'unicorn'
 
-=begin
-platforms :mri_18, :mingw_18 do
-  group :mysql do
-    gem "mysql"
-  end
-end
+# Deploy with Capistrano
+# gem 'capistrano'
 
-platforms :mri_19, :mingw_19 do
-  group :mysql do
-    gem "mysql2", "~> 0.3.11"
-  end
-end
-=end
+# To use debugger
+# gem 'debugger'
 
-platforms :jruby do
-  gem "jruby-openssl"
+# Dalli is a high performance pure Ruby client for accessing memcached servers.
+gem 'dalli'
 
-  group :mysql do
-    gem "activerecord-jdbcmysql-adapter"
-  end
+# jpmobile is Rails plugin for Japanese mobile-phones.
+gem 'jpmobile'
 
-  group :postgresql do
-    gem "activerecord-jdbcpostgresql-adapter"
-  end
-
-  group :sqlite do
-    gem "activerecord-jdbcsqlite3-adapter"
-  end
-end
-
-group :development do
-  gem "rdoc", ">= 2.4.2"
-  gem "yard"
-end
-
-gem "jpmobile", "3.0.6"
-gem 'therubyracer', :platforms => :ruby
+# Devise is Flexible authentication solution for Rails with Warden.
 gem 'devise'
-gem 'execjs'
-gem 'uglifier'
+
+# Devise extension to allow authentication via LDAP.
+gem 'devise_ldap_authenticatable'
+
+# Load Local Gemfile
+local_gemfile = File.join(File.dirname(__FILE__), "Gemfile.local")
+if File.exists?(local_gemfile)
+  puts "Loading Gemfile.local ..." if $DEBUG # `ruby -d` or `bundle -v`
+  instance_eval File.read(local_gemfile)
+end
+
+# Load plugins' Gemfiles
+Dir.glob File.expand_path("../plugins/*/Gemfile", __FILE__) do |file|
+  puts "Loading #{file} ..." if $DEBUG # `ruby -d` or `bundle -v`
+  instance_eval File.read(file)
+end
