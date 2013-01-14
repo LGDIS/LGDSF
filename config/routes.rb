@@ -1,4 +1,4 @@
-Spf::Application.routes.draw do
+Lgdsf::Application.routes.draw do
 
   devise_for :users
 

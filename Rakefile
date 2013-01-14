@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Spf::Application.load_tasks
+Lgdsf::Application.load_tasks
