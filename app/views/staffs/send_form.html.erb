@@ -1,4 +1,10 @@
-<h1>個人特定情報送信画面</h1>
+<!--<h1>個人特定情報送信画面</h1> -->
+
+<% if params[:notice] %>
+  <div id="flash" style="color: green; border: green solid">
+    <%= params[:notice] %>
+  </div>
+<% end %>
 
 <p>受け取ったメールのメールアドレスを入力し、送信してください。</p>
 

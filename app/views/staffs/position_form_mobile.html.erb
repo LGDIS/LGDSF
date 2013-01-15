@@ -1,5 +1,13 @@
-下記のリンクから、現在位置を送信してください。
-<br><br>
-<%= get_position_link_to "現在位置を送信", :action => "save_position" %>
-<br><br>
-※リンク選択後に、確認を求められますが、全て承諾してください。
+<% if params[:notice] %>
+  <div id="flash" style="color: green; border: green solid">
+    <%= params[:notice] %>
+  </div>
+<% end %>
+
+<div>下記のリンクから、現在位置を送信してください。</div>
+<br>
+
+<%= get_position_link_to "現在位置を送信", :action => "save_position", :mail_id => @mail_id, :agent_id => @agent_id %>
+
+<br>
+<div>※リンク選択後に、確認を求められますが、全て承諾してください。</div>

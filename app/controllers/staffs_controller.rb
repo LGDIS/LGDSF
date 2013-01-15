@@ -40,18 +40,33 @@ class StaffsController < ApplicationController
 
     # メールアドレス認証
     if @agent.present?
-      redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id, :name => @agent.name
+      # 認証成功の場合
+      @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
+      if @staff.present?
+        # 上書き
+        @staff.name = @agent.name
+        @staff.agent_id = @agent.id
+      else
+        # 挿入
+        @staff =Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
+      end
+      if @staff.save
+        redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
+      else
+        # 認証エラーの場合
+        @notice = "認証に失敗しました"
+        redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
+      end
     else
-      # メールアドレス認証失敗時の処理
-      #render text: "認証に失敗しました"
+      # 認証エラーの場合
+      @notice = "認証に失敗しました"
+      redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
     end
   end
 
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
-    @name = params[:name]
-
     if request.mobile?
       render "position_form_mobile"
     else
@@ -62,25 +77,20 @@ class StaffsController < ApplicationController
   def save_position
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
-    @name = params[:name]
     #@latitude = params[:latitude]
     #@longitude = params[:longitude]
 
-    #if request.mobile? and request.mobile.position
-    #  @latitude = request.mobile.position.lat
-    #  @longitude = request.mobile.position.lon
-    #end
-
-    #p "**********"
-    #p @latitude
-    #p "**********"
-    #p "++++++++++"
-    #p @longitude
-    #p "++++++++++"
-
-    # 現在位置が取得できていないので定数を代入
-    @latitude  = 38.4344802
-    @longitude = 141.3029167
+    # 現在位置の取得
+    if request.mobile? and request.mobile.position
+      p @latitude = request.mobile.position.lat
+      p @longitude = request.mobile.position.lon
+    else
+      # 現在位置が取得できていないので定数を代入
+      @latitude  = 38.4344802
+      @longitude = 141.3029167
+      #@latitude = params[:latitude]
+      #@longitude = params[:longitude]
+    end
 
     @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
@@ -90,15 +100,17 @@ class StaffsController < ApplicationController
       @staff.longitude = @longitude
     else
       # 挿入
-      @staff =Staff.new(:name => @name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
+      @agent = Agent.find(@agent_id)
+      @staff =Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
     end
 
     if @staff.save
-      # 現在位置送信成功時の処理
+      # 現在位置送信成功時の場合
       redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
     else
-      # 現在位置送信失敗時の処理
-      #render text: "現在位置の送信に失敗しました"
+      # 現在位置送信失敗時の場合
+      @notice = "認証に失敗しました"
+      redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
     end
 
   end

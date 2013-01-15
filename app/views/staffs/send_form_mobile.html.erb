@@ -1,3 +1,9 @@
+<% if params[:notice] %>
+  <div id="flash" style="color: green; border: green solid">
+    <%= params[:notice] %>
+  </div>
+<% end %>
+
 <p>受け取ったメールのメールアドレスを入力し、送信してください。</p>
 
 <%= form_tag :action => 'save_send' do %>
