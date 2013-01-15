@@ -193,6 +193,8 @@ class StaffsController < ApplicationController
     @destination = params[:destination]
     @agent_id = params[:agent_id]
     @mail_id = params[:mail_id]
+    @latitude = params[:latitude]
+    @longitude = params[:longitude]
 
     @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
@@ -211,11 +213,12 @@ class StaffsController < ApplicationController
 
     if @staff.save
       # 参集先情報送信成功時の処理
-      # render text: "送信しました"
-      redirect_to :action => "mail"
+      @notice = "送信しました"
+      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
     else
       # 参集先情報送信失敗時の処理
-      # render text: "参集先情報の送信に失敗しました"
+      @notice = "参集先情報の送信に失敗しました"
+      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
     end
   end
 
