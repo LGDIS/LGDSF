@@ -1,74 +1,76 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="utf-8" />
-<title>Staff Finder</title>
-<meta name="description"/>
-<meta name="keywords" content="issue,bug,tracker" />
-<%= stylesheet_link_tag 'jquery/jquery-ui-1.8.21', 'application', :media => 'all' %>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=ja"></script>
-<%= javascript_include_tag "staffs_redmine" %>
-<!-- page specific tags -->
-</head>
-<body onload="
-<%= "iniMap(#{LATITUDE}, #{LONGITUDE}, #{@zoom});" %>
-<% if @shelters %>
-  <% @shelters.each_with_index do |shelter, count| %>
-    <%= "iniShelters(#{count}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
-  <% end %>
-<% end %>
-<% if @staffs %>
-  <% @staffs.each_with_index do |staff, count| %>
-    <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
-  <% end %>
-<% end %>
-">
+  <head>
+    <meta charset="utf-8" />
+    <title>Staff Finder</title>
+    <meta name="description"/>
+    <meta name="keywords" content="issue,bug,tracker" />
+    <%= stylesheet_link_tag 'jquery/jquery-ui-1.8.21', 'application', :media => 'all' %>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=ja"></script>
+    <%= javascript_include_tag "staffs_redmine" %>
+    <!-- page specific tags -->
+  </head>
+  <body onload="
+    <%= "iniMap(#{LATITUDE}, #{LONGITUDE}, #{@zoom});" %>
+    <% if @shelters %>
+      <% @shelters.each_with_index do |shelter, count| %>
+        <%= "iniShelters(#{count}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
+      <% end %>
+    <% end %>
+    <% if @staffs %>
+      <% @staffs.each_with_index do |staff, count| %>
+        <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+      <% end %>
+    <% end %>
+  ">
 
-<div id="wrapper">
-<div id="wrapper2">
-<div id="top-menu">
-  <div id="account">
-  <ul>
-    <li>
-      <%= link_to "ログアウト", destroy_user_session_path %>
-    </li>
-  </ul>
-  </div>
-</div>
-<div id="header">
-    <h1>職員位置確認</h1>
+    <div id="wrapper">
+      <div id="wrapper2">
 
-    <div id="main-menu">
+        <div id="top-menu">
+          <div id="account">
+            <ul>
+              <li>
+                <%= link_to "ログアウト", destroy_user_session_path %>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="header">
+          <h1>職員位置確認</h1>
+          <div id="main-menu"></div>
+        </div>
+
+        <div id="main" class="sidebar">
+          <div id="sidebar">
+            <%= yield :sidebar %>
+          </div>
+
+          <div id="content">
+            <%= yield %>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+
+        <div id="ajax-indicator" style="display:none;"><span></span></div>
+        <div id="ajax-modal" style="display:none;"></div>
+
+        <div id="footer">
+          <div class="bgl">
+            <div class="bgr">Powered by &copy; 2006-2012 Jean-Philippe Lang</div>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
 
-<div id="main" class="sidebar">
-    <div id="sidebar">
-        <%= yield :sidebar %>
-    </div>
+    <script type="text/javascript">
+      $(window).load(function() {
+        var height = $(window).height() - $("#top-menu").height() - $("#header").height() - $("#footer").height() - 20;
+        $("#list").height(height);
+        $("#map_canvas").height(height);
+      });
+    </script>
 
-    <div id="content">
-        <%= yield %>
-        <div style="clear:both;"></div>
-    </div>
-</div>
-
-<div id="ajax-indicator" style="display:none;"><span></span></div>
-<div id="ajax-modal" style="display:none;"></div>
-
-<div id="footer">
-  <div class="bgl"><div class="bgr">
-    Powered by &copy; 2006-2012 Jean-Philippe Lang
-  </div></div>
-</div>
-</div>
-</div>
-<script type="text/javascript">
-$(window).load(function() {
-var height = $(window).height() - $("#top-menu").height() - $("#header").height() - $("#footer").height() - 20;
-$("#list").height(height);
-$("#map_canvas").height(height);
-});
-</script>
-</body>
+  </body>
 </html>

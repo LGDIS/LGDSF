@@ -1,23 +1,27 @@
-<!--<h1>4.4.4.1.1. 参集場所報告画面（モバイル）</h1>-->
+<!-- 参集場所報告画面（モバイル） -->
+
+<% if params[:notice] %>
+  <div id="flash" style="color: green; border: green solid">
+    <%= params[:notice] %>
+  </div>
+<% end %>
 
 <%= form_tag :action => 'save_destination' do %>
 
   <%= hidden_field_tag "mail_id", @mail_id %>
   <%= hidden_field_tag "agent_id", @agent_id %>
 
-  参集場所（これから向かう場所）を選択してください。<br>
+  <div>参集場所（これから向かう場所）を選択してください。</div>
 
-  <p>▼所定の参集場所<br>
-  <%= radio_button "destination", "position", "#{@predefinedposition.id}" %>(1) <%= @predefinedposition.name %><br>
-  </p>
+  <p>▼所定の参集場所</p>
+  <p><%= radio_button "destination", "position", "#{@predefinedposition.id}" %>(1) <%= @predefinedposition.name %></p>
 
-  <p>▼近くの参集場所<br>
+  <p>▼近くの参集場所</p>
   <% for i in 1...@shelters.size %>
-    <%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + 1}) #{@shelters[i].name}"%><br>
+    <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + 1}) #{@shelters[i].name}"%></p>
   <% end %>
-  </p>
 
-<img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
+  <img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
 &zoom=<%= @zoom %>&size=240x240&sensor=false
 &markers=<%= @latitude %>,<%= @longitude %>
 <% @shelters.each_with_index do |shelter, count| %>
@@ -25,10 +29,10 @@
 <% end %>
 ">
 
-  <p>▼参集場所に向かうのが困難<br>
-    <%= check_box "destination", "place" %>理由を入力して下さい。<br>
-    <%= text_field :destination, :reason %>
-  </p>
+  <p>▼参集場所に向かうのが困難</p>
+
+  <p><%= check_box "destination", "place" %>理由を入力して下さい。</p>
+  <p><%= text_field :destination, :reason %></p>
 
   <%= submit_tag "送信" %>
 

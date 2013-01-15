@@ -1,4 +1,10 @@
-<!--<h1>4.4.4.1.1. 参集場所報告画面（スマートフォン/タブレット）</h1>-->
+<!-- 参集場所報告画面（スマートフォン/タブレット） -->
+
+<% if params[:notice] %>
+  <div id="flash" style="color: green; border: green solid">
+    <%= params[:notice] %>
+  </div>
+<% end %>
 
 <%= form_tag :action => 'save_destination' do %>
 
@@ -6,8 +12,10 @@
   <%= hidden_field_tag "agent_id", @agent_id %>
   <%= hidden_field "destination", "position", :value => "" %>
 
-  参集場所（これから向かう場所）を、地図上のマーカーから選択してください。<br>
-  <div id="map_canvas" style="height:350px;"></div> <!-- マップ表示 -->
+  <div>参集場所（これから向かう場所）を、地図上のマーカーから選択してください。</div>
+
+  <!-- マップ表示 -->
+  <div id="map_canvas" style="height:350px;"></div>
 
   <%= check_box "destination", "place" %>
 

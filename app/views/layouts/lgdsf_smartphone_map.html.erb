@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8" />
-<title></title>
-<%= csrf_meta_tag %>
-<link href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" rel="stylesheet" type="text/css" />
-<script src="http://code.jquery.com/jquery.min.js"></script>
-<script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=ja"></script>
-<%= javascript_include_tag 'staffs' %>
-<%= yield :header_tags -%>
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <%= csrf_meta_tag %>
+    <link href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" rel="stylesheet" type="text/css" />
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=ja"></script>
+    <%= javascript_include_tag 'staffs' %>
+    <%= yield :header_tags -%>
+  </head>
+  <body>
 
-<body>
+    <%= yield %>
 
-<%= yield %>
+    <script type="text/javascript">
+      setTimeout(function(){
+        <% if @shelters %>
+          <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+          <% count = 0 %>
 
-<script type="text/javascript">
-setTimeout(function(){
+          <% @shelters.each do |shelter| %>
+            <%= "iniShelters(#{count}, #{shelter.id}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
+            <% count += 1 %>
+          <% end %>
+       <% end %>
+      }, 1);
+    </script>
 
-<% if @shelters %>
-<%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
-  <% count = 0 %>
-  <% @shelters.each do |shelter| %>
-    <%= "iniShelters(#{count}, #{shelter.id}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
-    <% count += 1 %>
-  <% end %>
-<% end %>
-
-}, 1);
-</script>
-
-</body>
+  </body>
 </html>

@@ -97,19 +97,25 @@ class StaffsController < ApplicationController
 
     @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
-    if @staff.present?
-      # 上書き
-      @staff.latitude = @latitude
-      @staff.longitude = @longitude
-    else
-      # 挿入
-      @agent = Agent.find(@agent_id)
-      @staff =Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
-    end
+    if @latitude.present? && @longitude.present?
+      if @staff.present?
+        # 上書き
+        @staff.latitude = @latitude
+        @staff.longitude = @longitude
+      else
+        # 挿入
+        @agent = Agent.find(@agent_id)
+        @staff =Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
+      end
 
-    if @staff.save
-      # 現在位置送信成功時の場合
-      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
+      if @staff.save
+        # 現在位置送信成功時の場合
+        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
+      else
+        # 現在位置送信失敗時の場合
+        @notice = "認証に失敗しました"
+        redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
+      end
     else
       # 現在位置送信失敗時の場合
       @notice = "認証に失敗しました"
