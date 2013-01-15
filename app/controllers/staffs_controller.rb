@@ -8,12 +8,15 @@ class StaffsController < ApplicationController
 
   trans_sid
 
+  # レイアウトの選択処理
   def layout_selector
     case params[:action]
     when 'mail'
       'lgdsf'
     when 'index'
       'lgdsf_redmine'
+    when 'position_form'
+      request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_position'
     when 'destination_form'
       request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_map'
     else
@@ -21,9 +24,11 @@ class StaffsController < ApplicationController
     end
   end
 
+  # メールのアクション
   def mail
   end
 
+  # 個人情報送信画面の読み込み処理
   def send_form
     @mail_id = params[:mail_id]
     if request.mobile?
@@ -33,6 +38,7 @@ class StaffsController < ApplicationController
     end
   end
 
+  # 個人情報送信画面の書き込み処理
   def save_send
     @mail = params[:mail]
     @mail_id = params[:mail_id]
@@ -64,6 +70,7 @@ class StaffsController < ApplicationController
     end
   end
 
+  # 現在位置送信画面の読み込み処理
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
@@ -74,22 +81,18 @@ class StaffsController < ApplicationController
     end
   end
 
+  # 現在位置送信画面の書き込み処理
   def save_position
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
-    #@latitude = params[:latitude]
-    #@longitude = params[:longitude]
 
     # 現在位置の取得
     if request.mobile? and request.mobile.position
-      p @latitude = request.mobile.position.lat
-      p @longitude = request.mobile.position.lon
+      @latitude = request.mobile.position.lat
+      @longitude = request.mobile.position.lon
     else
-      # 現在位置が取得できていないので定数を代入
-      @latitude  = 38.4344802
-      @longitude = 141.3029167
-      #@latitude = params[:latitude]
-      #@longitude = params[:longitude]
+      @latitude = params[:latitude]
+      @longitude = params[:longitude]
     end
 
     @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
@@ -115,6 +118,7 @@ class StaffsController < ApplicationController
 
   end
 
+  # 参集先情報送信画面の読み込み処理
   def destination_form
     @all_shelters = Shelter.find(:all)
     @mail_id = params[:mail_id]
@@ -178,6 +182,7 @@ class StaffsController < ApplicationController
     end
   end
 
+  # 参集先画面の書き込み処理
   def save_destination
     @destination = params[:destination]
     @agent_id = params[:agent_id]
@@ -208,6 +213,7 @@ class StaffsController < ApplicationController
     end
   end
 
+  # 職員参集場所確認画面の処理
   def index
     @shelters = Shelter.find(:all)
     new = Staff.maximum(:mail_id) # 最新の災害番号データ

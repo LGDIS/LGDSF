@@ -8,6 +8,16 @@ var bigs     = new google.maps.MVCArray(); // 参集先拡大時のマーカを�
 var before = -1; // 前回拡大した参集先マーカの位置を記憶する配列（初期値は-1）
 var currentInfoWindow; // 前回表示した吹き出しを格納する変数
 
+function checkPosition(lat, lng) {
+
+  if (lat && lng)
+    return true;
+  else
+    return false;
+  end
+
+}
+
 // ページ読み込み時にマップを作成する。
 function iniMap(lat, lng, zoom) {
 
