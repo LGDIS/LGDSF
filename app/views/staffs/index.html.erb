@@ -10,8 +10,22 @@
 <fieldset class="collapsible collapsed">
   <legend onclick="toggleFieldset(this);"><%= name %>
     <% @staffs.each do |staff| %>
-      <% if staff.destination == name %>
-        <% count += 1 %>
+      <% if name == "現在位置不明" %>
+        <% if staff.latitude.blank? || staff.longitude.blank? %>
+          <% count += 1 %>
+        <% end %>
+      <% elsif name == "参集先不明" %>
+        <% if staff.latitude.present? && staff.longitude.present? %>
+          <% if staff.destination.blank? && staff.status == true %>
+            <% count += 1 %>
+          <% end %>
+        <% end %>
+      <% elsif name == "参集不可" %>
+        <% if staff.latitude.present? && staff.longitude.present? %>
+          <% if staff.status == false %>
+            <% count += 1 %>
+          <% end %>
+        <% end %>
       <% end %>
     <% end %>
     <span class="num"><%= count %>名</span>
@@ -20,11 +34,21 @@
   <div style="display: none;">
     <ul class="person_list">
       <% @staffs.each_with_index do |staff, pos| %>
-        <% if staff.destination == name %>
-          <% if name == "現在位置不明" %>
-            <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;" %></li>
-          <% else %>
-            <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;" %></li>
+        <% if name == "現在位置不明" %>
+          <% if staff.latitude.blank? || staff.longitude.blank? %>
+            <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+          <% end %>
+        <% elsif name == "参集先不明" %>
+          <% if staff.latitude.present? && staff.longitude.present? %>
+            <% if staff.destination.blank? && staff.status == true %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% end %>
+          <% end %>
+        <% elsif name == "参集不可" %>
+          <% if staff.latitude.present? && staff.longitude.present? %>
+            <% if staff.status == false %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
@@ -39,7 +63,7 @@
   <% count = 0 %>
   <fieldset class="collapsible collapsed">
   <legend onclick="toggleFieldset(this);">
-    <%= link_to shelter.name, {}, :onclick=> "showShelter(#{pos}, '#{shelter.name}'); return false;" %>
+    <%= link_to shelter.name, {}, :onclick=> "showShelter(#{pos}, '#{shelter.name}'); return false;".html_safe %>
     <% pos += 1 %>
     <% @staffs.each do |staff| %>
       <% if staff.destination == shelter.name %>
@@ -53,7 +77,7 @@
     <ul class="person_list">
       <% @staffs.each_with_index do |staff, pos2| %>
         <% if staff.destination == shelter.name %>
-          <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;" %></li>
+          <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
         <% end %>
       <% end %>
     </ul>

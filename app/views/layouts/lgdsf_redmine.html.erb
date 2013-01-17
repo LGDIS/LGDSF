@@ -19,7 +19,11 @@
     <% end %>
     <% if @staffs %>
       <% @staffs.each_with_index do |staff, count| %>
-        <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+        <% if staff.latitude.present? && staff.longitude.present? %>
+          <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+        <% else %>
+          <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+        <% end %>
       <% end %>
     <% end %>
   ">
