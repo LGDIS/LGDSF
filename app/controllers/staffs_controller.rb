@@ -42,22 +42,30 @@ class StaffsController < ApplicationController
   def save_send
     @mail = params[:mail]
     @mail_id = params[:mail_id]
-    @agent = Agent.find_by_mail_address(@mail['mail_address'])
 
     # メールアドレス認証
-    if @agent.present?
-      # 認証成功の場合
-      @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
-      if @staff.present?
-        # 上書き
-        @staff.name = @agent.name
-        @staff.agent_id = @agent.id
-      else
-        # 挿入
-        @staff =Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
-      end
-      if @staff.save
-        redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
+    if @mail['mail_address'].present?
+
+      @agent = Agent.find_by_mail_address(@mail['mail_address'])
+
+      if @agent.present?
+        # 認証成功の場合
+        @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
+        if @staff.present?
+          # 上書き
+          @staff.name = @agent.name
+          @staff.agent_id = @agent.id
+        else
+          # 挿入
+          @staff =Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
+        end
+        if @staff.save
+          redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
+        else
+          # 認証エラーの場合
+          @notice = "認証に失敗しました"
+          redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
+        end
       else
         # 認証エラーの場合
         @notice = "認証に失敗しました"
@@ -65,7 +73,7 @@ class StaffsController < ApplicationController
       end
     else
       # 認証エラーの場合
-      @notice = "認証に失敗しました"
+      @notice = "メールアドレスを入力してください"
       redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
     end
   end
