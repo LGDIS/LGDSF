@@ -95,9 +95,10 @@ class StaffsController < ApplicationController
       @longitude = params[:longitude]
     end
 
-    @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
-
     if @latitude.present? && @longitude.present?
+
+      @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
+
       if @staff.present?
         # 上書き
         @staff.latitude = @latitude
@@ -118,7 +119,7 @@ class StaffsController < ApplicationController
       end
     else
       # 現在位置送信失敗時の場合
-      @notice = "認証に失敗しました"
+      @notice = "現在位置の取得に失敗しました"
       redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
     end
 
@@ -139,7 +140,7 @@ class StaffsController < ApplicationController
 
     # 近くの参集場所の計算
     diffs = []
-    size = request.mobile? ? 240.0 : 350.0
+    size = request.mobile? ? 200.0 : 350.0
 
     # 2点間の距離を求める
     @all_shelters.each_with_index do |shelter, count|
@@ -198,6 +199,8 @@ class StaffsController < ApplicationController
 
     @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
 
+  if @destination['position'].present? || @destination['place'].to_i == 1 && @destination['reason'].present?
+
     if @staff.present?
       # 上書き
       @staff.status = @destination['place'].to_i == 1 ? false : true
@@ -220,6 +223,13 @@ class StaffsController < ApplicationController
       @notice = "参集先情報の送信に失敗しました"
       redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
     end
+
+  else
+    # 参集先情報送信失敗時の処理
+    @notice = @destination['place'].to_i == 1 ? "理由を入力してください" : "参集場所を選択してください"
+    redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
+  end
+
   end
 
   # 職員参集場所確認画面の処理

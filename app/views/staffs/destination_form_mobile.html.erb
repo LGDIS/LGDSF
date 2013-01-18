@@ -24,7 +24,7 @@
   <% end %>
 
   <img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
-&zoom=<%= @zoom %>&size=240x240&sensor=false
+&zoom=<%= @zoom %>&size=200x200&sensor=false
 &markers=<%= @latitude %>,<%= @longitude %>
 <% @shelters.each_with_index do |shelter, count| %>
   <%= "&markers=label:#{count+1}|#{shelter.latitude},#{shelter.longitude}".html_safe %>
