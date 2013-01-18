@@ -10,11 +10,11 @@ var currentInfoWindow; // 前回表示した吹き出しを格納する変数
 
 function checkPosition(lat, lng) {
 
-  if (lat && lng)
+  if (lat && lng) {
     return true;
-  else
+  } else {
     return false;
-  end
+  }
 
 }
 
