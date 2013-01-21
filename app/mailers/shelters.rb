@@ -1,3 +1,3 @@
-class Shelters < ActiveRecord::Base
+﻿class Shelters < ActiveRecord::Base
   unloadable
 end

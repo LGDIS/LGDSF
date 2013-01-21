@@ -1,4 +1,4 @@
-class PredefinedPosition < ActiveRecord::Base
+﻿class PredefinedPosition < ActiveRecord::Base
   attr_accessible :agent_id, :shelter_id
 
   has_one    :shelter

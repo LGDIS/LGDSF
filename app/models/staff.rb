@@ -1,4 +1,4 @@
-class Staff < ActiveRecord::Base
+﻿class Staff < ActiveRecord::Base
   attr_accessible :latitude, :longitude, :agent_id,
                   :reason, :name, :status, :destination, :mail_id
 
