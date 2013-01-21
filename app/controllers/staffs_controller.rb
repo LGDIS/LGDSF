@@ -9,6 +9,10 @@ class StaffsController < ApplicationController
   trans_sid
 
   # レイアウトの選択処理
+  # ==== Args
+  # _params[:action]_ :: URL（パス）
+  # ==== Return
+  # ==== Raise
   def layout_selector
     case params[:action]
     when 'mail'
@@ -25,10 +29,18 @@ class StaffsController < ApplicationController
   end
 
   # メールのアクション
+  # ==== Args
+  # ==== Return
+  # ==== Raise
   def mail
   end
 
-  # 個人情報送信画面の読み込み処理
+  # 個人特定情報送信画面
+  # 読み込み処理
+  # ==== Args
+  # _params[:mail_id]_ :: 災害番号
+  # ==== Return
+  # ==== Raise
   def send_form
     @mail_id = params[:mail_id]
     if request.mobile?
@@ -38,7 +50,13 @@ class StaffsController < ApplicationController
     end
   end
 
-  # 個人情報送信画面の書き込み処理
+  # 個人特定情報送信画面
+  # 書き込み処理
+  # ==== Args
+  # _params[:mail]_ :: メールアドレス
+  # _params[:mail_id]_ :: 災害番号
+  # ==== Return
+  # ==== Raise
   def save_send
     @mail = params[:mail]
     @mail_id = params[:mail_id]
@@ -78,7 +96,13 @@ class StaffsController < ApplicationController
     end
   end
 
-  # 現在位置送信画面の読み込み処理
+  # 位置情報送信画面
+  # 読み込み処理
+  # ==== Args
+  # _params[:mail_id]_ :: 災害番号
+  # _params[:agent_id]_ :: 職員ID
+  # ==== Return
+  # ==== Raise
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
@@ -89,7 +113,13 @@ class StaffsController < ApplicationController
     end
   end
 
-  # 現在位置送信画面の書き込み処理
+  # 位置情報送信画面
+  # 書き込み処理
+  # ==== Args
+  # _params[:mail_id]_ :: 災害番号
+  # _params[:agent_id]_ :: 職員ID
+  # ==== Return
+  # ==== Raise
   def save_position
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
@@ -133,7 +163,15 @@ class StaffsController < ApplicationController
 
   end
 
-  # 参集先情報送信画面の読み込み処理
+  # 参集場所報告画面
+  # 読み込み処理
+  # ==== Args
+  # _params[:mail_id]_ :: 災害番号
+  # _params[:agent_id]_ :: 職員ID
+  # _params[:latitude]_ :: 緯度
+  # _params[:longitude]_ :: 経度
+  # ==== Return
+  # ==== Raise
   def destination_form
     @all_shelters = Shelter.find(:all)
     @mail_id = params[:mail_id]
@@ -197,7 +235,16 @@ class StaffsController < ApplicationController
     end
   end
 
-  # 参集先画面の書き込み処理
+  # 参集場所報告画面
+  # 書き込み処理
+  # ==== Args
+  # _params[:destination]_ :: 参集場所情報
+  # _params[:mail_id]_ :: 災害番号
+  # _params[:agent_id]_ :: 職員ID
+  # _params[:latitude]_ :: 緯度
+  # _params[:longitude]_ :: 経度
+  # ==== Return
+  # ==== Raise
   def save_destination
     @destination = params[:destination]
     @agent_id = params[:agent_id]
@@ -240,7 +287,11 @@ class StaffsController < ApplicationController
 
   end
 
-  # 職員参集場所確認画面の処理
+  # 職員参集場所確認画面
+  # 初期処理
+  # ==== Args
+  # ==== Return
+  # ==== Raise
   def index
     @shelters = Shelter.find(:all)
     new = Staff.maximum(:mail_id) # 最新の災害番号データ
