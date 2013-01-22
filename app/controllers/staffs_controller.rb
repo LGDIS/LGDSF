@@ -180,10 +180,6 @@ class StaffsController < ApplicationController
     @longitude = params[:longitude].to_f
     @zoom = 15
 
-    # 参集場所の取得
-    place = PredefinedPosition.find_by_shelter_id(@agent_id)
-    @predefinedposition = Shelter.find(place)
-
     # 近くの参集場所の計算
     diffs = []
     size = request.mobile? ? 200.0 : 350.0
@@ -202,10 +198,13 @@ class StaffsController < ApplicationController
     # ズームの微調整
     @zoom = @zoom.round - 1
 
+    # 参集場所の取得
+    place = PredefinedPosition.find_by_agent_id(@agent_id)
+
     # id は配列の番号なので実際には+1した値がID
     # 所定の参集場所IDを初期値として代入しておく。
     shelters_id = []
-    shelters_id.push(@predefinedposition.id)
+    shelters_id.push(place.shelter_id)
 
     # モバイル・スマートフォンにより、近くの参集場所の表示数を分ける
     roop = request.mobile? ? 3 : 8
