@@ -53,6 +53,8 @@ gem 'devise', '2.2.2'
 # Devise extension to allow authentication via LDAP.
 gem 'devise_ldap_authenticatable', '0.6.1'
 
+gem 'ruby-ldap', '0.9.12'
+
 # Load Local Gemfile
 local_gemfile = File.join(File.dirname(__FILE__), "Gemfile.local")
 if File.exists?(local_gemfile)

@@ -4,6 +4,7 @@
 .rspec
 .rvmrc
 Gemfile.local
+Gemfile.lock
 /.bundle
 /vendor/bundle
 /log/*
