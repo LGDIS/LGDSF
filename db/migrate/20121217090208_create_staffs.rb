@@ -12,5 +12,17 @@ class CreateStaffs < ActiveRecord::Migration
 
       t.timestamps
     end
+
+    set_column_comment(:staffs, :id,          "ID")
+    set_column_comment(:staffs, :name,        "職員名")
+    set_column_comment(:staffs, :agent_id,    "職員マスタID")
+    set_column_comment(:staffs, :destination, "参集場所")
+    set_column_comment(:staffs, :status,      "参集先に向かうのが困難")
+    set_column_comment(:staffs, :reason,      "理由")
+    set_column_comment(:staffs, :latitude,    "緯度")
+    set_column_comment(:staffs, :longitude,   "経度")
+    set_column_comment(:staffs, :mail_id,     "災害番号")
+    set_column_comment(:staffs, :created_at,  "作成時刻")
+    set_column_comment(:staffs, :updated_at,  "更新時刻")
   end
 end

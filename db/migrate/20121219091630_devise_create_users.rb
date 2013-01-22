@@ -43,5 +43,20 @@ class DeviseCreateUsers < ActiveRecord::Migration
     # add_index :users, :confirmation_token,   :unique => true
     # add_index :users, :unlock_token,         :unique => true
     # add_index :users, :authentication_token, :unique => true
+
+    set_column_comment(:users, :id,                     "ID")
+    set_column_comment(:users, :email,                  "電子メール")
+    set_column_comment(:users, :encrypted_password,     "パスワード")
+    set_column_comment(:users, :agent_id,               "職員マスタID")
+    set_column_comment(:users, :reset_password_token,   "リセットパスワードトークン")
+    set_column_comment(:users, :reset_password_sent_at, "リセットパスワード送信時刻")
+    set_column_comment(:users, :remember_created_at,    "アウカント作成時刻")
+    set_column_comment(:users, :sign_in_count,          "サインイン回数")
+    set_column_comment(:users, :current_sign_in_at,     "最新サインイン時刻")
+    set_column_comment(:users, :last_sign_in_at,        "最終サインイン時刻")
+    set_column_comment(:users, :current_sign_in_ip,     "最新サインインIP")
+    set_column_comment(:users, :last_sign_in_ip,        "最終サインインIP")
+    set_column_comment(:users, :created_at,             "作成時刻")
+    set_column_comment(:users, :updated_at,             "更新時刻")
   end
 end
