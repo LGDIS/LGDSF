@@ -16,7 +16,7 @@
         <% end %>
       <% elsif name == "参集先不明" %>
         <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.destination.blank? && staff.status == true %>
+          <% if staff.destination.blank? && staff.status != false %>
             <% count += 1 %>
           <% end %>
         <% end %>
@@ -42,6 +42,9 @@
           <% if staff.latitude.present? && staff.longitude.present? %>
             <% if staff.destination.blank? && staff.status == true %>
               <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% elsif staff.destination.blank? && staff.status == nil %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', null, '#{staff.reason}'); return false;".html_safe %></l
+i>
             <% end %>
           <% end %>
         <% elsif name == "参集不可" %>

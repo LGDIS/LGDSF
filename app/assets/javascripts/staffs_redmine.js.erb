@@ -212,10 +212,10 @@ function showStaff(pos, name, mail, destination, status, reason) {
       }
     }
   }
-  else if (status == true) {
+  else if (status != false) {
     // 参集先不明に属する職員マーカの表示
     for(i = 0; i < destinations.length; i++){
-      if (!destinations[i] && statuses[i] == true) {
+      if (!destinations[i] && statuses[i] != false) {
         staffs[i].setVisible(true);
       }
     }
