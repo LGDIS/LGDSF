@@ -15,12 +15,14 @@
 
   <div>参集場所（これから向かう場所）を選択してください。</div>
 
-  <p>▼所定の参集場所</p>
-  <p><%= radio_button "destination", "position", "#{@predefinedposition.id}" %>(1) <%= @predefinedposition.name %></p>
-
-  <p>▼近くの参集場所</p>
-  <% for i in 1...@shelters.size %>
-    <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + 1}) #{@shelters[i].name}"%></p>
+  <% for i in 0...@shelters.size %>
+    <% if i == 0 %>
+      <p>▼所定の参集場所</p>
+      <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %>(1) <%= @shelters[i].name %></p>
+      <p>▼近くの参集場所</p>
+    <% else %>
+      <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + 1}) #{@shelters[i].name}"%></p>
+    <% end %>
   <% end %>
 
   <img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
