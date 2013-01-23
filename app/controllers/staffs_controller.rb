@@ -251,8 +251,6 @@ class StaffsController < ApplicationController
     @latitude = params[:latitude]
     @longitude = params[:longitude]
 
-    p @destination['place']
-
     if @destination['position'].present? || @destination['place'].to_i == 1 
 
       @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
@@ -261,12 +259,14 @@ class StaffsController < ApplicationController
         # 上書き
         if @destination['place'].to_i == 1
           @staff.status = false
+          @staff.destination = ''
+          @staff.reason = @destination['reason'].present? ? @destination['reason'] : ''
         else
           @staff.status = true
           shelter = Shelter.find(@destination['position'])
           @staff.destination = shelter.name
+          @staff.reason = ''
         end
-        @staff.reason = @destination['reason'] if @destination['reason'].present?
       else
         # 挿入（エラー処理）
         @notice = "参集先情報の送信に失敗しました"
