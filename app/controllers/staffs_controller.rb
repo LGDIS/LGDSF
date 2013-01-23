@@ -251,38 +251,43 @@ class StaffsController < ApplicationController
     @latitude = params[:latitude]
     @longitude = params[:longitude]
 
-    @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
+    p @destination['place']
 
-  if @destination['position'].present? || @destination['place'].to_i == 1 && @destination['reason'].present?
+    if @destination['position'].present? || @destination['place'].to_i == 1 
 
-    if @staff.present?
-      # 上書き
-      @staff.status = @destination['place'].to_i == 1 ? false : true
-      if @destination['position'].present?
-        shelter = Shelter.find(@destination['position'])
-        @staff.destination = shelter.name
+      @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
+
+      if @staff.present?
+        # 上書き
+        if @destination['place'].to_i == 1
+          @staff.status = false
+        else
+          @staff.status = true
+          shelter = Shelter.find(@destination['position'])
+          @staff.destination = shelter.name
+        end
+        @staff.reason = @destination['reason'] if @destination['reason'].present?
+      else
+        # 挿入（エラー処理）
+        @notice = "参集先情報の送信に失敗しました"
+        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
       end
-      @staff.reason = @destination['reason']
-    else
-      # 挿入（エラー処理）
-      #@staff = Staff.new(:name => @name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
-    end
 
-    if @staff.save
-      # 参集先情報送信成功時の処理
-      @notice = "送信しました"
-      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
+      if @staff.save
+        # 参集先情報送信成功時の処理
+        @notice = "送信しました"
+        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
+      else
+        # 参集先情報送信失敗時の処理
+        @notice = "参集先情報の送信に失敗しました"
+        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
+      end
+
     else
       # 参集先情報送信失敗時の処理
-      @notice = "参集先情報の送信に失敗しました"
+      @notice = "参集場所を選択してください"
       redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
     end
-
-  else
-    # 参集先情報送信失敗時の処理
-    @notice = @destination['place'].to_i == 1 ? "理由を入力してください" : "参集場所を選択してください"
-    redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
-  end
 
   end
 

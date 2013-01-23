@@ -21,7 +21,6 @@ class CreateStaffs < ActiveRecord::Migration
     set_column_comment(:staffs, :reason,      "理由")
     set_column_comment(:staffs, :latitude,    "緯度")
     set_column_comment(:staffs, :longitude,   "経度")
-    set_column_comment(:staffs, :mail_id,     "災害番号")
     set_column_comment(:staffs, :created_at,  "作成時刻")
     set_column_comment(:staffs, :updated_at,  "更新時刻")
   end
