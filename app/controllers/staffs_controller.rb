@@ -198,7 +198,7 @@ class StaffsController < ApplicationController
     # ズームの微調整
     @zoom = @zoom.round - 1
 
-    # 参集場所の取得
+    # 所定の参集場所の取得
     place = PredefinedPosition.find_by_agent_id(@agent_id)
 
     # id は配列の番号なので実際には+1した値がID
@@ -209,16 +209,21 @@ class StaffsController < ApplicationController
     # モバイル・スマートフォンにより、近くの参集場所の表示数を分ける
     roop = request.mobile? ? 3 : 8
 
-    # 近くの参集場所を近い順に並べる
-    for i in 0...roop
+    # 参集場所を近い順に並べる
+    i = 0
+    while i < roop
       diffs.each_with_index do |diff, count|
         if temps[i] == diff
           unless shelters_id.include?(count + 1)
-            shelters_id[i+1] = count + 1
+            shelters_id.push(count + 1)
+            break
+          else
+            roop += 1
             break
           end
         end
       end
+      i += 1
     end
 
     # 所定の参集場所、近くの参集場所を@shelters変数に格納する。
