@@ -18,7 +18,7 @@ class StaffsController < ApplicationController
     when 'mail'
       'lgdsf'
     when 'index'
-      'lgdsf_redmine'
+      'lgdsf_index'
     when 'position_form'
       request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_position'
     when 'destination_form'
