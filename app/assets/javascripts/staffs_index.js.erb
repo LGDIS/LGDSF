@@ -2,17 +2,19 @@
 //= require jquery_ujs
 
 var map; // GoogleMapを格納する変数
-
-var staffs   = new google.maps.MVCArray(); // 職員マーカを格納する配列
-var shelters = new google.maps.MVCArray(); // 参集先マーカを格納する配列
-var bigs     = new google.maps.MVCArray(); // 参集先拡大時のマーカを格納する配列
-
-var before = -1;       // 前回拡大した参集先マーカの位置を記憶する配列（初期値は-1）
 var currentInfoWindow; // 前回表示した吹き出しを格納する変数
 
-var destinations   = new Array(); // 職員の参集場所を格納する配列
-var statuses       = new Array(); // 職員の状態を格納する配列
-var names          = new Array(); // 参集場所名を格納する配列
+var shelters     = new google.maps.MVCArray(); // 参集先マーカを格納する配列
+var staffs       = new google.maps.MVCArray(); // 職員マーカを格納する配列
+var big_shelters = new google.maps.MVCArray(); // 参集先拡大時のマーカを格納する配列
+var big_staffs   = new google.maps.MVCArray(); // 職員拡大時のマーカを格納する配列
+
+var before_shelter = -1; // 前回拡大した参集先マーカの位置を記憶する配列（初期値は-1）
+var before_staff   = -1; // 前回拡大した職員マーカの位置を記憶する配列（初期値は-1）
+
+var destinations  = new Array(); // 職員の参集場所を格納する配列
+var statuses      = new Array(); // 職員の状態を格納する配列
+var names         = new Array(); // 参集場所名を格納する配列
 
 // フィールドの切替
 function toggleFieldset(el) {
@@ -46,7 +48,7 @@ function iniShelters(pos, name, lat, lng) {
   });
 
   // 拡大時のマーカ作成（最初は非表示）
-  bigs[pos] = new google.maps.Marker({
+  big_shelters[pos] = new google.maps.Marker({
     position: new google.maps.LatLng(lat, lng),
     map: map,
     flat: true,
@@ -60,7 +62,7 @@ function iniShelters(pos, name, lat, lng) {
   });
 
   // 拡大されたマーカをクリックしたときの処理
-  google.maps.event.addDomListener(bigs[pos], 'click', function(){
+  google.maps.event.addDomListener(big_shelters[pos], 'click', function(){
     infoShelter(pos, name);
   });
 
@@ -72,9 +74,19 @@ function iniShelters(pos, name, lat, lng) {
 // 職員の現在位置と参集場所の記録
 function iniStaffs(pos, name, lat, lng, mail, destination, status, reason) {
 
-  // 職員マーカ作成（最初は非表示）
   if (lat && lng) {
+
+    // 職員マーカ作成（最初は非表示）
     staffs[pos] = new google.maps.Marker({
+      position: new google.maps.LatLng(lat, lng),
+      map: map,
+      flat: true,
+      visible: false,
+      icon: "<%=asset_path('mm_20_blue.png') %>"
+    });
+
+    // 拡大時のマーカ作成（最初は非表示）
+    big_staffs[pos] = new google.maps.Marker({
       position: new google.maps.LatLng(lat, lng),
       map: map,
       flat: true,
@@ -85,6 +97,11 @@ function iniStaffs(pos, name, lat, lng, mail, destination, status, reason) {
     // 職員マーカをクリックしたときの処理
     google.maps.event.addDomListener(staffs[pos], 'click', function(){
       showStaff(pos, name, mail, destination, status, reason);
+    });
+
+    // 拡大されたマーカをクリックしたときの処理
+    google.maps.event.addDomListener(big_staffs[pos], 'click', function(){
+      infoStaff(pos, name, mail, status, reason);
     });
 
     // 現在位置不明ではないときのみ参集場所を記録
@@ -111,13 +128,13 @@ function infoShelter(pos, name) {
   });
 
   // 吹き出しを表示する。
-  infowindow.open(map, bigs[pos]);
+  infowindow.open(map, big_shelters[pos]);
 
   // 開いた情報ウィンドウを記録
   currentInfoWindow = infowindow;
 
   // 拡大したマーカを記録
-  before = pos;
+  before_shelter = pos;
 
 }
 
@@ -130,51 +147,51 @@ function infoStaff(pos, name, mail, status, reason) {
   }
 
   // 吹き出しに表示する内容を決定する。
+  var message;
   if (status == false) {
-    var infowindow = new google.maps.InfoWindow({
-      content: '氏名：' + name + '<br>メール：' + mail + '<br>参集できない理由：' + reason
-    });
+    message = '氏名：' + name + '<br>メール：' + mail + '<br>参集できない理由：' + reason
   } else {
-    var infowindow = new google.maps.InfoWindow({
-      content: '氏名：' + name + '<br>メール：' + mail
-    });
+    message = '氏名：' + name + '<br>メール：' + mail
   }
+  var infowindow = new google.maps.InfoWindow({
+    content: message
+  });
 
   // 吹き出しを表示する。
-  infowindow.open(map, staffs[pos]);
+  infowindow.open(map, big_staffs[pos]);
 
   // 開いた情報ウィンドウを記録
   currentInfoWindow = infowindow;
+
+  // 拡大したマーカを記録
+  before_staff = pos;
 
 }
 
 // 参集先リンク押下時の処理
 function showShelter(pos, name) {
 
-  // クリックしたマーカを非表示
+  // クリックした参集先マーカを非表示
   shelters[pos].setVisible(false);
 
   // 以前に拡大したマーカを元に戻す処理
-  // 前回と違うマーカをクリックしたときのみ実行
-  if (before != -1 && pos != before) {
-    bigs[before].setVisible(false);
-    shelters[before].setVisible(true);
+  if (before_shelter != -1 && pos != before_shelter) {
+    big_shelters[before_shelter].setVisible(false);
+    shelters[before_shelter].setVisible(true);
+  }
+  if (before_staff != -1) {
+    big_staffs[before_staff].setVisible(false);
+    staffs[before_staff].setVisible(true);
   }
 
   // 参集先マーカ拡大
-  bigs[pos].setVisible(true);
+  big_shelters[pos].setVisible(true);
 
   // 職員マーカの非表示
-  for(i = 0; i < destinations.length; i++){
-    staffs[i].setVisible(false);
-  }
+  hideStaff();
 
   // 参集先に属する職員マーカの表示
-  for(i = 0; i < destinations.length; i++){
-    if (name == destinations[i]) {
-      staffs[i].setVisible(true);
-    }
-  }
+  showBelongStaff(name);
 
   // 吹き出し表示
   infoShelter(pos, name);
@@ -184,31 +201,24 @@ function showShelter(pos, name) {
 function showStaff(pos, name, mail, destination, status, reason) {
 
   // 以前に拡大したマーカを元に戻す処理
-  if (before != -1) {
-    bigs[before].setVisible(false);
-    shelters[before].setVisible(true);
-  }
+  markerReplace();
 
   // 職員を非表示にする処理
-  for(i = 0; i < destinations.length; i++){
-    staffs[i].setVisible(false);
-  }
+  hideStaff();
 
   if (destination) {
     // 参集先に属する職員マーカの表示
-    for(i = 0; i < destinations.length; i++){
-      if (destination == destinations[i]) {
-        staffs[i].setVisible(true);
-      }
-    }
+    showBelongStaff(destination);
+    staffs[pos].setVisible(false);
+    big_staffs[pos].setVisible(true);
 
     // 参集先のマーカを拡大する処理
     for(i = 0; i < names.length; i++){
       if (destination == names[i]) {
         shelters[i].setVisible(false);
-        bigs[i].setVisible(true);
+        big_shelters[i].setVisible(true);
         // 拡大したマーカを記録
-        before = i;
+        before_shelter = i;
       }
     }
   }
@@ -219,6 +229,8 @@ function showStaff(pos, name, mail, destination, status, reason) {
         staffs[i].setVisible(true);
       }
     }
+    staffs[pos].setVisible(false);
+    big_staffs[pos].setVisible(true);
   }
   else if (status == false) {
     // 参集不可に属する職員マーカの表示
@@ -227,6 +239,8 @@ function showStaff(pos, name, mail, destination, status, reason) {
         staffs[i].setVisible(true);
       }
     }
+    staffs[pos].setVisible(false);
+    big_staffs[pos].setVisible(true);
   }
 
   infoStaff(pos, name, mail, status, reason);
@@ -236,30 +250,23 @@ function showStaff(pos, name, mail, destination, status, reason) {
 function unknownShowStaff(pos, name, mail, destination, status, reason) {
 
   // 以前に拡大したマーカを元に戻す処理
-  if (before != -1) {
-    bigs[before].setVisible(false);
-    shelters[before].setVisible(true);
-  }
+  markerReplace();
 
   // 職員を非表示にする処理
-  for(i = 0; i < destinations.length; i++){
-    staffs[i].setVisible(false);
-  }
+  hideStaff();
 
   // 参集先に属する職員マーカの表示
-  for(i = 0; i < destinations.length; i++){
-    if (destination == destinations[i]) {
-      staffs[i].setVisible(true);
-    }
-  }
+  showBelongStaff(destination);
+  staffs[pos].setVisible(false);
+  big_staffs[pos].setVisible(true);
 
   // 参集先のマーカを拡大する処理
   for(i = 0; i < names.length; i++){
     if (destination == names[i]) {
       shelters[i].setVisible(false);
-      bigs[i].setVisible(true);
+      big_shelters[i].setVisible(true);
       // 拡大したマーカを記録
-      before = i;
+      before_shelter = i;
     }
   }
 
@@ -269,4 +276,31 @@ function unknownShowStaff(pos, name, mail, destination, status, reason) {
 // 現在位置不明ボタン押下時、表示処理
 function unknownStaff(pos, name, mail) {
    alert('氏名：' + name + '\nメール：' + mail + '\n現在位置不明');
+}
+
+// 以前に拡大したマーカを元に戻す処理
+function markerReplace() {
+  if (before_shelter != -1) {
+    big_shelters[before_shelter].setVisible(false);
+    shelters[before_shelter].setVisible(true);
+  }
+  if (before_staff != -1) {
+    big_staffs[before_staff].setVisible(false);
+    staffs[before_staff].setVisible(true);
+  }
+}
+
+// 職員を非表示にする処理
+function hideStaff() {
+  for(i = 0; i < destinations.length; i++){
+    staffs[i].setVisible(false);
+  }
+}
+// 参集先に属する職員マーカの表示
+function showBelongStaff(name) {
+  for(i = 0; i < destinations.length; i++){
+    if (name == destinations[i]) {
+      staffs[i].setVisible(true);
+    }
+  }
 }
