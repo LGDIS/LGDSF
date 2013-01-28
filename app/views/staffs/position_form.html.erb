@@ -6,8 +6,7 @@
   </div>
 <% end %>
 
-<div>下記のボタンから、現在位置を送信してください。</div>
-<br>
+<p>下記のボタンから、現在位置を送信してください。</p>
 
 <%= form_tag :action => 'save_position', :onSubmit => "return checkPosition(@latitude, @longitude);" do %>
   <%= hidden_field_tag "mail_id", @mail_id %>
@@ -17,5 +16,4 @@
   <%= submit_tag '現在位置を送信', :id => 'send' %>
 <% end %>
 
-<br>
-<div>※ボタン押下後に、確認を求められますが、全て承諾してください。</div>
+<p>※ボタン押下後に、確認を求められますが、全て承諾してください。</p>

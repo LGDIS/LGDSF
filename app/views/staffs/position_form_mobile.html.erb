@@ -6,10 +6,8 @@
   </div>
 <% end %>
 
-<div>下記のリンクから、現在位置を送信してください。</div>
-<br>
+<p>下記のリンクから、現在位置を送信してください。</p>
 
-<%= get_position_link_to "現在位置を送信", :action => "save_position", :mail_id => @mail_id, :agent_id => @agent_id %>
+<p><%= get_position_link_to "現在位置を送信", :action => "save_position", :mail_id => @mail_id, :agent_id => @agent_id %></p>
 
-<br>
-<div>※リンク選択後に、確認を求められますが、全て承諾してください。</div>
+<p>※リンク選択後に、確認を求められますが、全て承諾してください。</p>
