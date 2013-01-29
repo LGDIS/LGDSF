@@ -14,19 +14,19 @@
   <%= hidden_field_tag "longitude", @longitude %>
   <%= hidden_field "destination", "position", :value => "" %>
 
-  <p id="place">参集場所（これから向かう場所）を、地図上のマーカーから選択してください。</p>
+  <div id="place">参集場所（これから向かう場所）を、地図上のマーカーから選択してください。</div>
 
   <!-- マップ表示 -->
   <div id="map_canvas" style="height:350px;"></div>
 
-  <p id="footer">
-    <p><%= check_box "destination", "place" %>
+  <div id="footer">
+    <div><%= check_box "destination", "place" %>
       <label for="destination_place">参集場所に向かうのが困難</label>
-    </p>
+    </div>
 
-    <p><%= text_field :destination, :reason, :placeholder => '理由を入力して下さい。' %></p>
+    <div><%= text_field :destination, :reason, :placeholder => '理由を入力して下さい。' %></div>
 
-    </p><%= submit_tag "送信" %></p>
-  </p>
+    <div><%= submit_tag "送信" %></div>
+  </div>
 
 <% end %>
