@@ -115,7 +115,7 @@ PredefinedPosition.create(:agent_id => 21, :shelter_id => 17)
 PredefinedPosition.create(:agent_id => 22, :shelter_id => 18)
 PredefinedPosition.create(:agent_id => 23, :shelter_id => 19)
 PredefinedPosition.create(:agent_id => 24, :shelter_id => 20)
-PredefinedPosition.create(:agent_id => 25, :shelter_id => 21)
+PredefinedPosition.create(:agent_id => 25, :shelter_id => 20)
 
 PredefinedPosition.create(:agent_id => 26, :shelter_id => 4)
 PredefinedPosition.create(:agent_id => 27, :shelter_id => 4)
