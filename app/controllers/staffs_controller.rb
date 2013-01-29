@@ -200,11 +200,11 @@ class StaffsController < ApplicationController
 
     # 所定の参集場所の取得
     place = PredefinedPosition.find_by_agent_id(@agent_id)
+    @predefined_position = place.shelter_id - 1
 
     # id は配列の番号なので実際には+1した値がID
     # 所定の参集場所IDを初期値として代入しておく。
     shelters_id = []
-    shelters_id.push(place.shelter_id)
 
     # モバイル・スマートフォンにより、近くの参集場所の表示数を分ける
     roop = request.mobile? ? 3 : 8
@@ -214,7 +214,7 @@ class StaffsController < ApplicationController
     while i < roop
       diffs.each_with_index do |diff, count|
         if temps[i] == diff
-          unless shelters_id.include?(count + 1)
+          if @predefined_position != (count + 1)
             shelters_id.push(count + 1)
             break
           else

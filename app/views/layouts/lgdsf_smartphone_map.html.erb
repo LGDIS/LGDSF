@@ -27,7 +27,13 @@
         $("#map_canvas").height(height);
         <% if @shelters %>
           <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
-          <% count = 0 %>
+
+          <% if @all_shelters[@predefined_position] %>
+            <%= "iniShelters(0, #{@predefined_position + 1}, '#{@all_shelters[@predefined_position].name}', #{@all_shelters[@predefined_position].latitude}, #{@all_shelters[@predefined_position].longitude});".html_safe %>
+            <% count = 1 %>
+          <% else %>
+            <% count = 0 %>
+          <% end %>
 
           <% @shelters.each do |shelter| %>
             <%= "iniShelters(#{count}, #{shelter.id}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>

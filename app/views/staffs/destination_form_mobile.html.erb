@@ -15,21 +15,31 @@
 
   <p>参集場所（これから向かう場所）を選択してください。</p>
 
+  <% if @all_shelters[@predefined_position] %>
+    <% count = 2 %>
+    <p>▼所定の参集場所</p>
+    <p><%= radio_button "destination", "position", "#{@predefined_position + 1}" %>(1) <%= @all_shelters[@predefined_position].name %></p>
+  <% else %>
+    <% count = 1 %>
+  <% end %>
+
+  <p>▼近くの参集場所</p>
+
   <% for i in 0...@shelters.size %>
-    <% if i == 0 %>
-      <p>▼所定の参集場所</p>
-      <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %>(1) <%= @shelters[i].name %></p>
-      <p>▼近くの参集場所</p>
-    <% else %>
-      <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + 1}) #{@shelters[i].name}"%></p>
-    <% end %>
+    <p><%= radio_button "destination", "position", "#{@shelters[i].id}" %><%="(#{i + count}) #{@shelters[i].name}"%></p>
   <% end %>
 
   <img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
 &zoom=<%= @zoom %>&size=200x200&sensor=false
 &markers=<%= @latitude %>,<%= @longitude %>
+<% if @all_shelters[@predefined_position] %>
+  <%= "&markers=label:1|#{@all_shelters[@predefined_position].latitude},#{@all_shelters[@predefined_position].longitude}".html_safe %>
+  <% i = 2 %>
+<% else %>
+  <% i = 1 %>
+<% end %>
 <% @shelters.each_with_index do |shelter, count| %>
-  <%= "&markers=label:#{count+1}|#{shelter.latitude},#{shelter.longitude}".html_safe %>
+  <%= "&markers=label:#{count+i}|#{shelter.latitude},#{shelter.longitude}".html_safe %>
 <% end %>
 ">
 
