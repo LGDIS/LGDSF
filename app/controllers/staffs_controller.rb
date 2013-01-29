@@ -1,5 +1,7 @@
 # encoding: utf-8
+# Staff Finderの処理を行うクラス
 class StaffsController < ApplicationController
+
   before_filter :authenticate_user!, :only => 'index'
 
   skip_before_filter :check_if_login_required, :except => :index
@@ -9,9 +11,11 @@ class StaffsController < ApplicationController
   trans_sid
 
   # レイアウトの選択処理
+  # 各画面で使用するレイアウトを決定する
   # ==== Args
   # _params[:action]_ :: URL（パス）
   # ==== Return
+  # レイアウト名
   # ==== Raise
   def layout_selector
     case params[:action]
@@ -28,7 +32,8 @@ class StaffsController < ApplicationController
     end
   end
 
-  # メールのアクション
+  # 災害メール
+  # 読み込み処理
   # ==== Args
   # ==== Return
   # ==== Raise
@@ -37,12 +42,14 @@ class StaffsController < ApplicationController
 
   # 個人特定情報送信画面
   # 読み込み処理
+  # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
   # _params[:mail_id]_ :: 災害番号
   # ==== Return
   # ==== Raise
   def send_form
     @mail_id = params[:mail_id]
+    # モバイルの場合は、モバイル用のviewに切替える
     if request.mobile?
       render "send_form_mobile"
     else
@@ -52,6 +59,9 @@ class StaffsController < ApplicationController
 
   # 個人特定情報送信画面
   # 書き込み処理
+  # 入力されたメールアドレスを元に認証を行う
+  # * 認証が成功した場合、職員の名前とID、災害番号をDBに登録し、位置情報送信画面に遷移する
+  # * 認証が失敗した場合、"認証に失敗しました"と画面上部に表示する。
   # ==== Args
   # _params[:mail]_ :: メールアドレス
   # _params[:mail_id]_ :: 災害番号
@@ -77,6 +87,7 @@ class StaffsController < ApplicationController
           # 挿入
           @staff =Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
         end
+        # DB登録処理
         if @staff.save
           redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
         else
@@ -98,6 +109,7 @@ class StaffsController < ApplicationController
 
   # 位置情報送信画面
   # 読み込み処理
+  # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
   # _params[:mail_id]_ :: 災害番号
   # _params[:agent_id]_ :: 職員ID
@@ -106,6 +118,7 @@ class StaffsController < ApplicationController
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
+    # モバイルの場合は、モバイル用のviewに切替える
     if request.mobile?
       render "position_form_mobile"
     else
@@ -115,6 +128,9 @@ class StaffsController < ApplicationController
 
   # 位置情報送信画面
   # 書き込み処理
+  # 端末の位置情報を取得し、DBに保存する。
+  # * 現在位置送信が成功した場合、位置情報（緯度、経度）をDBに登録し、参集場所報告画面に遷移する
+  # * 現在位置送信が失敗した場合、"現在位置の送信に失敗しました"と画面上部に表示する。
   # ==== Args
   # _params[:mail_id]_ :: 災害番号
   # _params[:agent_id]_ :: 職員ID
@@ -133,6 +149,7 @@ class StaffsController < ApplicationController
       @longitude = params[:longitude]
     end
 
+    # 現在位置の取得成功の場合
     if @latitude.present? && @longitude.present?
 
       @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
@@ -144,19 +161,20 @@ class StaffsController < ApplicationController
       else
         # 挿入
         @agent = Agent.find(@agent_id)
-        @staff =Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
+        @staff = Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
       end
 
+      # DB登録処理
       if @staff.save
         # 現在位置送信成功時の場合
         redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
       else
         # 現在位置送信失敗時の場合
-        @notice = "認証に失敗しました"
+        @notice = "現在位置の送信に失敗しました"
         redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
       end
     else
-      # 現在位置送信失敗時の場合
+      # 現在位置取得失敗時の場合
       @notice = "現在位置の取得に失敗しました"
       redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
     end
@@ -165,6 +183,7 @@ class StaffsController < ApplicationController
 
   # 参集場所報告画面
   # 読み込み処理
+  # 近くの参集場所を計算して求め、所定の参集場所と近くの参集場所をGoogle Map上に表示する。
   # ==== Args
   # _params[:mail_id]_ :: 災害番号
   # _params[:agent_id]_ :: 職員ID
@@ -232,6 +251,7 @@ class StaffsController < ApplicationController
       @shelters.push(Shelter.find(shelter_id))
     end
 
+    # モバイルの場合は、モバイル用のviewに切替える
     if request.mobile?
       render "destination_form_mobile"
     else
@@ -241,6 +261,9 @@ class StaffsController < ApplicationController
 
   # 参集場所報告画面
   # 書き込み処理
+  # 職員の参集先情報を取得し、DBに保存する。
+  # * 参集先情報送信が成功した場合、参集先情報をDBに登録し、"送信しました"と画面上部に表示する。
+  # * 参集先情報送信が失敗した場合、"参集先情報の送信に失敗しました"と画面上部に表示する。
   # ==== Args
   # _params[:destination]_ :: 参集場所情報
   # _params[:mail_id]_ :: 災害番号
@@ -256,6 +279,7 @@ class StaffsController < ApplicationController
     @latitude = params[:latitude]
     @longitude = params[:longitude]
 
+    # バリデーションチェック
     if @destination['position'].present? || @destination['place'].to_i == 1 
 
       @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
@@ -278,6 +302,7 @@ class StaffsController < ApplicationController
         redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
       end
 
+      # DB登録処理
       if @staff.save
         # 参集先情報送信成功時の処理
         @notice = "送信しました"
@@ -296,15 +321,20 @@ class StaffsController < ApplicationController
 
   end
 
-  # 職員参集場所確認画面
+  # 職員位置確認画面
   # 初期処理
+  # 最新の災害の職員の参集先情報をGoogle Map上に表示する。
   # ==== Args
   # ==== Return
   # ==== Raise
   def index
     @shelters = Shelter.find(:all)
-    new = Staff.maximum(:mail_id) # 最新の災害番号データ
+
+    # 最新の災害番号データの取得
+    new = Staff.maximum(:mail_id)
     @staffs = Staff.find(:all, :conditions => { :mail_id => new })
+
+    # 2点間の距離を求め、ズーム率を決定する。
     @zoom = 15
     @shelters.each_with_index do |shelter, count|
       lat = shelter.latitude - LATITUDE
