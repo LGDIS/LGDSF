@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 class CreateShelters < ActiveRecord::Migration
   def change
     create_table :shelters do |t|

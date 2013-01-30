@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 class CreatePredefinedPositions < ActiveRecord::Migration
   def change
     create_table :predefined_positions do |t|

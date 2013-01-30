@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 class CreateAgents < ActiveRecord::Migration
   def change
     create_table :agents do |t|
