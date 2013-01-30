@@ -25,18 +25,18 @@
       $(window).load(function() {
         var height = $(window).height() - $("#flash").height() - $("#place").height() - $("#footer").height() - 20;
         $("#map_canvas").height(height);
-        <% if @shelters %>
+        <% if @near_gathering_positions %>
           <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
 
-          <% if @all_shelters[@predefined_position] %>
-            <%= "iniShelters(0, #{@predefined_position + 1}, '#{@all_shelters[@predefined_position].name}', #{@all_shelters[@predefined_position].latitude}, #{@all_shelters[@predefined_position].longitude});".html_safe %>
+          <% if @gathering_positions["#{@predefined_position}"] %>
+            <%= "iniShelters(0, #{@predefined_position}, '#{@gathering_positions["#{@predefined_position}"]["name"]}', #{@gathering_positions["#{@predefined_position}"]["latitude"]}, #{@gathering_positions["#{@predefined_position}"]["longitude"]});".html_safe %>
             <% count = 1 %>
           <% else %>
             <% count = 0 %>
           <% end %>
 
-          <% @shelters.each do |shelter| %>
-            <%= "iniShelters(#{count}, #{shelter.id}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
+          <% @near_gathering_positions.each do |id, gathering_position| %>
+            <%= "iniShelters(#{count},  #{id.to_i}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
             <% count += 1 %>
           <% end %>
        <% end %>

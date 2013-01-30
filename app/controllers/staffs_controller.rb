@@ -74,6 +74,7 @@ class StaffsController < ApplicationController
     # メールアドレス認証
     if @mail['mail_address'].present?
 
+      # TODO LDAP認証で行う
       @agent = Agent.find_by_mail_address(@mail['mail_address'])
 
       if @agent.present?
@@ -192,21 +193,21 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def destination_form
-    @all_shelters = Shelter.find(:all)
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
     @latitude = params[:latitude].to_f
     @longitude = params[:longitude].to_f
-    @zoom = 15
+    @zoom = 13
 
     # 近くの参集場所の計算
     diffs = []
     size = request.mobile? ? 200.0 : 350.0
 
     # 2点間の距離を求める
-    @all_shelters.each_with_index do |shelter, count|
-      lat = shelter.latitude - @latitude
-      lng = shelter.longitude - @longitude
+    @gathering_positions.each do |id, gathering_position|
+      count = id.to_i-1
+      lat = gathering_position["latitude"].to_f - @latitude
+      lng = gathering_position["longitude"].to_f - @longitude
       diffs[count] = Math::sqrt(lat * lat + lng * lng)
       @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
     end
@@ -218,12 +219,11 @@ class StaffsController < ApplicationController
     @zoom = @zoom.round - 1
 
     # 所定の参集場所の取得
-    place = PredefinedPosition.find_by_agent_id(@agent_id)
-    @predefined_position = place.shelter_id - 1
+    @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i
 
     # id は配列の番号なので実際には+1した値がID
     # 所定の参集場所IDを初期値として代入しておく。
-    shelters_id = []
+    gathering_position_ids = []
 
     # モバイル・スマートフォンにより、近くの参集場所の表示数を分ける
     roop = request.mobile? ? 3 : 8
@@ -234,7 +234,7 @@ class StaffsController < ApplicationController
       diffs.each_with_index do |diff, count|
         if temps[i] == diff
           if @predefined_position != (count + 1)
-            shelters_id.push(count + 1)
+            gathering_position_ids.push(count + 1)
             break
           else
             roop += 1
@@ -245,10 +245,10 @@ class StaffsController < ApplicationController
       i += 1
     end
 
-    # 所定の参集場所、近くの参集場所を@shelters変数に格納する。
-    @shelters = []
-    shelters_id.each_with_index do |shelter_id, count|
-      @shelters.push(Shelter.find(shelter_id))
+    # 近くの参集場所を@near_gathering_positions変数に格納する。
+    @near_gathering_positions = {}
+    gathering_position_ids.each do |gathering_position_id|
+      @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
     end
 
     # モバイルの場合は、モバイル用のviewに切替える
@@ -292,8 +292,8 @@ class StaffsController < ApplicationController
           @staff.reason = @destination['reason'].present? ? @destination['reason'] : ''
         else
           @staff.status = true
-          shelter = Shelter.find(@destination['position'])
-          @staff.destination = shelter.name
+          gathering_position = @gathering_positions[@destination['position']]
+          @staff.destination = gathering_position['name']
           @staff.reason = ''
         end
       else
@@ -328,17 +328,25 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def index
-    @shelters = Shelter.find(:all)
+    # ActiveResource各種設定
+    settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
+
+    # 職員位置確認画面のマップの中心緯度
+    @latitude  = settings["ldgsf"][Rails.env]["latitude"]
+
+    # 職員位置確認画面のマップの中心経度
+    @longitude = settings["ldgsf"][Rails.env]["longitude"]
 
     # 最新の災害番号データの取得
-    new = Staff.maximum(:mail_id)
-    @staffs = Staff.find(:all, :conditions => { :mail_id => new })
+    new_mail_id = Staff.maximum(:mail_id)
+    @staffs = Staff.find(:all, :conditions => { :mail_id => new_mail_id })
 
     # 2点間の距離を求め、ズーム率を決定する。
-    @zoom = 15
-    @shelters.each_with_index do |shelter, count|
-      lat = shelter.latitude - LATITUDE
-      lng = shelter.longitude - LONGITUDE
+    @zoom = 13
+    @gathering_positions.each do |id, gathering_position|
+      lat = gathering_position["latitude"].to_f - @latitude
+      lng = gathering_position["longitude"].to_f - @longitude
+      count = id.to_i-1
       diff = Math::sqrt(lat * lat + lng * lng)
       @zoom = Math::log(534.0/diff)/Math::log(2) < @zoom ? Math::log(534.0/diff)/Math::log(2) : @zoom
     end

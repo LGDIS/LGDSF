@@ -68,4 +68,5 @@ Lgdsf::Application.configure do
   # Dalli memcache client library settings
   # config.cache_store = :dalli_store, 'cache-1.example.com', 'cache-2.example.com',
   #   { :namespace => LGDSF, :expires_in => 1.day, :compress => true }
+  config.cache_store = :dalli_store
 end

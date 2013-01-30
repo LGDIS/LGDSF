@@ -62,14 +62,14 @@ i>
 
 <!-- 職員参集先情報 -->
 <% pos = 0 %>
-<% @shelters.each do |shelter| %>
+<% @gathering_positions.each do |id, gathering_position| %>
   <% count = 0 %>
   <fieldset class="collapsible collapsed">
   <legend onclick="toggleFieldset(this);">
-    <%= link_to shelter.name, {}, :onclick=> "showShelter(#{pos}, '#{shelter.name}'); return false;".html_safe %>
+    <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{pos}, '#{gathering_position["name"]}'); return false;".html_safe %>
     <% pos += 1 %>
     <% @staffs.each do |staff| %>
-      <% if staff.destination == shelter.name %>
+      <% if staff.destination == gathering_position["name"] %>
         <% count += 1 %>
       <% end %>
     <% end %>
@@ -79,7 +79,7 @@ i>
   <div style="display: none;">
     <ul class="person_list">
       <% @staffs.each_with_index do |staff, pos2| %>
-        <% if staff.destination == shelter.name %>
+        <% if staff.destination == gathering_position["name"] %>
           <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
         <% end %>
       <% end %>

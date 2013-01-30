@@ -11,10 +11,11 @@
     <!-- page specific tags -->
   </head>
   <body onload="
-    <%= "iniMap(#{LATITUDE}, #{LONGITUDE}, #{@zoom});" %>
-    <% if @shelters %>
-      <% @shelters.each_with_index do |shelter, count| %>
-        <%= "iniShelters(#{count}, '#{shelter.name}', #{shelter.latitude}, #{shelter.longitude});".html_safe %>
+    <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+    <% if @gathering_positions %>
+      <% @gathering_positions.each do |id, gathering_position| %>
+        <% count = id.to_i - 1 %>
+        <%= "iniShelters(#{count}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
       <% end %>
     <% end %>
     <% if @staffs %>
