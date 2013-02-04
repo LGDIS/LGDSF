@@ -20,7 +20,7 @@ describe StaffsController do
         response.should be_success
       end
       it 'テンプレートが適用されていること' do
-        response.should render_template("staffs/mail") # lgdsf
+        response.should render_template("mail") # lgdsf
       end
     end
   end
@@ -295,6 +295,12 @@ describe StaffsController do
         @longitude = assigns[:longitude]
         @zoom = 13
       end
+      it 'getが成功すること' do
+        response.should be_success
+      end
+      it 'テンプレートが適用されていること' do
+        response.should render_template("destination_form") # lgdsf
+      end
       it '' do
         diffs = []
         size = request.mobile? ? 200.0 : 350.0
@@ -416,6 +422,12 @@ describe StaffsController do
     context '正常の場合' do
       before '職員位置確認画面にアクセスする' do
         get :index
+      end
+      it 'getが成功すること' do
+        response.should be_success
+      end
+      it 'テンプレートが適用されていること' do
+        response.should render_template("index") # lgdsf_index
       end
       describe '職員位置確認画面のマップの中心' do
         settings = YAML.load_file("#{Rails.root}/config/settings.yml")
