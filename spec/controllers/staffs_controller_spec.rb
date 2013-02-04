@@ -410,11 +410,12 @@ describe StaffsController do
   end
 
   describe 'index' do
+  
+    login_user
+
     context '正常の場合' do
       before '職員位置確認画面にアクセスする' do
-        pending 'get できないため保留' do
         get :index
-        end
       end
       describe '職員位置確認画面のマップの中心' do
         settings = YAML.load_file("#{Rails.root}/config/settings.yml")
