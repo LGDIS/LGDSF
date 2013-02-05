@@ -1,4 +1,4 @@
-# encoding: utf-8
+﻿# -*- coding:utf-8 -*-
 # Staff Finderの処理を行うクラス
 class StaffsController < ApplicationController
 
@@ -38,6 +38,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def mail
+    # TODO：動作確認用メソッド（結合時には削除する）
   end
 
   # 個人特定情報送信画面
@@ -68,44 +69,55 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def save_send
-    @mail = params[:mail]
+    @notice = nil
+    mail = params[:mail]['mail_address']
     @mail_id = params[:mail_id]
 
     # メールアドレス認証
-    if @mail['mail_address'].present?
+    if mail.present?
 
-      # TODO LDAP認証で行う
-      @agent = Agent.find_by_mail_address(@mail['mail_address'])
+      # メールアドレスの入力可能数が256桁である。
+      if mail.size <= 256
 
-      if @agent.present?
-        # 認証成功の場合
-        @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
-        if @staff.present?
-          # 上書き
-          @staff.name = @agent.name
-          @staff.agent_id = @agent.id
+        # TODO：LDAP認証で行う
+        @agent = Agent.find_by_mail_address(mail)
+
+        if @agent.present?
+          # 認証成功の場合
+          @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
+    
+          if @staff.present?
+            # 上書き
+            @staff.name = @agent.name
+            @staff.agent_id = @agent.id
+          else
+            # 挿入
+            @staff = Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
+          end
+    
+          # DB登録処理
+          if @staff.save
+            redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
+            return false
+          else
+            @notice = "DBの登録に失敗しました"
+          end
+      
         else
-          # 挿入
-          @staff =Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
-        end
-        # DB登録処理
-        if @staff.save
-          redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
-        else
-          # 認証エラーの場合
           @notice = "認証に失敗しました"
-          redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
         end
       else
-        # 認証エラーの場合
-        @notice = "認証に失敗しました"
-        redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
+        @notice = "メールアドレスは256桁以下で入力してください"
       end
     else
-      # 認証エラーの場合
       @notice = "メールアドレスを入力してください"
+    end
+
+    # エラーの場合
+    if @notice.present?
       redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
     end
+
   end
 
   # 位置情報送信画面
@@ -138,6 +150,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def save_position
+    @notice = nil
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
 
@@ -161,7 +174,7 @@ class StaffsController < ApplicationController
         @staff.longitude = @longitude
       else
         # 挿入
-        @agent = Agent.find(@agent_id)
+        @agent = Agent.find_by_id(@agent_id)
         @staff = Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
       end
 
@@ -169,17 +182,20 @@ class StaffsController < ApplicationController
       if @staff.save
         # 現在位置送信成功時の場合
         redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
+        return false
       else
         # 現在位置送信失敗時の場合
         @notice = "現在位置の送信に失敗しました"
-        redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
       end
     else
       # 現在位置取得失敗時の場合
       @notice = "現在位置の取得に失敗しました"
-      redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
     end
 
+    # エラーの場合
+    if @notice.present?
+      redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
+    end
   end
 
   # 参集場所報告画面
@@ -299,26 +315,25 @@ class StaffsController < ApplicationController
       else
         # 挿入（エラー処理）
         @notice = "参集先情報の送信に失敗しました"
-        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
       end
 
       # DB登録処理
       if @staff.save
         # 参集先情報送信成功時の処理
         @notice = "送信しました"
-        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
       else
         # 参集先情報送信失敗時の処理
         @notice = "参集先情報の送信に失敗しました"
-        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
       end
 
     else
       # 参集先情報送信失敗時の処理
       @notice = "参集場所を選択してください"
-      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
     end
 
+    if @notice.present?
+      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
+    end
   end
 
   # 職員位置確認画面
@@ -339,7 +354,7 @@ class StaffsController < ApplicationController
 
     # 最新の災害番号データの取得
     new_mail_id = Staff.maximum(:mail_id)
-    @staffs = Staff.find(:all, :conditions => { :mail_id => new_mail_id })
+    @staffs = Staff.all(:conditions => { :mail_id => new_mail_id })
 
     # 2点間の距離を求め、ズーム率を決定する。
     @zoom = 13
