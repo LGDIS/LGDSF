@@ -69,7 +69,6 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def save_send
-    @notice = nil
     mail = params[:mail]['mail_address']
     @mail_id = params[:mail_id]
 
@@ -114,10 +113,7 @@ class StaffsController < ApplicationController
     end
 
     # エラーの場合
-    if @notice.present?
-      redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
-    end
-
+    redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
   end
 
   # 位置情報送信画面
@@ -131,6 +127,11 @@ class StaffsController < ApplicationController
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
+    if request.mobile.is_a?(Jpmobile::Mobile::Au)
+      session[:mail_id] = @mail_id
+      session[:agent_id] = @agent_id
+    end
+
     # モバイルの場合は、モバイル用のviewに切替える
     if request.mobile?
       render "position_form_mobile"
@@ -150,9 +151,13 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def save_position
-    @notice = nil
-    @mail_id = params[:mail_id]
-    @agent_id = params[:agent_id]
+    if request.mobile.is_a?(Jpmobile::Mobile::Au)
+      @mail_id = session[:mail_id]
+      @agent_id = session[:agent_id]
+    else
+      @mail_id = params[:mail_id]
+      @agent_id = params[:agent_id]
+    end
 
     # 現在位置の取得
     if request.mobile? and request.mobile.position
@@ -181,7 +186,11 @@ class StaffsController < ApplicationController
       # DB登録処理
       if @staff.save
         # 現在位置送信成功時の場合
-        redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id
+        if request.mobile.is_a?(Jpmobile::Mobile::Au)
+          redirect_to :action => "destination_form", :latitude => @latitude, :longitude => @longitude
+        else
+          redirect_to :action => "destination_form", :mail_id => @mail_id, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
+        end
         return false
       else
         # 現在位置送信失敗時の場合
@@ -193,9 +202,7 @@ class StaffsController < ApplicationController
     end
 
     # エラーの場合
-    if @notice.present?
-      redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
-    end
+    redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
   end
 
   # 参集場所報告画面
@@ -209,8 +216,14 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def destination_form
-    @mail_id = params[:mail_id]
-    @agent_id = params[:agent_id]
+    if request.mobile.is_a?(Jpmobile::Mobile::Au)
+      @mail_id = session[:mail_id]
+      @agent_id = session[:agent_id]
+    else
+      @mail_id = params[:mail_id]
+      @agent_id = params[:agent_id]
+    end
+
     @latitude = params[:latitude].to_f
     @longitude = params[:longitude].to_f
     @zoom = 13
