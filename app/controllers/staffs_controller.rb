@@ -10,10 +10,14 @@ class StaffsController < ApplicationController
 
   trans_sid
 
+  class MailBlankException < StandardError; end
+  class MailLengthException < StandardError; end
+  class AgentBlankException < StandardError; end
+
   # レイアウトの選択処理
   # 各画面で使用するレイアウトを決定する
   # ==== Args
-  # _params[:action]_ :: URL（パス）
+  # _action_ :: URL（パス）
   # ==== Return
   # レイアウト名
   # ==== Raise
@@ -38,14 +42,14 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def mail
-    # TODO：動作確認用メソッド（結合時には削除する）
+    # TODO:動作確認用メソッド（結合時には削除する）
   end
 
   # 個人特定情報送信画面
   # 読み込み処理
   # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
-  # _params[:mail_id]_ :: 災害番号
+  # _mail_id_ :: 災害番号
   # ==== Return
   # ==== Raise
   def send_form
@@ -64,70 +68,54 @@ class StaffsController < ApplicationController
   # * 認証が成功した場合、職員の名前とID、災害番号をDBに登録し、位置情報送信画面に遷移する
   # * 認証が失敗した場合、"認証に失敗しました"と画面上部に表示する。
   # ==== Args
-  # _params[:mail]_ :: メールアドレス
-  # _params[:mail_id]_ :: 災害番号
+  # _mail_ :: メールアドレス
+  # _mail_id_ :: 災害番号
   # ==== Return
   # ==== Raise
   def save_send
     mail = params[:mail]['mail_address']
     @mail_id = params[:mail_id]
 
-    # メールアドレス認証
-    if mail.present?
-
+    begin
+      # メールアドレス認証
+      raise MailBlankException, I18n.t("errors.messages.mail_blank") if mail.blank?
       # メールアドレスの入力可能数が256桁である。
-      if mail.size <= 256
-
-        # TODO：LDAP認証で行う
-        @agent = Agent.find_by_mail_address(mail)
-
-        if @agent.present?
-          # 認証成功の場合
-          @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
-    
-          if @staff.present?
-            # 上書き
-            @staff.name = @agent.name
-            @staff.agent_id = @agent.id
-          else
-            # 挿入
-            @staff = Staff.new(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
-          end
-    
-          # DB登録処理
-          if @staff.save
-            redirect_to :action  =>"position_form", :mail_id => @mail_id, :agent_id => @agent.id
-            return false
-          else
-            @notice = "DBの登録に失敗しました"
-          end
-      
-        else
-          @notice = "認証に失敗しました"
-        end
+      raise MailLengthException, I18n.t("errors.messages.mail_length") if mail.size > 256
+      # Agentが存在する
+      # TODO: LDAP認証で行う
+      @agent = Agent.find_by_mail_address(mail)
+      raise AgentBlankException, I18n.t("errors.messages.agent_blank") if @agent.blank?
+      # 認証成功の場合
+      @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
+      if @staff.present?
+        # 上書き
+        @staff.update_attributes!(:name => @agent.name, :agent_id => @agent.id)
       else
-        @notice = "メールアドレスは256桁以下で入力してください"
+        # 挿入
+        @staff = Staff.create!(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
       end
-    else
-      @notice = "メールアドレスを入力してください"
+    rescue MailBlankException, MailLengthException, AgentBlankException, ActiveRecord::RecordInvalid => e
+      flash[:notice] = e.message
+      redirect_to :action => :send_form, :mail_id => @mail_id, :notice => flash[:notice]
+      return
     end
 
-    # エラーの場合
-    redirect_to :action => 'send_form', :mail_id => @mail_id, :notice => @notice
+    redirect_to :action  => :position_form, :mail_id => @mail_id, :agent_id => @agent.id
   end
 
   # 位置情報送信画面
   # 読み込み処理
   # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
-  # _params[:mail_id]_ :: 災害番号
-  # _params[:agent_id]_ :: 職員ID
+  # _mail_id_ :: 災害番号
+  # _agent_id_ :: 職員ID
   # ==== Return
   # ==== Raise
   def position_form
     @mail_id = params[:mail_id]
     @agent_id = params[:agent_id]
     if request.mobile.is_a?(Jpmobile::Mobile::Au)
+      reset_session
       session[:mail_id] = @mail_id
       session[:agent_id] = @agent_id
     end
@@ -146,8 +134,8 @@ class StaffsController < ApplicationController
   # * 現在位置送信が成功した場合、位置情報（緯度、経度）をDBに登録し、参集場所報告画面に遷移する
   # * 現在位置送信が失敗した場合、"現在位置の送信に失敗しました"と画面上部に表示する。
   # ==== Args
-  # _params[:mail_id]_ :: 災害番号
-  # _params[:agent_id]_ :: 職員ID
+  # _mail_id_ :: 災害番号
+  # _agent_id_ :: 職員ID
   # ==== Return
   # ==== Raise
   def save_position
@@ -209,16 +197,17 @@ class StaffsController < ApplicationController
   # 読み込み処理
   # 近くの参集場所を計算して求め、所定の参集場所と近くの参集場所をGoogle Map上に表示する。
   # ==== Args
-  # _params[:mail_id]_ :: 災害番号
-  # _params[:agent_id]_ :: 職員ID
-  # _params[:latitude]_ :: 緯度
-  # _params[:longitude]_ :: 経度
+  # _mail_id_ :: 災害番号
+  # _agent_id_ :: 職員ID
+  # _latitude_ :: 緯度
+  # _longitude_ :: 経度
   # ==== Return
   # ==== Raise
   def destination_form
     if request.mobile.is_a?(Jpmobile::Mobile::Au)
       @mail_id = session[:mail_id]
       @agent_id = session[:agent_id]
+      reset_session
     else
       @mail_id = params[:mail_id]
       @agent_id = params[:agent_id]
@@ -294,11 +283,11 @@ class StaffsController < ApplicationController
   # * 参集先情報送信が成功した場合、参集先情報をDBに登録し、"送信しました"と画面上部に表示する。
   # * 参集先情報送信が失敗した場合、"参集先情報の送信に失敗しました"と画面上部に表示する。
   # ==== Args
-  # _params[:destination]_ :: 参集場所情報
-  # _params[:mail_id]_ :: 災害番号
-  # _params[:agent_id]_ :: 職員ID
-  # _params[:latitude]_ :: 緯度
-  # _params[:longitude]_ :: 経度
+  # _destination_ :: 参集場所情報
+  # _mail_id_ :: 災害番号
+  # _agent_id_ :: 職員ID
+  # _latitude_ :: 緯度
+  # _longitude_ :: 経度
   # ==== Return
   # ==== Raise
   def save_destination
