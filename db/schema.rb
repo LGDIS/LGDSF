@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130123113655) do
+ActiveRecord::Schema.define(:version => 20121219091630) do
 
 
 
@@ -22,32 +22,17 @@ ActiveRecord::Schema.define(:version => 20130123113655) do
     t.datetime "updated_at",   :null => false
   end
 
-  create_table "predefined_positions", :force => true do |t|
-    t.integer  "agent_id"
-    t.integer  "shelter_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  create_table "shelters", :force => true do |t|
-    t.string   "name"
-    t.decimal  "latitude",   :precision => 10, :scale => 6
-    t.decimal  "longitude",  :precision => 10, :scale => 6
-    t.datetime "created_at",                                :null => false
-    t.datetime "updated_at",                                :null => false
-  end
-
   create_table "staffs", :force => true do |t|
     t.string   "name"
     t.integer  "agent_id"
-    t.string   "destination"
+    t.string   "destination_code"
     t.boolean  "status"
     t.text     "reason"
-    t.decimal  "latitude",    :precision => 10, :scale => 6
-    t.decimal  "longitude",   :precision => 10, :scale => 6
-    t.datetime "created_at",                                 :null => false
-    t.datetime "updated_at",                                 :null => false
-    t.string   "mail_id"
+    t.decimal  "latitude",         :precision => 10, :scale => 6
+    t.decimal  "longitude",        :precision => 10, :scale => 6
+    t.string   "disaster_code"
+    t.datetime "created_at",                                      :null => false
+    t.datetime "updated_at",                                      :null => false
   end
 
   create_table "users", :force => true do |t|
@@ -68,5 +53,38 @@ ActiveRecord::Schema.define(:version => 20130123113655) do
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+
+  set_column_comment 'agents', 'id', 'ID'
+  set_column_comment 'agents', 'name', '職員名'
+  set_column_comment 'agents', 'mail_address', 'メールアドレス'
+  set_column_comment 'agents', 'created_at', '作成時刻'
+  set_column_comment 'agents', 'updated_at', '更新時刻'
+
+  set_column_comment 'staffs', 'id', 'ID'
+  set_column_comment 'staffs', 'name', '職員名'
+  set_column_comment 'staffs', 'agent_id', '職員マスタID'
+  set_column_comment 'staffs', 'destination_code', '参集場所コード'
+  set_column_comment 'staffs', 'status', '参集先に向かうのが困難'
+  set_column_comment 'staffs', 'reason', '理由'
+  set_column_comment 'staffs', 'latitude', '緯度'
+  set_column_comment 'staffs', 'longitude', '経度'
+  set_column_comment 'staffs', 'disaster_code', '災害番号'
+  set_column_comment 'staffs', 'created_at', '作成時刻'
+  set_column_comment 'staffs', 'updated_at', '更新時刻'
+
+  set_column_comment 'users', 'id', 'ID'
+  set_column_comment 'users', 'email', '電子メール'
+  set_column_comment 'users', 'encrypted_password', 'パスワード'
+  set_column_comment 'users', 'agent_id', '職員マスタID'
+  set_column_comment 'users', 'reset_password_token', 'リセットパスワードトークン'
+  set_column_comment 'users', 'reset_password_sent_at', 'リセットパスワード送信時刻'
+  set_column_comment 'users', 'remember_created_at', 'アウカント作成時刻'
+  set_column_comment 'users', 'sign_in_count', 'サインイン回数'
+  set_column_comment 'users', 'current_sign_in_at', '最新サインイン時刻'
+  set_column_comment 'users', 'last_sign_in_at', '最終サインイン時刻'
+  set_column_comment 'users', 'current_sign_in_ip', '最新サインインIP'
+  set_column_comment 'users', 'last_sign_in_ip', '最終サインインIP'
+  set_column_comment 'users', 'created_at', '作成時刻'
+  set_column_comment 'users', 'updated_at', '更新時刻'
 
 end
