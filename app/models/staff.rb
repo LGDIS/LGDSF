@@ -13,4 +13,11 @@ class Staff < ActiveRecord::Base
   def mail_address
     self.agent.mail_address
   end
+
+  validates :name,
+              :length => {:maximum => 64}
+  validates :destination_code,
+              :length => {:maximum => 20}
+  validates :disaster_code,
+              :length => {:maximum => 20}
 end
