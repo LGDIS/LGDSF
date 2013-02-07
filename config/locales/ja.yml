@@ -2,3 +2,9 @@
 
 ja:
   label_loading: ロード中...
+
+  errors:
+    messages:
+      mail_blank: "メールアドレスを入力してください"
+      mail_length: "メールアドレスは256桁以下で入力してください"
+      agent_blank: "認証に失敗しました"
