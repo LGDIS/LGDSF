@@ -67,3 +67,13 @@ Dir.glob File.expand_path("../plugins/*/Gemfile", __FILE__) do |file|
   puts "Loading #{file} ..." if $DEBUG # `ruby -d` or `bundle -v`
   instance_eval File.read(file)
 end
+
+group :test do
+  gem 'rspec', '2.12.0'
+  
+  gem 'factory_girl_rails', '4.2.0'
+  
+  gem 'resque_spec', '0.13.0'
+end
+
+gem 'i18n_generators', '1.2.1'
