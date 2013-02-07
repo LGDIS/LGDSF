@@ -10,9 +10,16 @@ class StaffsController < ApplicationController
 
   trans_sid
 
+  # 個人特定情報送信画面
   class MailBlankException < StandardError; end
   class MailLengthException < StandardError; end
   class AgentBlankException < StandardError; end
+
+  # 位置情報情報送信画面
+  class PositionBlankException < StandardError; end
+
+  # 参集場所報告画面
+  class DestinationBlankException < StandardError; end
 
   # レイアウトの選択処理
   # 各画面で使用するレイアウトを決定する
@@ -49,11 +56,11 @@ class StaffsController < ApplicationController
   # 読み込み処理
   # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # ==== Return
   # ==== Raise
   def send_form
-    @mail_id = params[:mail_id]
+    @disaster_code = params[:disaster_code]
     # モバイルの場合は、モバイル用のviewに切替える
     if request.mobile?
       render "send_form_mobile"
@@ -69,54 +76,54 @@ class StaffsController < ApplicationController
   # * 認証が失敗した場合、"認証に失敗しました"と画面上部に表示する。
   # ==== Args
   # _mail_ :: メールアドレス
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # ==== Return
   # ==== Raise
   def save_send
-    mail = params[:mail]['mail_address']
-    @mail_id = params[:mail_id]
+    @disaster_code = params[:disaster_code]
 
     begin
-      # メールアドレス認証
-      raise MailBlankException, I18n.t("errors.messages.mail_blank") if mail.blank?
-      # メールアドレスの入力可能数が256桁である。
-      raise MailLengthException, I18n.t("errors.messages.mail_length") if mail.size > 256
-      # Agentが存在する
+      # メールアドレスが空の場合、例外を発生させる。
+      raise MailBlankException, I18n.t("errors.messages.mail_blank") if params[:mail].blank?
+      # メールアドレスの入力数が256桁以上の場合、例外を発生させる。
+      raise MailLengthException, I18n.t("errors.messages.mail_length") if params[:mail].size > 256
       # TODO: LDAP認証で行う
-      @agent = Agent.find_by_mail_address(mail)
-      raise AgentBlankException, I18n.t("errors.messages.agent_blank") if @agent.blank?
+      agent = Agent.find_by_mail_address(params[:mail])
+      # Agentが存在しない場合、例外を発生させる。
+      raise AgentBlankException, I18n.t("errors.messages.agent_blank") if agent.blank?
       # 認証成功の場合
-      @staff = Staff.find_by_agent_id_and_mail_id(@agent.id, @mail_id)
-      if @staff.present?
+      staff = Staff.find_by_agent_id_and_disaster_code(agent.id, @disaster_code)
+      if staff.present?
         # 上書き
-        @staff.update_attributes!(:name => @agent.name, :agent_id => @agent.id)
+        staff.update_attributes!(:name => agent.name, :agent_id => agent.id)
       else
         # 挿入
-        @staff = Staff.create!(:name => @agent.name, :agent_id => @agent.id, :mail_id => @mail_id)
+        Staff.create!(:name => agent.name, :agent_id => agent.id, :disaster_code => @disaster_code)
       end
     rescue MailBlankException, MailLengthException, AgentBlankException, ActiveRecord::RecordInvalid => e
       flash[:notice] = e.message
-      redirect_to :action => :send_form, :mail_id => @mail_id, :notice => flash[:notice]
+      redirect_to :action => :send_form, :disaster_code => @disaster_code, :notice => flash[:notice]
       return
     end
 
-    redirect_to :action  => :position_form, :mail_id => @mail_id, :agent_id => @agent.id
+    redirect_to :action  => :position_form, :disaster_code => @disaster_code, :agent_id => agent.id
   end
 
   # 位置情報送信画面
   # 読み込み処理
   # モバイルの場合は、モバイル用のviewに切替える
   # ==== Args
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # _agent_id_ :: 職員ID
   # ==== Return
   # ==== Raise
   def position_form
-    @mail_id = params[:mail_id]
+    @disaster_code = params[:disaster_code]
     @agent_id = params[:agent_id]
+    # Auの場合、sessionを記録する
     if request.mobile.is_a?(Jpmobile::Mobile::Au)
       reset_session
-      session[:mail_id] = @mail_id
+      session[:disaster_code] = @disaster_code
       session[:agent_id] = @agent_id
     end
 
@@ -134,16 +141,17 @@ class StaffsController < ApplicationController
   # * 現在位置送信が成功した場合、位置情報（緯度、経度）をDBに登録し、参集場所報告画面に遷移する
   # * 現在位置送信が失敗した場合、"現在位置の送信に失敗しました"と画面上部に表示する。
   # ==== Args
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # _agent_id_ :: 職員ID
   # ==== Return
   # ==== Raise
   def save_position
+    # Auの場合、sessionを渡す。
     if request.mobile.is_a?(Jpmobile::Mobile::Au)
-      @mail_id = session[:mail_id]
+      @disaster_code = session[:disaster_code]
       @agent_id = session[:agent_id]
     else
-      @mail_id = params[:mail_id]
+      @disaster_code = params[:disaster_code]
       @agent_id = params[:agent_id]
     end
 
@@ -156,60 +164,48 @@ class StaffsController < ApplicationController
       @longitude = params[:longitude]
     end
 
-    # 現在位置の取得成功の場合
-    if @latitude.present? && @longitude.present?
-
-      @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
-
-      if @staff.present?
+    begin
+      # 現在位置の取得失敗の場合
+      raise PositionBlankException, I18n.t("errors.messages.position_blank") if @latitude.blank? || @longitude.blank?
+      # 現在位置取得成功の場合
+      staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
+      if staff.present?
         # 上書き
-        @staff.latitude = @latitude
-        @staff.longitude = @longitude
-      else
-        # 挿入
-        @agent = Agent.find_by_id(@agent_id)
-        @staff = Staff.new(:name => @agent.name, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id)
+        staff.update_attributes!(:latitude => @latitude, :longitude => @longitude)
       end
-
-      # DB登録処理
-      if @staff.save
-        # 現在位置送信成功時の場合
-        if request.mobile.is_a?(Jpmobile::Mobile::Au)
-          redirect_to :action => "destination_form", :latitude => @latitude, :longitude => @longitude
-        else
-          redirect_to :action => "destination_form", :mail_id => @mail_id, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
-        end
-        return false
-      else
-        # 現在位置送信失敗時の場合
-        @notice = "現在位置の送信に失敗しました"
-      end
-    else
-      # 現在位置取得失敗時の場合
-      @notice = "現在位置の取得に失敗しました"
+    rescue PositionBlankException, ActiveRecord::RecordInvalid => e
+      flash[:notice] = e.message
+      redirect_to :action => :position_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :notice => flash[:notice]
+      return
     end
 
-    # エラーの場合
-    redirect_to :action => 'position_form', :mail_id => @mail_id, :agent_id => @agent_id, :notice => @notice
+    if request.mobile.is_a?(Jpmobile::Mobile::Au)
+      redirect_to :action => :destination_form, :latitude => @latitude, :longitude => @longitude
+    else
+      redirect_to :action => :destination_form, :disaster_code => @disaster_code, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude
+    end
+
   end
 
   # 参集場所報告画面
   # 読み込み処理
   # 近くの参集場所を計算して求め、所定の参集場所と近くの参集場所をGoogle Map上に表示する。
   # ==== Args
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # _agent_id_ :: 職員ID
   # _latitude_ :: 緯度
   # _longitude_ :: 経度
   # ==== Return
   # ==== Raise
   def destination_form
-    if request.mobile.is_a?(Jpmobile::Mobile::Au)
-      @mail_id = session[:mail_id]
+
+    # Auの場合、sessionを渡し、sessionを削除する
+    if params[:agent_id].blank?
+      @disaster_code = session[:disaster_code]
       @agent_id = session[:agent_id]
       reset_session
     else
-      @mail_id = params[:mail_id]
+      @disaster_code = params[:disaster_code]
       @agent_id = params[:agent_id]
     end
 
@@ -284,7 +280,7 @@ class StaffsController < ApplicationController
   # * 参集先情報送信が失敗した場合、"参集先情報の送信に失敗しました"と画面上部に表示する。
   # ==== Args
   # _destination_ :: 参集場所情報
-  # _mail_id_ :: 災害番号
+  # _disaster_code_ :: 災害番号
   # _agent_id_ :: 職員ID
   # _latitude_ :: 緯度
   # _longitude_ :: 経度
@@ -293,49 +289,30 @@ class StaffsController < ApplicationController
   def save_destination
     @destination = params[:destination]
     @agent_id = params[:agent_id]
-    @mail_id = params[:mail_id]
+    @disaster_code = params[:disaster_code]
     @latitude = params[:latitude]
     @longitude = params[:longitude]
 
-    # バリデーションチェック
-    if @destination['position'].present? || @destination['place'].to_i == 1 
-
-      @staff = Staff.find_by_agent_id_and_mail_id(@agent_id, @mail_id)
-
-      if @staff.present?
+    begin
+      # バリデーションチェック
+      raise DestinationBlankException, I18n.t("errors.messages.destination_blank") if @destination['position'].blank? && @destination['place'].to_i == 0
+      staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
+      if staff.present?
         # 上書き
         if @destination['place'].to_i == 1
-          @staff.status = false
-          @staff.destination = ''
-          @staff.reason = @destination['reason'].present? ? @destination['reason'] : ''
+          staff.update_attributes!(:status => false, :destination_code => '', :reason => @destination['reason'].present? ? @destination['reason'] : '')
         else
-          @staff.status = true
           gathering_position = @gathering_positions[@destination['position']]
-          @staff.destination = gathering_position['name']
-          @staff.reason = ''
+          staff.update_attributes!(:status => true, :destination_code => gathering_position['position_code'], :reason => '')
         end
-      else
-        # 挿入（エラー処理）
-        @notice = "参集先情報の送信に失敗しました"
       end
-
-      # DB登録処理
-      if @staff.save
-        # 参集先情報送信成功時の処理
-        @notice = "送信しました"
-      else
-        # 参集先情報送信失敗時の処理
-        @notice = "参集先情報の送信に失敗しました"
-      end
-
-    else
-      # 参集先情報送信失敗時の処理
-      @notice = "参集場所を選択してください"
+    rescue DestinationBlankException, ActiveRecord::RecordInvalid => e
+      flash[:notice] = e.message
+      redirect_to :action => :destination_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :latitude => @latitude, :longitude => @longitude, :notice => flash[:notice]
+      return
     end
 
-    if @notice.present?
-      redirect_to :action => "destination_form", :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :mail_id => @mail_id, :notice => @notice
-    end
+    redirect_to :action => :destination_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :latitude => @latitude, :longitude => @longitude, :notice => "送信しました"
   end
 
   # 職員位置確認画面
@@ -355,8 +332,8 @@ class StaffsController < ApplicationController
     @longitude = settings["lgdsf"][Rails.env]["longitude"]
 
     # 最新の災害番号データの取得
-    new_mail_id = Staff.maximum(:mail_id)
-    @staffs = Staff.all(:conditions => { :mail_id => new_mail_id })
+    new_disaster_code = Staff.maximum(:disaster_code)
+    @staffs = Staff.all(:conditions => { :disaster_code => new_disaster_code })
 
     # 2点間の距離を求め、ズーム率を決定する。
     @zoom = 13

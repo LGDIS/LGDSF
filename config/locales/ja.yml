@@ -8,3 +8,7 @@ ja:
       mail_blank: "メールアドレスを入力してください"
       mail_length: "メールアドレスは256桁以下で入力してください"
       agent_blank: "認証に失敗しました"
+
+      position_blank: "現在位置の取得に失敗しました"
+
+      destination_blank: "参集場所を選択してください"

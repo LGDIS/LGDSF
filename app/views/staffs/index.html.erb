@@ -16,7 +16,7 @@
         <% end %>
       <% elsif name == "参集先不明" %>
         <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.destination.blank? && staff.status != false %>
+          <% if staff.destination_code.blank? && staff.status != false %>
             <% count += 1 %>
           <% end %>
         <% end %>
@@ -40,17 +40,17 @@
           <% end %>
         <% elsif name == "参集先不明" %>
           <% if staff.latitude.present? && staff.longitude.present? %>
-            <% if staff.destination.blank? && staff.status == true %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-            <% elsif staff.destination.blank? && staff.status == nil %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', null, '#{staff.reason}'); return false;".html_safe %></l
+            <% if staff.destination_code.blank? && staff.status == true %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% elsif staff.destination_code.blank? && staff.status == nil %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></l
 i>
             <% end %>
           <% end %>
         <% elsif name == "参集不可" %>
           <% if staff.latitude.present? && staff.longitude.present? %>
             <% if staff.status == false %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
             <% end %>
           <% end %>
         <% end %>
@@ -69,7 +69,7 @@ i>
     <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{pos}, '#{gathering_position["name"]}'); return false;".html_safe %>
     <% pos += 1 %>
     <% @staffs.each do |staff| %>
-      <% if staff.destination == gathering_position["name"] %>
+      <% if staff.destination_code == gathering_position["position_code"] %>
         <% count += 1 %>
       <% end %>
     <% end %>
@@ -79,8 +79,8 @@ i>
   <div style="display: none;">
     <ul class="person_list">
       <% @staffs.each_with_index do |staff, pos2| %>
-        <% if staff.destination == gathering_position["name"] %>
-          <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+        <% if staff.destination_code == gathering_position["position_code"] %>
+          <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
         <% end %>
       <% end %>
     </ul>

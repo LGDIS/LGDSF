@@ -22,15 +22,31 @@
       <% @staffs.each_with_index do |staff, count| %>
         <% if staff.latitude.present? && staff.longitude.present? %>
           <% if staff.status != nil %>
-            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% if staff.destination_code.present? %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% else %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% end %>
           <% else %>
-            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{staff.destination}', null, '#{staff.reason}');".html_safe %>
+            <% if staff.destination_code.present? %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
+            <% else %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
+            <% end %>
           <% end %>
         <% else %>
           <% if staff.status != nil %>
-            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{staff.destination}', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% if staff.destination_code.present? %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% else %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
+            <% end %>
           <% else %>
-            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{staff.destination}', null, '#{staff.reason}');".html_safe %>
+            <% if staff.destination_code.present? %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
+            <% else %>
+              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>

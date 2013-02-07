@@ -9,7 +9,7 @@
 <p>受け取ったメールのメールアドレスを入力し、送信してください。</p>
 
 <%= form_tag :action => 'save_send' do %>
-  <%= hidden_field_tag "mail_id", @mail_id %>
-  <p><%= text_field :mail, :mail_address, :placeholder => 'メールアドレスを入力して下さい。' %></p>
+  <%= hidden_field_tag "disaster_code", @disaster_code %>
+  <p><%= text_field_tag :mail, '', :placeholder => 'メールアドレスを入力して下さい。', :size => 30, :maxlength => '256' %></p>
   <%= submit_tag 'メールアドレスを送信', :id => 'send' %>
 <% end %>

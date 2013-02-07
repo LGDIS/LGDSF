@@ -18,7 +18,7 @@ Lgdsf::Application.routes.draw do
   match '/staffs/save_destination'
   match '/staffs' => 'staffs#index', :as => "staffs"
   match '/staffs/mail' => 'staffs#mail'
-  match '/staffs/send/:mail_id' => 'staffs#send_form', :as => "staffs_send"
+  match '/staffs/send/:disaster_code' => 'staffs#send_form', :as => "staffs_send"
   match '/staffs/save_send'
 
   # The priority is based upon order of creation:
