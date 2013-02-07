@@ -16,23 +16,23 @@ ActiveRecord::Schema.define(:version => 20121219091630) do
 
 
   create_table "agents", :force => true do |t|
-    t.string   "name"
-    t.string   "mail_address"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.string   "name",         :limit => 64
+    t.string   "mail_address", :limit => 256
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
   end
 
   create_table "staffs", :force => true do |t|
-    t.string   "name"
+    t.string   "name",             :limit => 64
     t.integer  "agent_id"
-    t.string   "destination_code"
+    t.string   "destination_code", :limit => 20,                                :null => false
     t.boolean  "status"
     t.text     "reason"
-    t.decimal  "latitude",         :precision => 10, :scale => 6
-    t.decimal  "longitude",        :precision => 10, :scale => 6
-    t.string   "disaster_code"
-    t.datetime "created_at",                                      :null => false
-    t.datetime "updated_at",                                      :null => false
+    t.decimal  "latitude",                       :precision => 10, :scale => 6
+    t.decimal  "longitude",                      :precision => 10, :scale => 6
+    t.string   "disaster_code",    :limit => 20,                                :null => false
+    t.datetime "created_at",                                                    :null => false
+    t.datetime "updated_at",                                                    :null => false
   end
 
   create_table "users", :force => true do |t|
