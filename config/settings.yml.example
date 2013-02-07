@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 # LGDSF ActiveResource settings
-ldgsf:
+lgdsf:
   development:
     latitude: 38.4344802
     longitude: 141.3029167

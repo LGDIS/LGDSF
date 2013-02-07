@@ -432,12 +432,12 @@ describe StaffsController do
       describe '職員位置確認画面のマップの中心' do
         settings = YAML.load_file("#{Rails.root}/config/settings.yml")
         it '@latitude（緯度）がStringクラスであること' do
-          @latitude  = settings["ldgsf"][Rails.env]["latitude"]
+          @latitude  = settings["lgdsf"][Rails.env]["latitude"]
           @latitude.should be_an_instance_of(Float)
         end
         it '@longitude（経度）がStringクラスであること' do
           settings = YAML.load_file("#{Rails.root}/config/settings.yml")
-          @longitude = settings["ldgsf"][Rails.env]["longitude"]
+          @longitude = settings["lgdsf"][Rails.env]["longitude"]
           @longitude.should be_an_instance_of(Float)
         end
         context '2点間の距離を求め、ズーム率を決定する。' do

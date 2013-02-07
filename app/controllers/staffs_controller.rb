@@ -347,10 +347,10 @@ class StaffsController < ApplicationController
     settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
 
     # 職員位置確認画面のマップの中心緯度
-    @latitude  = settings["ldgsf"][Rails.env]["latitude"]
+    @latitude  = settings["lgdsf"][Rails.env]["latitude"]
 
     # 職員位置確認画面のマップの中心経度
-    @longitude = settings["ldgsf"][Rails.env]["longitude"]
+    @longitude = settings["lgdsf"][Rails.env]["longitude"]
 
     # 最新の災害番号データの取得
     new_mail_id = Staff.maximum(:mail_id)
