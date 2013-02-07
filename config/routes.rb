@@ -1,16 +1,8 @@
 Lgdsf::Application.routes.draw do
 
-  devise_for :users
+  devise_for :users, :controllers => {:sessions => 'users'}
 
   root :to => "staffs#index"
-
-  #devise_for :users, :controllers => {:sessions => 'users'}
-
-  resource :users do
-    get :index
-    get :new
-    get :create
-  end
 
   match '/staffs/position' => 'staffs#position_form'
   match '/staffs/save_position'

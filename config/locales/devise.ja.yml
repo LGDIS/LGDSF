@@ -1,94 +1,61 @@
+# -*- coding:utf-8 -*-
+
 ja:
   errors:
     messages:
-      expired: "は期限切れになりました。登録し直してください。"
-#      expired: "has expired, please request a new one"
+      expired: "の期限が切れましたので、新しくリクエストしてください"
       not_found: "は見つかりませんでした"
-#      not_found: "not found"
-      already_confirmed: "は既に登録済みです"
-#      already_confirmed: "was already confirmed"
+      already_confirmed: "は既に登録済みですのでログインしてください"
       not_locked: "は凍結されていません"
-#      not_locked: "was not locked"
       not_saved:
-        one: "%{resource}にエラーが発生しました。"
-#        one: "1 error prohibited this %{resource} from being saved:"
-        other: "%{resource}に%{count}個のエラーが発生しました。"
-#        other: "%{count} errors prohibited this %{resource} from being saved:"
+        one: "1 つのエラーにより %{resource} は保存されませんでした:"
+        other: "%{count} つのエラーにより %{resource} は保存されませんでした:"
 
   devise:
     failure:
-      already_authenticated: 'すでにログインしています。'
-#      already_authenticated: 'You are already signed in.'
+      already_authenticated: '既にログインしています。'
       unauthenticated: 'ログインしてください。'
-#      unauthenticated: 'You need to sign in or sign up before continuing.'
       unconfirmed: '本登録を行ってください。'
-#      unconfirmed: 'You have to confirm your account before continuing.'
       locked: 'あなたのアカウントは凍結されています。'
-#      locked: 'Your account is locked.'
-      invalid: 'メールアドレスかパスワードが違います。'
-#      invalid: 'Invalid email or password.'
+      invalid: 'ログイン名またはパスワードが正しくありません。'
       invalid_token: '認証キーが不正です。'
-#      invalid_token: 'Invalid authentication token.'
       timeout: 'セッションがタイムアウトしました。もう一度ログインしてください。'
-#      timeout: 'Your session expired, please sign in again to continue.'
       inactive: 'アカウントがアクティベートされていません。'
-#      inactive: 'Your account was not activated yet.'
-    sessions:
-      signed_in: 'ログインしました。'
-#      signed_in: 'Signed in successfully.'
-      signed_out: 'ログアウトしました。'
-#      signed_out: 'Signed out successfully.'
+    users:
+      user:
+        signed_in: 'ログインしました。'
+        signed_out: 'ログアウトしました。'
+        invalid_login: 'ログイン名を入力してください。'
+        invalid_password: 'パスワードを入力してください。'
     passwords:
       send_instructions: 'パスワードのリセット方法を数分以内にメールでご連絡します。'
-#      send_instructions: 'You will receive an email with instructions about how to reset your password in a few minutes.'
       updated: 'パスワードを変更しました。'
-#      updated: 'Your password was changed successfully. You are now signed in.'
-      updated_not_active: 'パスワードを変更しました。'
-#      updated_not_active: 'Your password was changed successfully.'
-      send_paranoid_instructions: "データベースにメールアドレスが存在する場合は、パスワード変更ページへのリンクがあるメールをお送りします。"
-#     send_paranoid_instructions: "If your e-mail exists on our database, you will receive a password recovery link on your e-mail"
+      updated_not_active: 'パスワードが正しく変更されました。'
+      send_paranoid_instructions: "もしあなたのEメールアドレスが見つかった場合、パスワード復元用のメールが数分以内に送られます。"
+      no_token: "このページにはアクセスできません。パスワード復元メールのリンクをコピーした場合には、正しい URL かどうかをお確かめください。"
     confirmations:
       send_instructions: '登録方法を数分以内にメールでご連絡します。'
-#      send_instructions: 'You will receive an email with instructions about how to confirm your account in a few minutes.'
-      send_paranoid_instructions: 'データベースにメールアドレスがあった場合は、登録方法を数分以内にメールでご連絡します。'
-#     send_paranoid_instructions: 'If your e-mail exists on our database, you will receive an email with instructions about how to confirm your account in a few minutes.'
+      send_paranoid_instructions: 'もしあなたのEメールアドレスが見つかった場合、本人確認についてのメールが数分以内に送られます。'
       confirmed: 'アカウントを登録しました。'
-#      confirmed: 'Your account was successfully confirmed. You are now signed in.'
     registrations:
-      signed_up: 'アカウント登録を受け付けました。確認のメールをお送りします。'
-#      signed_up: 'You have signed up successfully. If enabled, a confirmation was sent to your e-mail.'
-      inactive_signed_up: 'アカウント登録を受け付けました。%{reason}ため、ログインできませんでした。'
-#      inactive_signed_up: 'You have signed up successfully. However, we could not sign you in because your account is %{reason}.'
-      updated: 'アカウントを更新しました。'
-#      updated: 'You updated your account successfully.'
+      signed_up: 'ようこそ！ アカウント登録を受け付けました。'
+      signed_up_but_unconfirmed: '本人確認用のメールがあなたのEメールアドレスに送られました。メール内のリンクからアカウントを有効化さ>せてください。'
+      signed_up_but_inactive: 'アカウント登録を受け付けました。しかしまだ有効化されておらず、ログインできません。'
+      signed_up_but_locked: 'アカウント登録を受け付けました。しかし、アカウントが凍結されているためログインできません。'
+      updated: 'アカウント情報を変更しました。'
+      update_needs_confirmation: "アカウント情報を変更しましたが、Eメールアドレスの本人確認用Eメールをお送りしましたので、中のリンクをクリックして証明してください。"
       destroyed: 'アカウントを削除しました。またのご利用をお待ちしております。'
-#      destroyed: 'Bye! Your account was successfully cancelled. We hope to see you again soon.'
-      reasons:
-        inactive: 'アクティベートされていない'
-#        inactive: 'inactive'
-        unconfirmed: '確認されていない'
-#        unconfirmed: 'unconfirmed'
-        locked: '凍結されている'
-#        locked: 'locked'
     unlocks:
       send_instructions: 'アカウントの凍結解除方法を数分以内にメールでご連絡します。'
-#      send_instructions: 'You will receive an email with instructions about how to unlock your account in a few minutes.'
-      unlocked: 'アカウントを凍結解除しました。'
-#      unlocked: 'Your account was successfully unlocked. You are now signed in.'
-      send_paranoid_instructions: 'アカウントが存在した場合は、アカウントの凍結解除方法を数分以内にメールでご連絡します。'
-#      send_paranoid_instructions: 'If your account exists, you will receive an email with instructions about how to unlock it in a few minutes.'
+      unlocked: 'アカウントを凍結解除しました。ログインしています。'
+      send_paranoid_instructions: 'アカウントが見つかった場合、アカウントの凍結解除方法を数分以内にメールでご連絡します。'
     omniauth_callbacks:
-      success: '%{kind}アカウントから承認されました。'
-#      success: 'Successfully authorized from %{kind} account.'
-      failure: '"%{reason}"であるため、%{kind}から承認されませんでした。'
-#      failure: 'Could not authorize you from %{kind} because "%{reason}".'
+      success: '%{kind} アカウントによる個人認証に成功しました。'
+      failure: '%{kind} アカウントによる個人認証に失敗しました（%{reason}）。'
     mailer:
       confirmation_instructions:
         subject: 'アカウントの登録方法'
-#        subject: 'Confirmation instructions'
       reset_password_instructions:
         subject: 'パスワードの再設定'
-#        subject: 'Reset password instructions'
       unlock_instructions:
         subject: 'アカウントの凍結解除'
-#        subject: 'Unlock Instructions'
