@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 FactoryGirl.define do
-  factory :staff1, class: Staff do |staff|
+  factory :staff, class: Staff do |staff|
     staff.id 1
     staff.name '佐藤'
     staff.agent_id 1
