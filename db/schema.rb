@@ -25,12 +25,12 @@ ActiveRecord::Schema.define(:version => 20121219091630) do
   create_table "staffs", :force => true do |t|
     t.string   "name",             :limit => 64
     t.integer  "agent_id"
-    t.string   "destination_code", :limit => 20,                                :null => false
+    t.string   "destination_code", :limit => 20
     t.boolean  "status"
     t.text     "reason"
     t.decimal  "latitude",                       :precision => 10, :scale => 6
     t.decimal  "longitude",                      :precision => 10, :scale => 6
-    t.string   "disaster_code",    :limit => 20,                                :null => false
+    t.string   "disaster_code",    :limit => 20
     t.datetime "created_at",                                                    :null => false
     t.datetime "updated_at",                                                    :null => false
   end

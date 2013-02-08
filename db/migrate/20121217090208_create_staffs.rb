@@ -5,12 +5,12 @@ class CreateStaffs < ActiveRecord::Migration
       t.integer :id
       t.string  :name, :limit => 64
       t.integer :agent_id
-      t.string  :destination_code, :limit => 20, :null => false
+      t.string  :destination_code, :limit => 20
       t.boolean :status
       t.text    :reason
       t.decimal :latitude,  :precision => 10, :scale => 6
       t.decimal :longitude, :precision => 10, :scale => 6
-      t.string  :disaster_code, :limit => 20, :null => false
+      t.string  :disaster_code, :limit => 20
 
       t.timestamps
     end
