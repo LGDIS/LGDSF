@@ -5,14 +5,6 @@
     new_user_session_path
   end
 
-  def index
-    @users = User.all
-  end
-
-  def new
-    super
-  end
-
   def create
 
     # ログイン名入力チェック
@@ -28,6 +20,14 @@
       redirect_to(:action => :new)
       return
     end
+
+    # 本番用
+    # super
+    # 開発用
+    user = User.find_by_email(params[:user][:email])
+    warden.authenticate!(auth_options) if user.blank?
+    sign_in(user, :bypass => true)
+    respond_with user, :location => after_sign_in_path_for(user)
 
   end
 
