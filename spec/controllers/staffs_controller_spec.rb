@@ -182,15 +182,15 @@ describe StaffsController do
           end
         end
         context 'Agentが存在しない場合' do
-          pending 'リダイレクトが失敗するため保留' do
+          pending '' do
           it '画面上部にエラーメッセージを表示すること' do
+            @agent = nil
             class AgentBlankException < StandardError; end
             begin
-              agent = nil
-              raise AgentBlankException, I18n.t("errors.messages.agent_blank") if agent.blank?
+              raise AgentBlankException, I18n.t("errors.messages.agent_blank") if @agent.blank?
             rescue AgentBlankException => e
               flash[:notice] = e.message
-              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => flash[:notice])
+              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => "")
             end
           end
           end
@@ -458,63 +458,63 @@ describe StaffsController do
   describe 'save_destination' do
     context '正常の場合' do
       before do
-        post :save_destination, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668", "destination" => {:position => "7", :place => "0", :reason => ""}
+        post :save_destination, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668", "destination" => {:position => "7", :place => "0", :reason => ""}
         @disaster_code = assigns[:disaster_code]
-        @destination[:destination] = assigns[:destination]
+        @destination = assigns[:destination]
         @agent_id = assigns[:agent_id]
         @latitude = assigns[:latitude]
         @longitude = assigns[:longitude]
       end
       describe '@destination' do
-
-        pending 'assigns[:destination]が取得できないため、保留' do
+        before do
+          @staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
+        end
         it '参集場所情報が正しく取得できること' do
           (@destination['position'].present? || @destination['place'].to_i == 1).should be_true
         end
+        it '職員が存在すること' do
+          @staff.present?.should be_true
         end
-
-        pending 'モデルが取得できないため保留' do
-        describe '' do
-          before do
-            @staff = Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
-          end
-          it '職員が存在すること' do
-            @staff.present?.should be_true
-          end
-          it 'DB登録が終了すること' do
-            @staff.status = true
-            gathering_position = @gathering_positions[@destination['position']]
-            @staff.destination = gathering_position['name']
-            @staff.reason = ''
-            @staff.save.should be_true
-          end
-          it '送信しましたと画面上部に表示すること' do
-            @notice = "送信しました"
-            response.should redirect_to(:action => 'destination_form', :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code, :notice => @notice)
+        context '参集場所に向かうのが困難な場合' do
+          it '上書きが成功すること' do
+            @destination['place'] = "1"
+            @staff.update_attributes!(:status => false, :destination_code => '', :reason => @destination['reason'].present? ? @destination['reason'] : '').should be_true
           end
         end
+        it '上書きが成功すること' do
+          gathering_position = @gathering_positions[@destination['position']]
+          @staff.update_attributes!(:status => true, :destination_code => gathering_position['position_code'], :reason => '')
         end
-
+        it '送信しましたと画面上部に表示すること' do
+          response.should redirect_to(:action => :destination_form, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code, :notice => "送信しました")
+        end
       end
     end
     context '異常の場合' do
       context '参集場所が選択されていない場合' do
-        before '' do
-          get :save_destination, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668", :destination => {:position => "", :place => "0", :reason => ""}
-          @destination = assigns[:destination]
+        before do
+          post :save_destination, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668", "destination" => {:position => "", :place => "0", :reason => ""}
           @disaster_code = assigns[:disaster_code]
+          @destination = assigns[:destination]
           @agent_id = assigns[:agent_id]
           @latitude = assigns[:latitude]
           @longitude = assigns[:longitude]
         end
         describe '参集場所情報' do
-          it '参集場所情報が選択されていないこと' do
-            (@destination['position'].present? || @destination['place'].to_i == 1).should be_false
+          context '参集場所未選択の取得失敗の場合' do
+            it '参集場所情報が選択されていないこと' do
+              (@destination['position'].present? || @destination['place'].to_i == 1).should be_false
+            end
+            it '画面上部にエラーメッセージを表示すること' do
+              class DestinationBlankException < StandardError; end
+              begin
+                raise DestinationBlankException, I18n.t("errors.messages.destination_blank") if @destination['position'].blank? && @destination['place'].to_i == 0
+              rescue DestinationBlankException => e
+                flash[:notice] = e.message
+                response.should redirect_to(:action => :destination_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :latitude => @latitude, :longitude => @longitude, :notice => flash[:notice])
+              end
+            end
           end
-        end
-        it '参集場所報告画面にリダイレクトする' do
-          @notice = "参集場所を選択してください"
-          response.should redirect_to(:action => 'destination_form', :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code, :notice => @notice)
         end
       end
     end
