@@ -73,9 +73,11 @@ describe StaffsController do
   end
 
   describe 'send_form' do
+    before do
+      get :send_form, :disaster_code => "20130108151823978961"
+    end
     context '正常の場合' do
       before do
-        get :send_form, :disaster_code => "20130108151823978961"
         @disaster_code = assigns[:disaster_code]
       end
       it 'getが成功すること' do
@@ -90,10 +92,21 @@ describe StaffsController do
         end
       end
     end
+    context '異常の場合' do
+      before do
+        @disaster_code = nil
+      end
+      describe '@disaster_code' do
+        it 'nilであること' do
+          @disaster_code.should be_nil
+        end
+      end
+    end
   end
 
   describe 'save_send' do
     context '正常の場合' do
+
       describe '@disaster_code' do
         before do
           post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.com"
@@ -109,7 +122,7 @@ describe StaffsController do
 
       context 'エラー処理' do
         before do
-          post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.com"
+          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978961"
           @disaster_code = assigns[:disaster_code]
           @mail = "sato@gmail.com"
           @agent = Agent.find_by_mail_address(@mail)
@@ -128,9 +141,11 @@ describe StaffsController do
         it '職員が存在すること' do
           @staff.present?.should be_true
         end
-        it 'DB登録が終了すること' do
-          @staff = Staff.new(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code)
-          @staff.save.should be_true
+        it '上書きが成功すること' do
+          @staff.update_attributes!(:name => @agent.name, :agent_id => @agent.id).should be_true
+        end
+        it '挿入が成功すること' do
+           Staff.create!(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code).should be_true
         end
         it '位置情報送信画面にリダイレクトする' do
           response.should redirect_to(:action => :position_form, :disaster_code => @disaster_code, :agent_id => @agent.id)
@@ -140,17 +155,45 @@ describe StaffsController do
       context '異常の場合' do
         before do
           post :save_send, :mail => "", :disaster_code => "20130108151823978961"
-          @mail = assigns[:mail]
+          @mail = ""
           @disaster_code = assigns[:disaster_code]
         end
-        describe '@mail' do
-          it 'メールアドレスが空であること' do
-            @mail.blank?.should be_true
+        context 'メールアドレスが空である場合' do
+          it '画面上部にエラーメッセージを表示すること' do
+            class MailBlankException < StandardError; end
+            begin
+              raise MailBlankException, I18n.t("errors.messages.mail_blank") if @mail.blank?
+            rescue MailBlankException => e
+              flash[:notice] = e.message
+              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => flash[:notice])
+            end
           end
         end
-        it '個人特定情報送信画面にリダイレクトする' do
-          @notice = "メールアドレスを入力してください"
-          response.should redirect_to(:action => 'send_form', :disaster_code => @disaster_code, :notice => @notice)
+        context 'メールアドレスの入力数が256桁以上の場合' do
+          it '画面上部にエラーメッセージを表示すること' do
+            @mail = 'a' * 256
+            class MailLengthException < StandardError; end
+            begin
+              raise MailLengthException, I18n.t("errors.messages.mail_length") if @mail.size > 256
+            rescue MailLengthException => e
+              flash[:notice] = e.message
+              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => flash[:notice])
+            end
+          end
+        end
+        context 'Agentが存在しない場合' do
+          pending 'リダイレクトが失敗するため保留' do
+          it '画面上部にエラーメッセージを表示すること' do
+            class AgentBlankException < StandardError; end
+            begin
+              agent = nil
+              raise AgentBlankException, I18n.t("errors.messages.agent_blank") if agent.blank?
+            rescue AgentBlankException => e
+              flash[:notice] = e.message
+              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => flash[:notice])
+            end
+          end
+          end
         end
       end
     end
