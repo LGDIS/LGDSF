@@ -4,9 +4,7 @@ require 'spec_helper'
 describe Agent do
 
   before do
-    @agent = Agent.new
-    @agent.name = "name"
-    @agent.mail_address = "mail_address"
+    @agent = FactoryGirl.build(:agent)
   end
 
   context '正常の場合' do
@@ -23,6 +21,9 @@ describe Agent do
           @agent.name = 'a' * 64
           @agent.save.should be_true
         end
+        it 'Stringクラスであること' do
+          @agent.name.should be_instance_of(String)
+        end
       end
     end
 
@@ -31,6 +32,9 @@ describe Agent do
         it 'DB登録が成功すること' do
           @agent.mail_address = 'a' * 256
           @agent.save.should be_true
+        end
+        it 'Stringクラスであること' do
+          @agent.mail_address.should be_instance_of(String)
         end
       end
     end
@@ -58,5 +62,4 @@ describe Agent do
     end
 
   end
-
 end

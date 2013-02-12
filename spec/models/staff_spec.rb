@@ -4,10 +4,7 @@ require 'spec_helper'
 describe Staff do
 
   before do
-    @staff = Staff.new
-    @staff.name = "name"
-    @staff.destination_code = "destination_code"
-    @staff.disaster_code = "disaster_code"
+    @staff = FactoryGirl.build(:staff)
   end
 
   context '正常の場合' do
