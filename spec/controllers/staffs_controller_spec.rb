@@ -109,33 +109,31 @@ describe StaffsController do
 
       context 'エラー処理' do
         before do
-          post :save_send, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}"
+          post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.com"
           @disaster_code = assigns[:disaster_code]
           @mail = "sato@gmail.com"
           @agent = Agent.find_by_mail_address(@mail)
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
         end
 
-        pending 'モデルが取得できないため、保留' do
-          it 'メールアドレスが空でないこと' do
-            @mail.present?.should be_true
-          end
-          it 'メールアドレスが256以下であること' do
-            @mail.size.should <= 256
-          end 
-          it 'メールアドレスが一致すること' do
-            @agent.present?.should be_true
-          end
-          it '職員が存在すること' do
-            @staff.present?.should be_true
-          end
-          it 'DB登録が終了すること' do
-            @staff = Staff.new(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code)
-            @staff.save.should be_true
-          end
-          it '位置情報送信画面にリダイレクトする' do
-            response.should redirect_to(:action => 'position_form', :disaster_code => @disaster_code, :agent_id => @agent.id)
-          end
+        it 'メールアドレスが空でないこと' do
+          @mail.present?.should be_true
+        end
+        it 'メールアドレスが256以下であること' do
+          @mail.size.should <= 256
+        end
+        it 'メールアドレスが一致すること' do
+          @agent.present?.should be_true
+        end
+        it '職員が存在すること' do
+          @staff.present?.should be_true
+        end
+        it 'DB登録が終了すること' do
+          @staff = Staff.new(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code)
+          @staff.save.should be_true
+        end
+        it '位置情報送信画面にリダイレクトする' do
+          response.should redirect_to(:action => :position_form, :disaster_code => @disaster_code, :agent_id => @agent.id)
         end
 
       end
@@ -227,8 +225,8 @@ describe StaffsController do
 
   describe 'save_position' do
     context '正常の場合' do
-      before '適当な職員ID、メールIDを渡す' do
-        get :save_position, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
+      before do
+        post :save_position, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
         @disaster_code = assigns[:disaster_code]
         @agent_id = assigns[:agent_id]
         @latitude = assigns[:latitude]
@@ -238,8 +236,6 @@ describe StaffsController do
         before do
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
         end
-
-        pending 'モデルが取得できないため、保留' do
         it '緯度、経度が空でないこと' do
           (@latitude.present? && @longitude.present?).should be_true
         end
@@ -254,14 +250,12 @@ describe StaffsController do
         it '参集場所報告画面にリダイレクトする' do
           response.should redirect_to(:action => 'destination_form', :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code)
         end
-        end
-
       end
     end
     context '異常の場合' do
       context 'メールアドレスが空の場合' do
-        before '適当なメールアドレス、メールIDを渡す' do
-          get :save_position, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}"
+        before do
+          get :save_position, :agent_id => 1, :disaster_code => "20130108151823978961"
           @disaster_code = assigns[:disaster_code]
           @agent_id = assigns[:agent_id]
           @latitude = nil
@@ -354,7 +348,7 @@ describe StaffsController do
   describe 'save_destination' do
     context '正常の場合' do
       before do
-        get :save_destination, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668", :destination => {:position => "7", :place => "0", :reason => ""}
+        post :save_destination, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668", "destination" => {:position => "7", :place => "0", :reason => ""}
         @disaster_code = assigns[:disaster_code]
         @destination[:destination] = assigns[:destination]
         @agent_id = assigns[:agent_id]
@@ -417,12 +411,15 @@ describe StaffsController do
   end
 
   describe 'index' do
-  
+ 
     login_user
 
     context '正常の場合' do
       before do
         get :index
+        settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
+        @latitude  = settings["lgdsf"][Rails.env]["latitude"]
+        @longitude = settings["lgdsf"][Rails.env]["longitude"]
       end
       it 'getが成功すること' do
         response.should be_success
@@ -431,20 +428,30 @@ describe StaffsController do
         response.should render_template("index") # lgdsf_index
       end
       describe '職員位置確認画面のマップの中心' do
-        settings = YAML.load_file("#{Rails.root}/config/settings.yml")
-        it '@latitude（緯度）がStringクラスであること' do
-          @latitude  = settings["lgdsf"][Rails.env]["latitude"]
+        it '@latitude（緯度）がFloatクラスであること' do
           @latitude.should be_an_instance_of(Float)
         end
-        it '@longitude（経度）がStringクラスであること' do
-          settings = YAML.load_file("#{Rails.root}/config/settings.yml")
-          @longitude = settings["lgdsf"][Rails.env]["longitude"]
+        it '@longitude（経度）がFloatクラスであること' do
           @longitude.should be_an_instance_of(Float)
         end
-        context '2点間の距離を求め、ズーム率を決定する。' do
-          it '2点間の距離を求める' do
-            pending "nil can't be coerced into Floatが出る為保留" do
+      end
+      describe '最新メール番号' do
+        it 'Stringクラスであること' do
+          new_disaster_code = Staff.maximum(:disaster_code)
+          new_disaster_code.should be_an_instance_of(String)
+        end
+        it 'Staff DBから値が取得できる' do
+          new_disaster_code = Staff.maximum(:disaster_code)
+          @staffs = Staff.find(:all, :conditions => { :disaster_code => new_disaster_code })
+          @staffs.should be_true
+        end
+      end
+      describe '2点間の距離を求め、ズーム率を決定する。' do
+        context '@zoom' do
+          before do
             @zoom = 13
+          end
+          it 'ズーム率が決定すること' do
             @gathering_positions.each do |id, gathering_position|
               lat = gathering_position["latitude"].to_f - @latitude
               lng = gathering_position["longitude"].to_f - @longitude
@@ -452,25 +459,8 @@ describe StaffsController do
               diff = Math::sqrt(lat * lat + lng * lng)
               @zoom = Math::log(534.0/diff)/Math::log(2) < @zoom ? Math::log(534.0/diff)/Math::log(2) : @zoom
             end
-            end
-          end
-          it 'ズーム率を決定する' do
-            pending '上記結果を使用するため保留' do
             @zoom = @zoom.round - 1
-            end
           end
-        end
-      end
-      describe '最新メール番号' do
-        pending ':disaster_codeがnilのため保留' do
-        it 'Stringクラスであること' do 
-          @new_disaster_code = Staff.maximum(:disaster_code)
-          @new_disaster_code.should be_an_instance_of(String)
-        end
-        end
-        it 'Staff DBから値が取得できる' do
-          @staffs = Staff.find(:all, :conditions => { :disaster_code => @new_disaster_code })
-          @staffs.should be_true
         end
       end
     end
