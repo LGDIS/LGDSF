@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*-
+﻿# -*- coding:utf-8 -*-
 require 'spec_helper'
 
 describe StaffsController do
@@ -326,8 +326,8 @@ describe StaffsController do
 
   describe 'destination_form' do
     context '正常の場合' do
-      before '' do
-        get :destination_form, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
+      before do
+        get :destination_form, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
         @disaster_code = assigns[:disaster_code]
         @agent_id = assigns[:agent_id]
         @latitude = assigns[:latitude].to_f
@@ -340,56 +340,116 @@ describe StaffsController do
       it 'テンプレートが適用されていること' do
         response.should render_template("destination_form") # lgdsf
       end
-      it '' do
-        diffs = []
-        size = request.mobile? ? 200.0 : 350.0
-
-        # 2点間の距離を求める
-        @gathering_positions.each do |id, gathering_position|
-          count = id.to_i-1
-          lat = gathering_position["latitude"].to_f - @latitude
-          lng = gathering_position["longitude"].to_f - @longitude
-          diffs[count] = Math::sqrt(lat * lat + lng * lng)
-          @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
+      context '2点間の距離を求め、ズーム率を決定する。' do
+        before do
+          diffs = []
+          size = 200.0
+          @gathering_positions.each do |id, gathering_position|
+            count = id.to_i-1
+            lat = gathering_position["latitude"].to_f - @latitude
+            lng = gathering_position["longitude"].to_f - @longitude
+            diffs[count] = Math::sqrt(lat * lat + lng * lng)
+            @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
+          end
         end
-        
-        temps = []
-        temps = diffs.sort
-        
-        # ズームの微調整
-        @zoom = @zoom.round - 1
-        
-        # 所定の参集場所の取得
-        @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i
-        
-        # id は配列の番号なので実際には+1した値がID
-        # 所定の参集場所IDを初期値として代入しておく。
-        gathering_position_ids = []
-        
-        # モバイル・スマートフォンにより、近くの参集場所の表示数を分ける
-        roop = request.mobile? ? 3 : 8
-        
-        # 参集場所を近い順に並べる
-        i = 0
-        while i < roop
-          diffs.each_with_index do |diff, count|
-            if temps[i] == diff
-              if @predefined_position != (count + 1)
-                gathering_position_ids.push(count + 1)
-                break
-              else
-                roop += 1
-                break
+        describe '@zoom' do
+          it 'ズーム率がFixnumであること' do
+            @zoom = @zoom.round - 1
+            @zoom.should be_an_instance_of(Fixnum)
+          end
+        end
+        describe '@predefined_position' do
+          it '所定の参集場所の取得ができること' do
+            @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i
+            @predefined_position.should be_an_instance_of(Fixnum)
+          end
+        end
+
+        describe '@near_gathering_positions' do
+          context 'モバイルの場合' do
+            it '近くの参集場所が3つ取得できること' do
+              diffs = []
+              size = 200.0
+              @gathering_positions.each do |id, gathering_position|
+                count = id.to_i-1
+                lat = gathering_position["latitude"].to_f - @latitude
+                lng = gathering_position["longitude"].to_f - @longitude
+                diffs[count] = Math::sqrt(lat * lat + lng * lng)
+                @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
               end
+              temps = []
+              temps = diffs.sort
+            
+              gathering_position_ids = []
+            
+              roop = 3
+            
+              i = 0
+              while i < roop
+                diffs.each_with_index do |diff, count|
+                  if temps[i] == diff
+                    if @predefined_position != (count + 1)
+                      gathering_position_ids.push(count + 1)
+                      break
+                    else
+                      roop += 1
+                      break
+                    end
+                  end
+                end
+                i += 1
+              end
+
+              @near_gathering_positions = {}
+              gathering_position_ids.each do |gathering_position_id|
+                @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
+              end
+              
+              @near_gathering_positions.size.should == 3
             end
           end
-          i += 1
-        end
-        
-        # 近くの参集場所を@near_gathering_positions変数に格納する。
-        @near_gathering_positions = {}
-        gathering_position_ids.each do |gathering_position_id|
-          @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
+          context 'スマートフォン/タブレットの場合' do
+            it '近くの参集場所が8つ取得できること' do
+              diffs = []
+              size = 350.0
+              @gathering_positions.each do |id, gathering_position|
+                count = id.to_i-1
+                lat = gathering_position["latitude"].to_f - @latitude
+                lng = gathering_position["longitude"].to_f - @longitude
+                diffs[count] = Math::sqrt(lat * lat + lng * lng)
+                @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
+              end
+              temps = []
+              temps = diffs.sort
+              
+              gathering_position_ids = []
+              
+              roop = 8
+              
+              i = 0
+              while i < roop
+                diffs.each_with_index do |diff, count|
+                  if temps[i] == diff
+                    if @predefined_position != (count + 1)
+                      gathering_position_ids.push(count + 1)
+                      break
+                    else
+                      roop += 1
+                      break
+                    end
+                  end
+                end
+                i += 1
+              end
+
+              @near_gathering_positions = {}
+              gathering_position_ids.each do |gathering_position_id|
+                @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
+              end
+              
+              @near_gathering_positions.size.should == 8
+            end
+          end
         end
       end
     end
@@ -501,7 +561,7 @@ describe StaffsController do
           before do
             @zoom = 13
           end
-          it 'ズーム率が決定すること' do
+          it 'ズーム率がFixnumであること' do
             @gathering_positions.each do |id, gathering_position|
               lat = gathering_position["latitude"].to_f - @latitude
               lng = gathering_position["longitude"].to_f - @longitude
@@ -510,6 +570,7 @@ describe StaffsController do
               @zoom = Math::log(534.0/diff)/Math::log(2) < @zoom ? Math::log(534.0/diff)/Math::log(2) : @zoom
             end
             @zoom = @zoom.round - 1
+            @zoom.should be_an_instance_of(Fixnum)
           end
         end
       end
