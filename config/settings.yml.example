@@ -5,8 +5,8 @@ lgdsf:
     latitude: 38.4344802
     longitude: 141.3029167
   test:
-    latitude:
-    longitude:
+    latitude: 38.4344802
+    longitude: 141.3029167
   production:
     latitude: 38.4344802
     longitude: 141.3029167
