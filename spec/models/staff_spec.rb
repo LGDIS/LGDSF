@@ -6,9 +6,15 @@ describe Staff do
   before do
     @staff = FactoryGirl.build(:staff)
   end
+  
+  describe '#mail_address' do
+    describe '@staff' do
+      subject { @staff }
+      its(:mail_address) { should be_true }
+    end
+  end
 
   context '正常の場合' do
-
     describe '@staff' do
       it 'DB登録が成功すること' do
         @staff.save.should be_true
