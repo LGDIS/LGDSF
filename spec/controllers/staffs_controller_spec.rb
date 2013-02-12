@@ -275,7 +275,7 @@ describe StaffsController do
         @latitude = assigns[:latitude]
         @longitude = assigns[:longitude]
       end
-      context '現在位置の取得成功の場合' do
+      describe '@staff' do
         before do
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
         end
@@ -285,13 +285,13 @@ describe StaffsController do
         it '職員が存在すること' do
           @staff.present?.should be_true
         end
-        it 'DB登録が終了すること' do
-          @staff.latitude = @latitude
-          @staff.longitude = @longitude
-          @staff.save.should be_true
+        it '上書きが成功すること' do
+          @staff.update_attributes!(:latitude => @latitude, :longitude => @longitude).should be_true
         end
+      end
+      context '現在位置取得成功の場合' do
         it '参集場所報告画面にリダイレクトする' do
-          response.should redirect_to(:action => 'destination_form', :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code)
+          response.should redirect_to(:action => :destination_form, :agent_id => @agent_id, :latitude => @latitude, :longitude => @longitude, :disaster_code => @disaster_code)
         end
       end
     end
@@ -309,9 +309,16 @@ describe StaffsController do
             (@latitude.blank? || @longitude.blank?).should be_true
           end
         end
-        it '個人特定情報送信画面にリダイレクトする' do
-          @notice = "現在位置の取得に失敗しました"
-          response.should redirect_to(:action => 'position_form', :disaster_code => @disaster_code, :agent_id => @agent_id, :notice => @notice)
+        context '現在位置の取得失敗の場合' do
+          it '画面上部にエラーメッセージを表示すること' do
+            class PositionBlankException < StandardError; end
+            begin
+              raise PositionBlankException, I18n.t("errors.messages.position_blank") if @latitude.blank? || @longitude.blank?
+            rescue PositionBlankException => e
+              flash[:notice] = e.message
+              response.should redirect_to(:action => :position_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :notice => flash[:notice])
+            end
+          end
         end
       end
     end
@@ -323,8 +330,8 @@ describe StaffsController do
         get :destination_form, :agent_id => 1, :disaster_code => "2013#{rand(13)}#{rand(32)}#{rand(24)}#{rand(60)}#{rand(100)}", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
         @disaster_code = assigns[:disaster_code]
         @agent_id = assigns[:agent_id]
-        @latitude = assigns[:latitude]
-        @longitude = assigns[:longitude]
+        @latitude = assigns[:latitude].to_f
+        @longitude = assigns[:longitude].to_f
         @zoom = 13
       end
       it 'getが成功すること' do
