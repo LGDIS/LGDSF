@@ -6,8 +6,8 @@ describe StaffsController do
   before do
     @gathering_positions  = Rails.cache.read("gathering_position")
     @predefined_positions = Rails.cache.read("predefined_position")
-    @factory_staff = FactoryGirl.build(:staff)
-    @factory_agent = FactoryGirl.build(:agent)
+    @factory_staff = FactoryGirl.create(:staff)
+    @factory_agent = FactoryGirl.create(:agent)
   end
 
   describe 'layout_selector' do
@@ -36,6 +36,11 @@ describe StaffsController do
           end
           it 'trueであること' do
             request.mobile?.should be_true
+          end
+        end
+        describe 'Au' do
+          before do
+            controller.request.env['HTTP_USER_AGENT'] = 'KDDI-CA39 UP.Browser/6.2.0.13.1.5 (GUI) MMP/2.0'
           end
         end
       end
@@ -70,6 +75,24 @@ describe StaffsController do
         end
       end
     end
+    describe 'request.mobile.is_a?(Jpmobile::Mobile::Au)' do
+      context '正常な場合' do
+        before do
+          controller.request.env['HTTP_USER_AGENT'] = 'KDDI-CA39 UP.Browser/6.2.0.13.1.5 (GUI) MMP/2.0'
+        end
+        it 'trueであること' do
+          request.mobile.is_a?(Jpmobile::Mobile::Au).should be_true
+        end
+      end
+      context '異常な場合' do
+        before do
+          controller.request.env['HTTP_USER_AGENT'] = nil
+        end
+        it 'falseであること' do
+          request.mobile.is_a?(Jpmobile::Mobile::Au).should be_false
+        end
+      end
+    end
   end
 
   describe 'send_form' do
@@ -85,6 +108,11 @@ describe StaffsController do
       end
       it 'テンプレートが適用されていること' do
         response.should render_template("staffs/send_form") # lgdsf_smartphone
+      end
+      it 'テンプレートが適用されていること' do
+        controller.request.env['HTTP_USER_AGENT'] = 'DoCoMo'
+        get :send_form, :disaster_code => "20130108151823978961"
+        response.should render_template("staffs/send_form") if request.mobile? # lgdsf_smartphone
       end
       describe '@disaster_code' do
         it 'Stringクラスであること' do
@@ -106,7 +134,6 @@ describe StaffsController do
 
   describe 'save_send' do
     context '正常の場合' do
-
       describe '@disaster_code' do
         before do
           post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.com"
@@ -138,20 +165,52 @@ describe StaffsController do
         it 'メールアドレスが一致すること' do
           @agent.present?.should be_true
         end
-        it '職員が存在すること' do
-          @staff.present?.should be_true
-        end
         it '上書きが成功すること' do
           @staff.update_attributes!(:name => @agent.name, :agent_id => @agent.id).should be_true
         end
         it '挿入が成功すること' do
-           Staff.create!(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code).should be_true
+          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978962"
+          @disaster_code = assigns[:disaster_code]
+          @mail = "sato@gmail.com"
+          @agent = Agent.find_by_mail_address(@mail)
+          @staff = Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
+          Staff.create!(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code).should be_true
+        end
+        it '職員が存在すること' do
+          @staff.present?.should be_true
         end
         it '位置情報送信画面にリダイレクトする' do
           response.should redirect_to(:action => :position_form, :disaster_code => @disaster_code, :agent_id => @agent.id)
         end
-
       end
+
+      context 'エラー処理' do
+        before do
+          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978961"
+          @disaster_code = assigns[:disaster_code]
+          @mail = "sato@gmail.com"
+          @agent = Agent.find_by_mail_address(@mail)
+          @staff = nil#Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
+        end
+
+        it 'メールアドレスが空でないこと' do
+          @mail.present?.should be_true
+        end
+        it 'メールアドレスが256以下であること' do
+          @mail.size.should <= 256
+        end
+        it 'メールアドレスが一致すること' do
+          @agent.present?.should be_true
+        end
+
+        it '職員が存在しないこと' do
+          @staff.present?.should be_false
+        end
+        it '位置情報送信画面にリダイレクトする' do
+          response.should redirect_to(:action => :position_form, :disaster_code => @disaster_code, :agent_id => @agent.id)
+        end
+      end
+
       context '異常の場合' do
         before do
           post :save_send, :mail => "", :disaster_code => "20130108151823978961"
@@ -181,20 +240,6 @@ describe StaffsController do
             end
           end
         end
-        context 'Agentが存在しない場合' do
-          pending '' do
-          it '画面上部にエラーメッセージを表示すること' do
-            @agent = nil
-            class AgentBlankException < StandardError; end
-            begin
-              raise AgentBlankException, I18n.t("errors.messages.agent_blank") if @agent.blank?
-            rescue AgentBlankException => e
-              flash[:notice] = e.message
-              response.should redirect_to(:action => :send_form, :disaster_code => @disaster_code, :notice => "")
-            end
-          end
-          end
-        end
       end
     end
   end
@@ -209,8 +254,20 @@ describe StaffsController do
       it 'getが成功すること' do
         response.should be_success
       end
+      it 'session変数が保存されていること' do
+        controller.request.env['HTTP_USER_AGENT'] = 'KDDI-CA39 UP.Browser/6.2.0.13.1.5 (GUI) MMP/2.0'
+        get :position_form, :disaster_code => "20130108151823978961", :agent_id => 1
+        session[:disaster_code] = @disaster_code
+        session[:agent_id] = @agent_id
+        (session[:disaster_code] && session[:agent_id]).should be_present
+      end
       it 'テンプレートが適用されていること' do
         response.should render_template("staffs/position_form") # lgdsf_smartphone
+      end
+      it 'テンプレートが適用されていること' do
+        controller.request.env['HTTP_USER_AGENT'] = 'DoCoMo'
+        get :position_form, :disaster_code => "20130108151823978961", :agent_id => 1
+        response.should render_template("staffs/position_form") if request.mobile? # lgdsf_smartphone 
       end
       describe '@disaster_code' do
         it 'Stringクラスであること' do
@@ -275,6 +332,12 @@ describe StaffsController do
         @latitude = assigns[:latitude]
         @longitude = assigns[:longitude]
       end
+      it 'auのとき、情報を取得できること' do
+        controller.request.env['HTTP_USER_AGENT'] = 'KDDI-CA39 UP.Browser/6.2.0.13.1.5 (GUI) MMP/2.0'
+        post :save_position, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
+        @disaster_code = session[:disaster_code]
+        @agent_id = session[:agent_id]
+      end
       describe '@staff' do
         before do
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
@@ -295,6 +358,7 @@ describe StaffsController do
         end
       end
     end
+
     context '異常の場合' do
       context 'メールアドレスが空の場合' do
         before do
@@ -339,6 +403,11 @@ describe StaffsController do
       end
       it 'テンプレートが適用されていること' do
         response.should render_template("destination_form") # lgdsf
+      end
+      it 'テンプレートが適用されていること' do
+        controller.request.env['HTTP_USER_AGENT'] = 'DoCoMo'
+        get :destination_form, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
+        response.should render_template("staffs/destination_form") if request.mobile? # lgdsf_smartphone
       end
       context '2点間の距離を求め、ズーム率を決定する。' do
         before do
@@ -477,7 +546,7 @@ describe StaffsController do
         end
         context '参集場所に向かうのが困難な場合' do
           it '上書きが成功すること' do
-            @destination['place'] = "1"
+             post :save_destination, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668", "destination" => {:position => "7", :place => "1", :reason => ""}
             @staff.update_attributes!(:status => false, :destination_code => '', :reason => @destination['reason'].present? ? @destination['reason'] : '').should be_true
           end
         end

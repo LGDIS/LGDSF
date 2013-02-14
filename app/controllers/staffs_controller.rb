@@ -226,11 +226,11 @@ class StaffsController < ApplicationController
       @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
     end
 
-    temps = []
-    temps = diffs.sort
-
     # ズームの微調整
     @zoom = @zoom.round - 1
+
+    temps = []
+    temps = diffs.sort
 
     # 所定の参集場所の取得
     @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i

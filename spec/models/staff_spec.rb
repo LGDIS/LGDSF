@@ -4,7 +4,8 @@ require 'spec_helper'
 describe Staff do
 
   before do
-    @staff = FactoryGirl.build(:staff)
+    @agent = FactoryGirl.build(:agent)
+    @staff = FactoryGirl.build(:staff, :agent => @agent)
   end
   
   describe '#mail_address' do
