@@ -7,7 +7,10 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-User.create(:email => 'test@test.jp', :password => 'test@test.jp')
+# TODO : adminでログインするため一次的に対応（結合時に削除する）
+User.find_by_sql("insert into users (email, encrypted_password, created_at, updated_at) values('admin', '$2a$10$.5ug7SfHzlliJyez6laINe8YxTuWVpXKGHuKztLkwofULliX3FLsy', now(), now())")
+
+# User.create!(:email => 'test@test.jp', :password => 'test@test.jp')
 
 Agent.create(:name => '佐藤', :mail_address => 'sato@gmail.com')
 Agent.create(:name => '鈴木', :mail_address => 'suzuki@gmail.com')
