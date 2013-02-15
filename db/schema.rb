@@ -11,15 +11,23 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121219091630) do
+ActiveRecord::Schema.define(:version => 20130214030135) do
 
 
 
   create_table "agents", :force => true do |t|
     t.string   "name",         :limit => 64
     t.string   "mail_address", :limit => 256
+    t.string   "department",   :limit => 64
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+  end
+
+  create_table "notes", :force => true do |t|
+    t.string   "note",       :limit => 20
+    t.integer  "staff_id"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
   end
 
   create_table "staffs", :force => true do |t|
@@ -57,8 +65,15 @@ ActiveRecord::Schema.define(:version => 20121219091630) do
   set_column_comment 'agents', 'id', 'ID'
   set_column_comment 'agents', 'name', '職員名'
   set_column_comment 'agents', 'mail_address', 'メールアドレス'
+  set_column_comment 'agents', 'department', '部署'
   set_column_comment 'agents', 'created_at', '作成時刻'
   set_column_comment 'agents', 'updated_at', '更新時刻'
+
+  set_column_comment 'notes', 'id', 'ID'
+  set_column_comment 'notes', 'note', '備考'
+  set_column_comment 'notes', 'staff_id', '職員'
+  set_column_comment 'notes', 'created_at', '作成時刻'
+  set_column_comment 'notes', 'updated_at', '更新時刻'
 
   set_column_comment 'staffs', 'id', 'ID'
   set_column_comment 'staffs', 'name', '職員名'

@@ -305,6 +305,10 @@ class StaffsController < ApplicationController
           gathering_position = @gathering_positions[@destination['position']]
           staff.update_attributes!(:status => true, :destination_code => gathering_position['position_code'], :reason => '')
         end
+        # 備考をnoteテーブルに登録
+        if @destination['note'].present?
+          Note.create!(:note => @destination['note'], :staff_id => staff.id)
+        end
       end
     rescue DestinationBlankException, ActiveRecord::RecordInvalid => e
       flash[:notice] = e.message
@@ -335,6 +339,23 @@ class StaffsController < ApplicationController
     new_disaster_code = Staff.maximum(:disaster_code)
     @staffs = Staff.all(:conditions => { :disaster_code => new_disaster_code })
 
+    # 部署名取得
+    @departments = ["部署不明"]
+    agents = Agent.all
+    agents.each do |agent|
+      if agent.department.present?
+        @departments.push(agent.department) unless @departments.include?(agent.department)
+      end
+    end
+
+    # 最新の備考データ取得
+    # TODO : 最新版だけのデータを取得する
+    @notes = []
+    @staffs.each do |staff|
+      note = Note.find_by_staff_id(staff.id)
+      @notes.push(note) if note.present?
+    end
+
     # 2点間の距離を求め、ズーム率を決定する。
     @zoom = 13
     @gathering_positions.each do |id, gathering_position|
@@ -345,5 +366,6 @@ class StaffsController < ApplicationController
       @zoom = Math::log(534.0/diff)/Math::log(2) < @zoom ? Math::log(534.0/diff)/Math::log(2) : @zoom
     end
     @zoom = @zoom.round - 1
+
   end
 end
