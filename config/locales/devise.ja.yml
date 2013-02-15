@@ -26,6 +26,7 @@ ja:
       user:
         signed_in: 'ログインしました。'
         signed_out: 'ログアウトしました。'
+        invalid: 'ログイン名またはパスワードが正しくありません。'
         invalid_login: 'ログイン名を入力してください。'
         invalid_password: 'パスワードを入力してください。'
     passwords:

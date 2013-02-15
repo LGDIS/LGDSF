@@ -7,6 +7,13 @@
 
   def create
 
+    # ログイン名、パスワード入力チェック
+    if params[:user][:email].blank? && params[:user][:password].blank?
+      set_flash_message(:alert, :invalid)
+      redirect_to(:action => :new)
+      return
+    end
+
     # ログイン名入力チェック
     if params[:user][:email].blank?
       set_flash_message(:alert, :invalid_login)
