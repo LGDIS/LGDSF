@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
   end
 
   create_table "notes", :force => true do |t|
-    t.string   "note",       :limit => 20
+    t.string   "note",       :limit => 40
     t.integer  "staff_id"
     t.datetime "created_at",               :null => false
     t.datetime "updated_at",               :null => false

@@ -5,12 +5,11 @@
 
 <fieldset class="collapsible collapsed">
 
-  <legend onclick="toggleFieldset(this);">備考</legend>
+  <legend onclick="toggleFieldset(this);">肩代わり報告</legend>
   <% @notes.each do |note| %>
-    <div style="display: none;">
-      <ul class="person_list">
-        <li><%= note.note %></li>
-      </ul>
+    <div style="display: none; padding:5px; border-bottom: 1px solid #EEE;">
+      <p style="margin: 5px;"><%= note.note %></p>
+      <span style="color: #999;margin-left:10px;"><%= note.name %></span><span style="color: #999; margin-left: 25px;"><%= note.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></span>
     </div>
   <% end %>
 
@@ -75,12 +74,6 @@ i>
 <% end %>
 
 <!-- 職員参集先情報 -->
-
-<fieldset class="collapsible collapsed">
-
-  <legend onclick="toggleFieldset(this);">地区</legend>
-  <div style="display: none;">
-
   <% pos = 0 %>
   <% @gathering_positions.each do |id, gathering_position| %>
     <% count = 0 %>
@@ -107,30 +100,6 @@ i>
     </div>
     </fieldset>
   <% end %>
-  
-  </div>
-
-</fieldset>
-
-<fieldset class="collapsible collapsed">
-
-  <legend onclick="toggleFieldset(this);">部署</legend>
-  <div style="display: none;">
-  
-    <% @departments.each do |department| %>
-      <fieldset class="collapsible collapsed">
-        <legend onclick="toggleFieldset(this);"><%= department %></legend>
-        <div style="display: none;">
-          <ul class="person_list">
-            
-          </ul>
-        </div>
-      </fieldset>
-    <% end %>
-
-  </div>
-
-</fieldset>
 
 </div>
 

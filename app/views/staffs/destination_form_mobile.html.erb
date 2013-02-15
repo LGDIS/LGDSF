@@ -49,8 +49,8 @@
   <p><%= check_box "destination", "place" %>理由を入力して下さい。</p>
   <p><%= text_field :destination, :reason %></p>
 
-  <p>備考を入力してください</p>
-  <p><%= text_field :destination, :note, :size => '30', :maxlength => '20' %></p>
+  <p>肩代わり報告があれば記載してください。</p>
+  <p><%= text_field :destination, :note, :size => '30', :maxlength => '40' %></p>
 
   <%= submit_tag "送信" %>
 

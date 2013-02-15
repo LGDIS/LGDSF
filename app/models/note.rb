@@ -11,8 +11,17 @@
   def disaster_code
     self.staff.disaster_code
   end
-  
+
+  # 対象の職員の名前取得処理
+  # ==== Args
+  # ==== Return
+  # 職員の名前
+  # ==== Raise
+  def name
+    self.staff.name
+  end
+
   validates :note,
-              :length => {:maximum => 20}
+              :length => {:maximum => 40}
   
 end

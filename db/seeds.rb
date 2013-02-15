@@ -12,12 +12,12 @@ User.find_by_sql("insert into users (email, encrypted_password, created_at, upda
 
 # User.create!(:email => 'test@test.jp', :password => 'test@test.jp')
 
-Note.create(:note => '市長は門脇中学校にいます', :staff_id => 32)
-Note.create(:note => '市長は無事です', :staff_id => 32)
-
-5.times do |i|
-  Note.create(:note => "サンプル#{i + 1}", :staff_id => i + 1)
-end
+Note.create(:note => '山田さんと、田中さんは宮城県石巻高等学校に出張のため、参集できません。', :staff_id => 9)
+Note.create(:note => '中村さんは市立女子高等学校に向かうようです。', :staff_id => 8)
+Note.create(:note => '片本さんは私と一緒にいます。', :staff_id => 5)
+Note.create(:note => '安田さんは石巻中央公民館に避難しています', :staff_id => 1)
+Note.create(:note => '市長は門脇中学校にいます', :staff_id => 2)
+Note.create(:note => '市長は無事です', :staff_id => 2)
 
 Agent.create(:name => '佐藤', :mail_address => 'sato@gmail.com', :department => '総務部災害対策課')
 Agent.create(:name => '鈴木', :mail_address => 'suzuki@gmail.com', :department => '人事部災害対策課')
@@ -52,7 +52,7 @@ Agent.create(:name => '渡邊', :mail_address => 'watanabe@gmail.com', :departme
 Agent.create(:name => '斉藤', :mail_address => 'saito@gmail.com', :department => '開発部災害対策課')
 Agent.create(:name => '山口', :mail_address => 'yamaguchi@gmail.com', :department => '総務部災害対策課')
 Agent.create(:name => '松本', :mail_address => 'matumoto@gmail.com', :department => '開発部災害対策課')
-Agent.create(:name => '木村', :mail_address => 'kimura@gmail.com')
+Agent.create(:name => '木村', :mail_address => 'kimura@gmail.com', :department => '未所属')
 Agent.create(:name => '清水', :mail_address => 'simizu@gmail.com', :department => '人事部災害対策課')
 
 Agent.create(:name => '山崎', :mail_address => 'yamazaki@gmail.com', :department => '開発部災害対策課')

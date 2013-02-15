@@ -326,6 +326,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def index
+
     # ActiveResource各種設定
     settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
 
@@ -350,10 +351,10 @@ class StaffsController < ApplicationController
 
     # 最新の備考データ取得
     # TODO : 最新版だけのデータを取得する
+    all_notes = Note.all
     @notes = []
-    @staffs.each do |staff|
-      note = Note.find_by_staff_id(staff.id)
-      @notes.push(note) if note.present?
+    all_notes.each do |note|
+      @notes.push(note) if note.present? && note.disaster_code == new_disaster_code
     end
 
     # 2点間の距離を求め、ズーム率を決定する。

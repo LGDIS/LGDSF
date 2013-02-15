@@ -3,7 +3,7 @@ class CreateNotes < ActiveRecord::Migration
   def change
     create_table :notes do |t|
       t.integer :id
-      t.string  :note, :limit => 20
+      t.string  :note, :limit => 40
       t.integer :staff_id
       
       t.timestamps
