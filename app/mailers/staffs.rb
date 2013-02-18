@@ -1,3 +1,3 @@
-﻿class Staffs < ActiveRecord::Base
+class Staffs < ActiveRecord::Base
   unloadable
 end

@@ -1,4 +1,5 @@
-﻿class ApplicationController < ActionController::Base
+# -*- coding: utf-8 -*-
+class ApplicationController < ActionController::Base
   before_filter :init
 
   protect_from_forgery

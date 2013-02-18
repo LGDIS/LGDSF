@@ -1,4 +1,4 @@
-﻿# -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 class Staff < ActiveRecord::Base
   attr_accessible :latitude, :longitude, :agent_id,
                   :reason, :name, :status, :destination_code, :disaster_code

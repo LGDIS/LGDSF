@@ -1,4 +1,5 @@
-﻿class Note < ActiveRecord::Base
+# -*- coding: utf-8 -*-
+class Note < ActiveRecord::Base
   attr_accessible :note, :staff_id
   
   belongs_to :staff

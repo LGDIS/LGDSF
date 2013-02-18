@@ -1,4 +1,4 @@
-﻿# -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 # Staff Finderの処理を行うクラス
 class StaffsController < ApplicationController
 
