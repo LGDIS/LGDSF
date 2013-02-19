@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
 
   set_column_comment 'notes', 'id', 'ID'
   set_column_comment 'notes', 'note', '備考'
-  set_column_comment 'notes', 'staff_id', '職員'
+  set_column_comment 'notes', 'staff_id', '職員ID'
   set_column_comment 'notes', 'created_at', '作成時刻'
   set_column_comment 'notes', 'updated_at', '更新時刻'
 
