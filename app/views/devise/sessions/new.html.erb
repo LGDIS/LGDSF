@@ -39,6 +39,9 @@
             <td align="right">
               <%= f.submit "ログイン" %>
             <% end %>
+<%= button_to "googleアカウントでログイン", user_omniauth_authorize_path(:google) %>
+<%= button_to "twitterアカウントでログイン", user_omniauth_authorize_path(:twitter) %>
+<%= button_to "facebookアカウントでログイン", user_omniauth_authorize_path(:facebook) %>
             </td>
           </tr>
         </table>

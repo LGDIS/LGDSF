@@ -215,6 +215,10 @@ Devise.setup do |config|
   #   manager.intercept_401 = false
   #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
   # end
+  config.omniauth :open_id
+  config.omniauth :open_id, :name => 'google', :identifier => 'https://www.google.com/accounts/o8/id'
+  config.omniauth :twitter, '6BD7k5IRNoKR9yzcYZBgQ', 'ndW0wTejpTs5fwqZX8GsDdLL1YfiUXL03jg8mdEA2Y'
+  config.omniauth :facebook, '266345620165564', 'ba77e7cf1e5e080aa6bd394989e1bbf6'
 
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine
