@@ -1,5 +1,8 @@
 # -*- coding:utf-8 -*-
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  # CSRF警告メッセージを抑制
+  skip_before_filter :verify_authenticity_token
+
   # Googleによる認可結果リダイレクトアクション
   # ==== Args
   # ==== Return
