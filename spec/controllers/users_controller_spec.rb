@@ -19,13 +19,25 @@ describe UsersController do
     context '正常な場合' do
       it 'ユーザが見つかること' do
         a = mock_user(:authenticatable_salt => "01")
-        User.should_receive(:find_by_email).with("test@test.jp").and_return(a)
+        User.should_receive(:find_by_email_and_provider).with("test@test.jp", nil).and_return(a)
         a.should_not be_nil
         request.env['devise.mapping'] = Devise.mappings[:user]
         post :create, :user=> {:email=>"test@test.jp", :password=>"test@test.jp"}
       end
     end
     context '異常な場合' do
+      context 'ログイン名、パスワードが空の場合' do
+        before do
+          @request.env["devise.mapping"] = Devise.mappings[:user]
+          post :create, :user => {:email => "", :password => ""}
+        end
+        it 'エラーメッセージが表示されること' do
+          flash[:alert].should == "ログイン名またはパスワードが正しくありません。"
+        end
+        it 'newへリダイレクトすること' do
+          response.should redirect_to(:action => :new)
+        end
+      end
       context 'ログイン名が空の場合' do
         before do
           @request.env["devise.mapping"] = Devise.mappings[:user]
