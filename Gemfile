@@ -84,6 +84,5 @@ gem 'omniauth-openid', '1.0.1' # for google
 gem 'omniauth-oauth', '1.0.1'
 gem 'omniauth-oauth2', '1.0.0' # for facebook
 gem 'omniauth-saml', '1.0.0', :git => 'git://github.com/ruvr/omniauth-saml.git'
-gem 'oa-core', '0.3.2'
 gem 'omniauth-twitter', '0.0.9'
 gem 'omniauth-facebook', '1.2.0'

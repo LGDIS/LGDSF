@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
   # RuntimeError :: 想定しないプロバイダによる認可のとき
   def self.find_for_open_id(access_token, signed_in_resource=nil)
     raise "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'google'
-    loginid = access_token.info['email']
+    loginid = access_token.info.email
     uid = access_token.uid
     return authorized_user(loginid, uid, GOOGLE_IDENTIFIER)
   end
