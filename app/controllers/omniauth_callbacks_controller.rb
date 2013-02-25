@@ -27,6 +27,15 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     redirect_to_result('facebook')
   end
 
+  # OpenAMによる認可結果リダイレクトアクション
+  # ==== Args
+  # ==== Return
+  # ==== Raise
+  def openam
+    @user = User.find_for_saml(request.env["omniauth.auth"], current_user)
+    redirect_to_result('openam')
+  end
+
   private
 
   # 共通リダイレクト処理

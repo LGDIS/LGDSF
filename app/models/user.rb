@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   GOOGLE_IDENTIFIER = 'google'
   TWITTER_IDENTIFIER = 'twitter'
   FACEBOOK_IDENTIFIER = 'facebook'
+  OPENAM_IDENTIFIER = 'openam'
 
   # create user authorized by google
   # ==== Args
@@ -46,6 +47,21 @@ class User < ActiveRecord::Base
       return self.authorized_user(access_token.info.name, access_token.uid, FACEBOOK_IDENTIFIER)
     end
     raise "illegal authorizer: #{access_token.provider}"
+  end
+
+  # create user authorized by openam
+  # ==== Args
+  # _access_token_ :: アクセストークン
+  # _signed_in_resource_ :: RESERVED
+  # ==== Return
+  # Userオブジェクト
+  # ==== Raise
+  # RuntimeError :: 想定しないプロバイダによる認可のとき
+  def self.find_for_saml(access_token, signed_in_resource=nil)
+    raise "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'openam'
+    loginid = access_token.uid
+    uid = loginid
+    return authorized_user(loginid, uid, OPENAM_IDENTIFIER)
   end
 
   private
