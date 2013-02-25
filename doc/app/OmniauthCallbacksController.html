@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+<title>class OmniauthCallbacksController - Rails Application Documentation</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>app/controllers/omniauth_callbacks_controller.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Devise::OmniauthCallbacksController
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-i-facebook">#facebook</a>
+    
+    <li><a href="#method-i-google">#google</a>
+    
+    <li><a href="#method-i-twitter">#twitter</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./doc/README_FOR_APP.html">README_FOR_APP</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./StaffsController.html">StaffsController</a>
+  
+    <li><a href="./StaffsController/AgentBlankException.html">StaffsController::AgentBlankException</a>
+  
+    <li><a href="./StaffsController/DestinationBlankException.html">StaffsController::DestinationBlankException</a>
+  
+    <li><a href="./StaffsController/MailBlankException.html">StaffsController::MailBlankException</a>
+  
+    <li><a href="./StaffsController/MailLengthException.html">StaffsController::MailLengthException</a>
+  
+    <li><a href="./StaffsController/PositionBlankException.html">StaffsController::PositionBlankException</a>
+  
+    <li><a href="./Batches.html">Batches</a>
+  
+    <li><a href="./Batches/MemcacheStore.html">Batches::MemcacheStore</a>
+  
+    <li><a href="./Batches/StaffsDestroy.html">Batches::StaffsDestroy</a>
+  
+    <li><a href="./Agent.html">Agent</a>
+  
+    <li><a href="./ApplicationController.html">ApplicationController</a>
+  
+    <li><a href="./ApplicationHelper.html">ApplicationHelper</a>
+  
+    <li><a href="./Note.html">Note</a>
+  
+    <li><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a>
+  
+    <li><a href="./Shelters.html">Shelters</a>
+  
+    <li><a href="./Staff.html">Staff</a>
+  
+    <li><a href="./Staffs.html">Staffs</a>
+  
+    <li><a href="./User.html">User</a>
+  
+    <li><a href="./UsersController.html">UsersController</a>
+  
+    <li><a href="./UsersHelper.html">UsersHelper</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class OmniauthCallbacksController</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-facebook" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">facebook</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>facebookによる認可結果リダイレクトアクション</p>
+
+<h4 id="method-i-facebook-label-Args">Args</h4>
+
+<h4 id="method-i-facebook-label-Return">Return</h4>
+
+<h4 id="method-i-facebook-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="facebook-source">
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 27</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">facebook</span>
+  <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_oauth</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
+  <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'facebook'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- facebook-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- facebook-method -->
+
+    
+      <div id="method-i-google" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">google</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Googleによる認可結果リダイレクトアクション</p>
+
+<h4 id="method-i-google-label-Args">Args</h4>
+
+<h4 id="method-i-google-label-Return">Return</h4>
+
+<h4 id="method-i-google-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="google-source">
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 9</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">google</span>
+  <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_open_id</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
+  <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'google'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- google-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- google-method -->
+
+    
+      <div id="method-i-twitter" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">twitter</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Twitterによる認可結果リダイレクトアクション</p>
+
+<h4 id="method-i-twitter-label-Args">Args</h4>
+
+<h4 id="method-i-twitter-label-Return">Return</h4>
+
+<h4 id="method-i-twitter-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="twitter-source">
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 18</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">twitter</span>
+  <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_oauth</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
+  <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'twitter'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- twitter-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- twitter-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.1.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

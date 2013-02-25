@@ -57,9 +57,11 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.string   "provider"
+    t.string   "uid"
   end
 
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["email", "provider", "uid"], :name => "index_users_on_email_and_provider_and_uid", :unique => true
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
   set_column_comment 'agents', 'id', 'ID'
@@ -101,5 +103,7 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
   set_column_comment 'users', 'last_sign_in_ip', '最終サインインIP'
   set_column_comment 'users', 'created_at', '作成時刻'
   set_column_comment 'users', 'updated_at', '更新時刻'
+  set_column_comment 'users', 'provider', '認可プロバイダ名'
+  set_column_comment 'users', 'uid', '認可プロバイダのユーザ識別子'
 
 end

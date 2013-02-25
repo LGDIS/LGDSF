@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 FactoryGirl.define do
   factory :staff, class: Staff do |staff|
-    staff.id 1
     staff.name '佐藤'
     staff.agent_id 1
     staff.destination_code '3'
