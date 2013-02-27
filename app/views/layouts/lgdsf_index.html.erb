@@ -14,8 +14,7 @@
     <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
     <% if @gathering_positions %>
       <% @gathering_positions.each do |id, gathering_position| %>
-        <% count = id.to_i - 1 %>
-        <%= "iniShelters(#{count}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
+        <%= "iniShelters(#{id.to_i - 1}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
       <% end %>
     <% end %>
     <% if @staffs %>
@@ -68,16 +67,68 @@
 
         <div id="header">
           <h1>職員位置確認</h1>
-          <div id="main-menu"></div>
+          <div id="main-menu">
+            <ul>
+              <%= yield :main_menu %>
+            </ul>
+          </div>
         </div>
 
         <div id="main" class="sidebar">
-          <div id="sidebar">
-            <%= yield :sidebar %>
-          </div>
-
           <div id="content">
-            <%= yield %>
+            <% #左のリスト部分 %>
+            <div id="list">
+              <fieldset class="collapsible collapsed">
+                <legend onclick="toggleFieldset(this);">肩代わり報告</legend>
+                <% @notes.each do |note| %>
+                  <div style="display: none; padding:5px; border-bottom: 1px solid #EEE;">
+                    <p style="margin: 5px;"><%= note.note %></p>
+                    <span style="color: #999;margin-left:10px;"><%= note.name %></span><span style="color: #999; margin-left: 25px;"><%= note.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></span>
+                  </div>
+                <% end %>
+              </fieldset>
+
+              <!-- 現在位置不明, 参集先不明, 参集不可 -->
+              <fieldset class="collapsible collapsed">
+                <legend onclick="toggleFieldset(this);">現在位置不明<span class="num"><%= @position_anknown_staffs.size %>名</span></legend>
+                <div style="display: none;">
+                  <ul class="person_list">
+                  <% @position_anknown_staffs.each_with_index do |staff, pos| %>
+                    <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              </fieldset>
+              <fieldset class="collapsible collapsed">
+                <legend onclick="toggleFieldset(this);">参集先不明<span class="num"><%= @destination_anknown_staffs.size %>名</span></legend>
+                <div style="display: none;">
+                  <ul class="person_list">
+                  <% @destination_anknown_staffs.each_with_index do |staff, pos| %>
+                    <% if staff.status == true %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                    <% elsif staff.status == nil %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></li>
+                    <% end %>
+                  <% end %>
+                  </ul>
+                </div>
+              </fieldset>
+              <fieldset class="collapsible collapsed">
+                <legend onclick="toggleFieldset(this);">参集不可<span class="num"><%= @not_gathered_staffs.size %>名</span></legend>
+                <div style="display: none;">
+                  <ul class="person_list">
+                  <% @not_gathered_staffs.each_with_index do |staff, pos| %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                  <% end %>
+                  </ul>
+                </div>
+              </fieldset>
+
+              <%= yield %>
+            </div>
+
+            <% #右のMAP部分 %>
+            <div id="map_canvas"></div>
             <div style="clear:both;"></div>
           </div>
         </div>

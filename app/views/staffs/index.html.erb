@@ -1,108 +1,41 @@
 <!-- 職員位置確認画面（PC） -->
 
-<% #左のリスト部分 %>
-<div id="list">
-
-<fieldset class="collapsible collapsed">
-
-  <legend onclick="toggleFieldset(this);">肩代わり報告</legend>
-  <% @notes.each do |note| %>
-    <div style="display: none; padding:5px; border-bottom: 1px solid #EEE;">
-      <p style="margin: 5px;"><%= note.note %></p>
-      <span style="color: #999;margin-left:10px;"><%= note.name %></span><span style="color: #999; margin-left: 25px;"><%= note.updated_at.strftime("%Y-%m-%d %H:%M:%S") %></span>
-    </div>
-  <% end %>
-
-</fieldset>
-
-<!-- 現在位置不明, 参集先不明, 参集不可 -->
-<% names = ["現在位置不明", "参集先不明", "参集不可"] %>
-<% names.each do |name| %>
-<% count = 0 %>
-
-<fieldset class="collapsible collapsed">
-  <legend onclick="toggleFieldset(this);"><%= name %>
-    <% @staffs.each do |staff| %>
-      <% if name == "現在位置不明" %>
-        <% if staff.latitude.blank? || staff.longitude.blank? %>
-          <% count += 1 %>
-        <% end %>
-      <% elsif name == "参集先不明" %>
-        <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.destination_code.blank? && staff.status != false %>
-            <% count += 1 %>
-          <% end %>
-        <% end %>
-      <% elsif name == "参集不可" %>
-        <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.status == false %>
-            <% count += 1 %>
-          <% end %>
-        <% end %>
-      <% end %>
-    <% end %>
-    <span class="num"><%= count %>名</span>
-  </legend>
-
-  <div style="display: none;">
-    <ul class="person_list">
-      <% @staffs.each_with_index do |staff, pos| %>
-        <% if name == "現在位置不明" %>
-          <% if staff.latitude.blank? || staff.longitude.blank? %>
-            <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
-          <% end %>
-        <% elsif name == "参集先不明" %>
-          <% if staff.latitude.present? && staff.longitude.present? %>
-            <% if staff.destination_code.blank? && staff.status == true %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-            <% elsif staff.destination_code.blank? && staff.status == nil %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></l
-i>
-            <% end %>
-          <% end %>
-        <% elsif name == "参集不可" %>
-          <% if staff.latitude.present? && staff.longitude.present? %>
-            <% if staff.status == false %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-            <% end %>
-          <% end %>
-        <% end %>
-      <% end %>
-    </ul>
-  </div>
-</fieldset>
+<% content_for :main_menu do %>
+  <li><%= link_to "参集場所", {:action => "index"}, :style => "color: yellow;" %></li>
+  <li><%= link_to "部署", :action => "index_department" %></li>
 <% end %>
 
 <!-- 職員参集先情報 -->
-  <% pos = 0 %>
-  <% @gathering_positions.each do |id, gathering_position| %>
-    <% count = 0 %>
-    <fieldset class="collapsible collapsed">
-    <legend onclick="toggleFieldset(this);">
-      <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{pos}, '#{gathering_position["name"]}'); return false;".html_safe %>
-      <% pos += 1 %>
-      <% @staffs.each do |staff| %>
-        <% if staff.destination_code == gathering_position["position_code"] %>
-          <% count += 1 %>
+<% @areas.each_with_index do |area, area_id| %>
+  <fieldset class="collapsible collapsed">
+    <legend onclick="toggleFieldset(this);"><%= area.name %></legend>
+    <div style="display: none;">
+      <% @gathering_positions.each do |id, gathering_position| %>
+        <% if (area_id + 1).to_s == gathering_position["area_dai_code"] %>
+          <% count = 0 %>
+          <fieldset class="collapsible collapsed">
+            <legend onclick="toggleFieldset(this);">
+              <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{id.to_i - 1}, '#{gathering_position["name"]}'); return false;".html_safe %>
+              <% @staffs.each do |staff| %>
+                <% if staff.destination_code == gathering_position["position_code"] %>
+                  <% count += 1 %>
+                <% end %>
+              <% end %>
+              <span class="num"><%= count %>名</span>
+            </legend>
+
+            <div style="display: none;">
+              <ul class="person_list">
+                <% @staffs.each_with_index do |staff, pos2| %>
+                  <% if staff.destination_code == gathering_position["position_code"] %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </fieldset>
         <% end %>
       <% end %>
-      <span class="num"><%= count %>名</span>
-    </legend>
-
-    <div style="display: none;">
-      <ul class="person_list">
-        <% @staffs.each_with_index do |staff, pos2| %>
-          <% if staff.destination_code == gathering_position["position_code"] %>
-            <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-          <% end %>
-        <% end %>
-      </ul>
     </div>
-    </fieldset>
-  <% end %>
-
-</div>
-
-<% #右のMAP部分 %>
-<div id="map_canvas">
-</div>
+  </fieldset>
+<% end %>

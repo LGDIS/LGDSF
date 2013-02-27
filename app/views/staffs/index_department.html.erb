@@ -1,0 +1,29 @@
+<!-- 職員位置確認画面（PC） -->
+
+<% content_for :main_menu do %>
+  <li><%= link_to "参集場所", :action => "index" %></li>
+  <li><%= link_to "部署", {:action => "index_department"}, :style => "color: yellow;" %></li>
+<% end %>
+
+<!-- 職員参集先情報 -->
+<% pos = 0 %>
+<% @departments.each do |department| %>
+  <fieldset class="collapsible collapsed">
+    <legend onclick="toggleFieldset(this);"><%= department.name %></legend>
+    <div style="display: none;">
+      <ul class="person_list">
+        <% @staffs.each_with_index do |staff, pos3| %>
+          <% if department.name == staff.department %>
+            <% if staff.latitude.blank? || staff.longitude.blank? %>
+              <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos3}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+            <% elsif @gathering_positions[staff.destination_code].present? %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos3}, '#{staff.name}', '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% elsif @gathering_positions[staff.destination_code].blank? %>
+              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos3}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+            <% end %>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+  </fieldset>
+<% end %>

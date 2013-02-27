@@ -2,9 +2,9 @@
 # Staff Finderの処理を行うクラス
 class StaffsController < ApplicationController
 
-  before_filter :authenticate_user!, :only => 'index'
+  before_filter :authenticate_user!, :only => [:index, :index_department]
 
-  skip_before_filter :check_if_login_required, :except => :index
+  skip_before_filter :check_if_login_required, :except => [:index, :index_department]
 
   layout :layout_selector
 
@@ -32,7 +32,7 @@ class StaffsController < ApplicationController
     case params[:action]
     when 'mail'
       'lgdsf'
-    when 'index'
+    when 'index', 'index_department'
       'lgdsf_index'
     when 'position_form'
       request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_position'
@@ -233,7 +233,7 @@ class StaffsController < ApplicationController
     temps = diffs.sort
 
     # 所定の参集場所の取得
-    @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i
+    @predefined_position = @predefined_positions[@agent_id.to_i - 1].position_code.to_i
 
     # id は配列の番号なので実際には+1した値がID
     # 所定の参集場所IDを初期値として代入しておく。
@@ -320,12 +320,12 @@ class StaffsController < ApplicationController
   end
 
   # 職員位置確認画面
-  # 初期処理
+  # 初期処理（共通処理）
   # 最新の災害の職員の参集先情報をGoogle Map上に表示する。
   # ==== Args
   # ==== Return
   # ==== Raise
-  def index
+  def main
 
     # ActiveResource各種設定
     settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
@@ -340,12 +340,20 @@ class StaffsController < ApplicationController
     new_disaster_code = Staff.maximum(:disaster_code)
     @staffs = Staff.all(:conditions => { :disaster_code => new_disaster_code })
 
-    # 部署名取得
-    @departments = ["部署不明"]
-    agents = Agent.all
-    agents.each do |agent|
-      if agent.department.present?
-        @departments.push(agent.department) unless @departments.include?(agent.department)
+    # 現在位置不明者作成
+    @position_anknown_staffs = []
+    @destination_anknown_staffs = []
+    @not_gathered_staffs = []
+
+    @staffs.each do |staff|
+      if staff.latitude.present? && staff.longitude.present?
+        if staff.status == false
+          @not_gathered_staffs.push(staff)
+        elsif staff.destination_code.blank?
+          @destination_anknown_staffs.push(staff)
+        end
+      else
+        @position_anknown_staffs.push(staff)
       end
     end
 
@@ -369,4 +377,25 @@ class StaffsController < ApplicationController
     @zoom = @zoom.round - 1
 
   end
+
+  # 職員位置確認画面
+  # 初期処理（参集場所）
+  # 最新の災害の職員の参集先情報をGoogle Map上に表示する。
+  # ==== Args
+  # ==== Return
+  # ==== Raise
+  def index
+    main
+  end
+
+  # 職員位置確認画面
+  # 初期処理（部署）
+  # 最新の災害の職員の参集先情報をGoogle Map上に表示する。
+  # ==== Args
+  # ==== Return
+  # ==== Raise
+  def index_department
+    main
+  end
+
 end

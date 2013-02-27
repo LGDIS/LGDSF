@@ -14,6 +14,15 @@ class Staff < ActiveRecord::Base
     self.agent.mail_address
   end
 
+  # 対象の職員の部署取得処理
+  # ==== Args
+  # ==== Return
+  # 職員の部署
+  # ==== Raise
+  def department
+    self.agent.department
+  end
+
   validates :name,
               :length => {:maximum => 64}
   validates :destination_code,

@@ -4,6 +4,8 @@ Lgdsf::Application.routes.draw do
 
   root :to => "staffs#index"
 
+  match '/staffs/index_department' => 'staffs#index_department'
+
   match '/staffs/position' => 'staffs#position_form'
   match '/staffs/save_position'
   match '/staffs/destination' => 'staffs#destination_form'
