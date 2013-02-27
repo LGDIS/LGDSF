@@ -199,6 +199,11 @@ ja:
       <<: *errors
   activerecord:
     attributes:
+      user:
+        login: ログイン
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワードの確認
       agent:
         name: 職員名
         mail_address: メールアドレス

@@ -8,9 +8,9 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 # TODO : adminでログインするため一次的に対応（結合時に削除する）
-User.find_by_sql("insert into users (email, encrypted_password, created_at, updated_at) values('admin', '$2a$10$.5ug7SfHzlliJyez6laINe8YxTuWVpXKGHuKztLkwofULliX3FLsy', now(), now())")
+User.find_by_sql("insert into users (login, email, encrypted_password, created_at, updated_at, confirmed_at) values('admin', 'admin@gmail.com', '$2a$10$.5ug7SfHzlliJyez6laINe8YxTuWVpXKGHuKztLkwofULliX3FLsy', now(), now(), now())")
 
-# User.create!(:email => 'test@test.jp', :password => 'test@test.jp')
+# User.create!(:login => 'testtest', :email => 'test@test.jp', :password => 'test@test.jp', :confirmed_at => Time.now)
 
 Note.create(:note => '山田さんと、田中さんは宮城県石巻高等学校に出張のため、参集できません。', :staff_id => 9)
 Note.create(:note => '中村さんは市立女子高等学校に向かうようです。', :staff_id => 8)

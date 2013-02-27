@@ -4,6 +4,8 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  layout :layout_by_resource
+
   # 初期処理
   # ==== Args
   # ==== Return
@@ -93,6 +95,15 @@ class ApplicationController < ActionController::Base
       i += 1
     end
     return data
+  end
+
+  protected
+  def layout_by_resource
+    if devise_controller? && !user_signed_in?
+      "users"
+    else
+      "application"
+    end
   end
 
 end

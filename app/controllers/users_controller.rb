@@ -6,33 +6,19 @@ class UsersController < Devise::SessionsController
     new_user_session_path
   end
 
+  # ログイン画面
+  # ログイン処理
+  # ==== Args
+  # _user_login_ :: ログイン名
+  # _user_password_ :: パスワード
+  # ==== Return
+  # ==== Raise
   def create
-
-    # ログイン名、パスワード入力チェック
-    if params[:user][:email].blank? && params[:user][:password].blank?
-      set_flash_message(:alert, :invalid)
-      redirect_to(:action => :new)
-      return
-    end
-
-    # ログイン名入力チェック
-    if params[:user][:email].blank?
-      set_flash_message(:alert, :invalid_login)
-      redirect_to(:action => :new)
-      return
-    end
-
-    # パスワード入力チェック
-    if params[:user][:password].blank?
-      set_flash_message(:alert, :invalid_password)
-      redirect_to(:action => :new)
-      return
-    end
 
     # 本番用
     # super
     # 開発用
-    user = User.find_by_email_and_provider(params[:user][:email], nil)
+    user = User.find_by_login_and_provider(params[:user][:login], nil)
     warden.authenticate!(auth_options) if user.blank?
     sign_in(user, :bypass => true)
     respond_with user, :location => after_sign_in_path_for(user)

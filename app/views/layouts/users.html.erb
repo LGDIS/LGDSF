@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>石巻市StaffFinder</title>
+    <%= stylesheet_link_tag    "application", :media => "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="wrapper2">
+        <div id="top-menu"></div>
+        <div id="header">
+          <h1>石巻市StaffFinder</h1>
+          <div id="quick-search"></div>
+          <div id="main-menu"></div>
+        </div>
+        <div id="main" class="nosidebar">
+          <div id="sidebar"></div>
+          <div id="content">
+            <% if alert %>
+              <div class="flash error"><%= alert %></div>
+            <% end %>
+            <% if notice %>
+              <div class="flash notice"><%= notice %></div>
+            <% end %>
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

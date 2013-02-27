@@ -1,0 +1,30 @@
+<div id="login-form">
+  <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+    <table>
+      <tr>
+        <td class="set_right">
+          <%= f.label "ログイン:" %>
+        </td>
+        <td class="set_left">
+          <%= f.text_field :login %>
+        </td>
+      </tr>
+      <tr>
+        <td class="set_right"><%= f.label "パスワード:" %></td>
+        <td class="set_left"><%= f.password_field :password %></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="set_left"></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="set_right"><%= f.submit "ログイン" %></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="set_right"><%= render "devise/shared/links" %></td>
+      </tr>
+    </table>
+  <% end %>
+</div>

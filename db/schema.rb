@@ -44,25 +44,27 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "email",                  :default => "", :null => false
-    t.string   "encrypted_password",     :default => "", :null => false
-    t.string   "agent_id",               :default => ""
-    t.string   "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          :default => 0
+    t.string   "login",                :default => "", :null => false
+    t.string   "email",                :default => "", :null => false
+    t.string   "encrypted_password",   :default => "", :null => false
+    t.string   "agent_id",             :default => ""
+    t.integer  "sign_in_count",        :default => 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                             :null => false
-    t.datetime "updated_at",                             :null => false
+    t.string   "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.string   "unconfirmed_email"
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
     t.string   "provider"
     t.string   "uid"
   end
 
   add_index "users", ["email", "provider", "uid"], :name => "index_users_on_email_and_provider_and_uid", :unique => true
-  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
+  add_index "users", ["login"], :name => "index_users_on_login", :unique => true
 
   set_column_comment 'agents', 'id', 'ID'
   set_column_comment 'agents', 'name', '職員名'
@@ -90,17 +92,19 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
   set_column_comment 'staffs', 'updated_at', '更新時刻'
 
   set_column_comment 'users', 'id', 'ID'
+  set_column_comment 'users', 'login', 'ログイン名'
   set_column_comment 'users', 'email', '電子メール'
   set_column_comment 'users', 'encrypted_password', 'パスワード'
   set_column_comment 'users', 'agent_id', '職員マスタID'
-  set_column_comment 'users', 'reset_password_token', 'リセットパスワードトークン'
-  set_column_comment 'users', 'reset_password_sent_at', 'リセットパスワード送信時刻'
-  set_column_comment 'users', 'remember_created_at', 'アウカント作成時刻'
   set_column_comment 'users', 'sign_in_count', 'サインイン回数'
   set_column_comment 'users', 'current_sign_in_at', '最新サインイン時刻'
   set_column_comment 'users', 'last_sign_in_at', '最終サインイン時刻'
   set_column_comment 'users', 'current_sign_in_ip', '最新サインインIP'
   set_column_comment 'users', 'last_sign_in_ip', '最終サインインIP'
+  set_column_comment 'users', 'confirmation_token', '確認トークン'
+  set_column_comment 'users', 'confirmed_at', '確認時刻'
+  set_column_comment 'users', 'confirmation_sent_at', '送信確認時刻'
+  set_column_comment 'users', 'unconfirmed_email', '未確認メール'
   set_column_comment 'users', 'created_at', '作成時刻'
   set_column_comment 'users', 'updated_at', '更新時刻'
   set_column_comment 'users', 'provider', '認可プロバイダ名'
