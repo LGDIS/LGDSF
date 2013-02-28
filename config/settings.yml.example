@@ -10,3 +10,12 @@ lgdsf:
   production:
     latitude: 38.4344802
     longitude: 141.3029167
+development:
+  external_auth:
+    enable: true
+test:
+  external_auth:
+    enable: true
+production:
+  external_auth:
+    enable: true

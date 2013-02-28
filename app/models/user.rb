@@ -17,6 +17,9 @@ class User < ActiveRecord::Base
   FACEBOOK_IDENTIFIER = 'facebook'
   OPENAM_IDENTIFIER = 'openam'
 
+  class InvalidAuthProvider < StandardError; end
+  class ExternalAuthDisabled < StandardError; end
+
   # create user authorized by google
   # ==== Args
   # _access_token_ :: openidアクセストークン
@@ -24,9 +27,11 @@ class User < ActiveRecord::Base
   # ==== Return
   # Userオブジェクト
   # ==== Raise
-  # RuntimeError :: 想定しないプロバイダによる認可のとき
+  # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
+  # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_open_id(access_token, signed_in_resource=nil)
-    raise "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'google'
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
+    raise InvalidAuthProvider, "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'google'
     loginid = access_token.info.email
     uid = access_token.uid
     return authorized_user(loginid, uid, GOOGLE_IDENTIFIER)
@@ -39,15 +44,17 @@ class User < ActiveRecord::Base
   # ==== Return
   # Userオブジェクト
   # ==== Raise
-  # RuntimeError :: 想定しないプロバイダによる認可のとき
+  # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
+  # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_oauth(access_token, signed_in_resource=nil)
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
     case access_token.provider
     when 'twitter'
       return self.authorized_user("@" + access_token.info.nickname, access_token.uid, TWITTER_IDENTIFIER)
     when 'facebook'
       return self.authorized_user(access_token.info.name, access_token.uid, FACEBOOK_IDENTIFIER)
     end
-    raise "illegal authorizer: #{access_token.provider}"
+    raise InvalidAuthProvider, "illegal authorizer: #{access_token.provider}"
   end
 
   # create user authorized by openam
@@ -57,9 +64,11 @@ class User < ActiveRecord::Base
   # ==== Return
   # Userオブジェクト
   # ==== Raise
-  # RuntimeError :: 想定しないプロバイダによる認可のとき
+  # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
+  # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_saml(access_token, signed_in_resource=nil)
-    raise "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'openam'
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
+    raise InvalidAuthProvider, "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'openam'
     loginid = access_token.uid
     uid = loginid
     return authorized_user(loginid, uid, OPENAM_IDENTIFIER)
