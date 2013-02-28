@@ -6,12 +6,12 @@
 <% end %>
 
 <!-- 職員参集先情報 -->
-<% @areas.each_with_index do |area, area_id| %>
+<% @areas.each do |area| %>
   <fieldset class="collapsible collapsed">
     <legend onclick="toggleFieldset(this);"><%= area.name %></legend>
     <div style="display: none;">
       <% @gathering_positions.each do |id, gathering_position| %>
-        <% if (area_id + 1).to_s == gathering_position["area_dai_code"] %>
+        <% if area.area_code == gathering_position["area_dai_code"] %>
           <% count = 0 %>
           <fieldset class="collapsible collapsed">
             <legend onclick="toggleFieldset(this);">

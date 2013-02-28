@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130214030135) do
+ActiveRecord::Schema.define(:version => 20130228031122) do
 
 
 
@@ -21,6 +21,15 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
     t.string   "department",   :limit => 64
     t.datetime "created_at",                  :null => false
     t.datetime "updated_at",                  :null => false
+  end
+
+  create_table "areas", :force => true do |t|
+    t.string   "area_code",  :limit => 2,   :default => "", :null => false
+    t.string   "name",       :limit => 30
+    t.string   "remarks",    :limit => 256
+    t.string   "polygon",    :limit => nil
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
   end
 
   create_table "notes", :force => true do |t|
@@ -72,6 +81,14 @@ ActiveRecord::Schema.define(:version => 20130214030135) do
   set_column_comment 'agents', 'department', '部署'
   set_column_comment 'agents', 'created_at', '作成時刻'
   set_column_comment 'agents', 'updated_at', '更新時刻'
+
+  set_column_comment 'areas', 'id', 'ID'
+  set_column_comment 'areas', 'area_code', '地区コード（大分類）'
+  set_column_comment 'areas', 'name', '地区名称（大分類）'
+  set_column_comment 'areas', 'remarks', '備考'
+  set_column_comment 'areas', 'polygon', 'ポリゴン'
+  set_column_comment 'areas', 'created_at', '作成時刻'
+  set_column_comment 'areas', 'updated_at', '更新時刻'
 
   set_column_comment 'notes', 'id', 'ID'
   set_column_comment 'notes', 'note', '備考'
