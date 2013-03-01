@@ -9,8 +9,6 @@ class Batches::MemcacheStore
   def self.execute
     p " #{Time.now.to_s} ===== START ===== "
 
-    # 地区大
-    store("area")
     # 部署
     store("department")
     # 参集場所マスタ

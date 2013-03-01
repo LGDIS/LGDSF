@@ -12,6 +12,14 @@ User.find_by_sql("insert into users (login, email, encrypted_password, created_a
 
 # User.create!(:login => 'testtest', :email => 'test@example.jp', :password => 'test@example.jp', :confirmed_at => Time.now)
 
+Area.create(:area_code => '1', :name => '石巻地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '2', :name => '河北地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '3', :name => '雄勝地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '4', :name => '河南地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '5', :name => '桃生地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '6', :name => '北上地区', :remarks => '', :polygon => '{}')
+Area.create(:area_code => '7', :name => '牡鹿地区', :remarks => '', :polygon => '{}')
+
 Note.create(:note => '山田さんと、田中さんは宮城県石巻高等学校に出張のため、参集できません。', :staff_id => 9)
 Note.create(:note => '中村さんは市立女子高等学校に向かうようです。', :staff_id => 8)
 Note.create(:note => '片本さんは私と一緒にいます。', :staff_id => 5)

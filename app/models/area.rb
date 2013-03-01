@@ -1,17 +1,10 @@
-# -*- coding:utf-8 -*-
-class Area
-  include ActiveModel::AttributeMethods
+class Area < ActiveRecord::Base
+  attr_accessible :area_code, :name, :remarks, :polygon
 
-  attribute_method_affix :prefix => 'clear_', :suffix => '!'
-  define_attribute_methods [:id, :name, :remarks, :polygon]
-
-  attr_accessor :id, :name, :remarks, :polygon
-
-  # 属性の初期化処理
-  # ==== Args
-  # ==== Return
-  # ==== Raise  
-  def clear_attribute!(attr)
-    send("#{attr}=", nil)
-  end
+  validates :area_code,
+              :length => {:maximum => 2}
+  validates :name,
+              :length => {:maximum => 30}
+  validates :remarks,
+              :length => {:maximum => 256}
 end

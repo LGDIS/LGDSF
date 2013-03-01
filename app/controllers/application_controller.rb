@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     # memcacheからマスタを取得
     # !!! 暫定
     @departments          = createDepartments(Rails.cache.read("department"))
-    @areas                = createAreas(Rails.cache.read("area"))
+    @areas                = Area.all
     @predefined_positions = createPredefinedPositions(Rails.cache.read("predefined_position"))
     @gathering_positions  = Rails.cache.read("gathering_position")
   end
@@ -32,25 +32,6 @@ class ApplicationController < ActionController::Base
       data[i].id = i + 1
       data[i].name = value["name"]
       data[i].remarks = value["remarks"]
-      i += 1
-    end
-    return data
-  end
-
-  # 地区データ作成処理
-  # ==== Args
-  # ==== Return
-  # 地区データ
-  # ==== Raise
-  def createAreas(hashs)
-    data = []
-    i = 0
-    hashs.each_value do |value|
-      data[i] = Area.new
-      data[i].id = i + 1
-      data[i].name = value["name"]
-      data[i].remarks = value["remarks"]
-      data[i].polygon = value["polygon"]
       i += 1
     end
     return data
