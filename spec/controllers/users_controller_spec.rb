@@ -14,52 +14,46 @@ describe UsersController do
     it { should be_redirect }
     it { should redirect_to(new_user_session_url) }
   end
-  
+
   describe "create" do
     context '正常な場合' do
       it 'ユーザが見つかること' do
-        a = mock_user(:authenticatable_salt => "01")
-        User.should_receive(:find_by_email_and_provider).with("test@test.jp", nil).and_return(a)
-        a.should_not be_nil
+        user = mock_user(:authenticatable_salt => "01")
+        User.should_receive(:find_by_login_and_provider).with("test@example.com", nil).and_return(user)
+        user.should_not be_nil
         request.env['devise.mapping'] = Devise.mappings[:user]
-        post :create, :user=> {:email=>"test@test.jp", :password=>"test@test.jp"}
+        post :create, :user=> {:login=>"test@example.com", :password=>"test@example.com"}
       end
     end
     context '異常な場合' do
       context 'ログイン名、パスワードが空の場合' do
         before do
           @request.env["devise.mapping"] = Devise.mappings[:user]
-          post :create, :user => {:email => "", :password => ""}
+          post :create, :user => {:login => "", :password => ""}
         end
         it 'エラーメッセージが表示されること' do
+          response.should be_success
           flash[:alert].should == "ログイン名またはパスワードが正しくありません。"
-        end
-        it 'newへリダイレクトすること' do
-          response.should redirect_to(:action => :new)
         end
       end
       context 'ログイン名が空の場合' do
         before do
           @request.env["devise.mapping"] = Devise.mappings[:user]
-          post :create, :user => {:email => "", :password => "test@test.jp"}
+          post :create, :user => {:login => "", :password => "test@example.com"}
         end
         it 'エラーメッセージが表示されること' do
-          flash[:alert].should == "ログイン名を入力してください。"
-        end
-        it 'newへリダイレクトすること' do
-          response.should redirect_to(:action => :new)
+          response.should be_success
+          flash[:alert].should == "ログイン名またはパスワードが正しくありません。"
         end
       end
       context 'パスワードが空の場合' do
         before do
           @request.env["devise.mapping"] = Devise.mappings[:user]
-          post :create, :user => {:email => "test@test.jp", :password => ""}
+          post :create, :user => {:login => "test@example.com", :password => ""}
         end
         it 'エラーメッセージが表示されること' do
-          flash[:alert].should == "パスワードを入力してください。"
-        end
-        it 'newへリダイレクトすること' do
-          response.should redirect_to(:action => :new)
+          response.should be_success
+          flash[:alert].should == "ログイン名またはパスワードが正しくありません。"
         end
       end
     end
