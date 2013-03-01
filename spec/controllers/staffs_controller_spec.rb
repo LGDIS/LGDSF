@@ -11,6 +11,93 @@ describe StaffsController do
   end
 
   describe 'layout_selector' do
+    before :each do
+      @controller = StaffsController.new
+    end
+    context 'メール画面のとき' do
+      it '"lgdsf"を返却すること' do
+        @controller.stub!(:params).and_return({:action => "mail"})
+        @controller.layout_selector.should == "lgdsf"
+      end
+    end
+    context 'index画面のとき' do
+      it '"lgdsf_index"を返却すること' do
+        @controller.stub!(:params).and_return({:action => "index"})
+        @controller.layout_selector.should == "lgdsf_index"
+      end
+    end
+    context 'index_department画面のとき' do
+      it '"lgdsf_index"を返却すること' do
+        @controller.stub!(:params).and_return({:action => "index_department"})
+        @controller.layout_selector.should == "lgdsf_index"
+      end
+    end
+    context 'position_form画面のとき' do
+      context 'フィーチャーフォンによるアクセスであれば' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => true)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_mobile"を返却すること' do
+          @controller.stub!(:params).and_return({:action => "position_form"})
+          @controller.layout_selector.should == "lgdsf_mobile"
+        end
+      end
+      context 'フィーチャーフォンによるアクセスでなければ' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => false)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_smartphone_position"を返却すること' do
+          @controller.stub!(:params).and_return({:action => "position_form"})
+          @controller.layout_selector.should == "lgdsf_smartphone_position"
+        end
+      end
+    end
+    context 'destination_form画面のとき' do
+      context 'フィーチャーフォンによるアクセスであれば' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => true)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_mobile"を返却すること' do
+          @controller.stub!(:params).and_return({:action => "destination_form"})
+          @controller.layout_selector.should == "lgdsf_mobile"
+        end
+      end
+      context 'フィーチャーフォンによるアクセスでなければ' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => false)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_smartphone_map"を返却すること' do
+          @controller.stub!(:params).and_return({:action => "destination_form"})
+          @controller.layout_selector.should == "lgdsf_smartphone_map"
+        end
+      end
+    end
+    context 'その他の画面のとき' do
+      context 'フィーチャーフォンによるアクセスであれば' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => true)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_mobile"を返却すること' do
+          @controller.stub!(:params).and_return({:action => ""})
+          @controller.layout_selector.should == "lgdsf_mobile"
+        end
+      end
+      context 'フィーチャーフォンによるアクセスでなければ' do
+        before :each do
+          request = double("HTTPRequest", :mobile? => false)
+          @controller.stub!(:request).and_return(request)
+        end
+        it '"lgdsf_smartphone"を返却すること' do
+          @controller.stub!(:params).and_return({:action => ""})
+          @controller.layout_selector.should == "lgdsf_smartphone"
+        end
+      end
+    end
   end
 
   describe 'mail' do
@@ -136,7 +223,7 @@ describe StaffsController do
     context '正常の場合' do
       describe '@disaster_code' do
         before do
-          post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.com"
+          post :save_send, :disaster_code => "20130108151823978961", :mail => "sato@gmail.example.com"
           @disaster_code = assigns[:disaster_code]
         end
         it 'postが成功すること' do
@@ -149,9 +236,9 @@ describe StaffsController do
 
       context 'エラー処理' do
         before do
-          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978961"
+          post :save_send, :mail => "sato@gmail.example.com", :disaster_code => "20130108151823978961"
           @disaster_code = assigns[:disaster_code]
-          @mail = "sato@gmail.com"
+          @mail = "sato@gmail.example.com"
           @agent = Agent.find_by_mail_address(@mail)
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
         end
@@ -169,9 +256,9 @@ describe StaffsController do
           @staff.update_attributes!(:name => @agent.name, :agent_id => @agent.id).should be_true
         end
         it '挿入が成功すること' do
-          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978962"
+          post :save_send, :mail => "sato@gmail.example.com", :disaster_code => "20130108151823978962"
           @disaster_code = assigns[:disaster_code]
-          @mail = "sato@gmail.com"
+          @mail = "sato@gmail.example.com"
           @agent = Agent.find_by_mail_address(@mail)
           @staff = Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
           Staff.create!(:name => @agent.name, :agent_id => @agent.id, :disaster_code => @disaster_code).should be_true
@@ -186,9 +273,9 @@ describe StaffsController do
 
       context 'エラー処理' do
         before do
-          post :save_send, :mail => "sato@gmail.com", :disaster_code => "20130108151823978961"
+          post :save_send, :mail => "sato@gmail.example.com", :disaster_code => "20130108151823978961"
           @disaster_code = assigns[:disaster_code]
-          @mail = "sato@gmail.com"
+          @mail = "sato@gmail.example.com"
           @agent = Agent.find_by_mail_address(@mail)
           @staff = nil#Staff.find_by_agent_id_and_disaster_code(@agent.id, @disaster_code)
         end
@@ -643,6 +730,24 @@ describe StaffsController do
           end
         end
       end
+    end
+  end
+
+  describe 'main' do
+    pending
+  end
+
+  describe 'index' do
+    it 'リクエストが成功すること' do
+      get :index
+      response.should be_success
+    end
+  end
+
+  describe 'index_department' do
+    it 'リクエストが成功すること' do
+      get :index_department
+      response.should be_success
     end
   end
 
