@@ -5,6 +5,13 @@ class Staff < ActiveRecord::Base
 
   belongs_to :agent
 
+  validates :name,
+              :length => {:maximum => 64}
+  validates :destination_code,
+              :length => {:maximum => 20}
+  validates :disaster_code,
+              :length => {:maximum => 20}
+
   # 対象の職員のメールアドレス取得処理
   # ==== Args
   # ==== Return
@@ -22,11 +29,4 @@ class Staff < ActiveRecord::Base
   def department
     self.agent.department
   end
-
-  validates :name,
-              :length => {:maximum => 64}
-  validates :destination_code,
-              :length => {:maximum => 20}
-  validates :disaster_code,
-              :length => {:maximum => 20}
 end

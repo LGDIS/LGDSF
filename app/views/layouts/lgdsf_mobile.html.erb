@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -6,6 +6,11 @@
     <%= csrf_meta_tag %>
   </head>
   <body>
+    <% if params[:notice] %>
+      <div id="flash" style="color: green; border: green solid">
+        <%= params[:notice] %>
+      </div>
+    <% end %>
     <%= yield %>
   </body>
 </html>

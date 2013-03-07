@@ -1,11 +1,5 @@
 <!-- 位置情報送信画面（モバイル） -->
 
-<% if params[:notice] %>
-  <div id="flash" style="color: green; border: green solid">
-    <%= params[:notice] %>
-  </div>
-<% end %>
-
 <p>下記のリンクから、現在位置を送信してください。</p>
 
 <% if request.mobile.is_a?(Jpmobile::Mobile::Au) %>

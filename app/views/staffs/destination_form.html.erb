@@ -1,11 +1,5 @@
 <!-- 参集場所報告画面（スマートフォン/タブレット） -->
 
-<% if params[:notice] %>
-  <div id="flash" style="color: green; border: green solid">
-    <%= params[:notice] %>
-  </div>
-<% end %>
-
 <%= form_tag :action => 'save_destination' do %>
 
   <%= hidden_field_tag "disaster_code", @disaster_code %>
@@ -24,7 +18,7 @@
       <label for="destination_place">参集場所に向かうのが困難</label>
     </div>
 
-    <div><%= text_field :destination, :reason, :placeholder => '理由を入力して下さい。' %></div>
+    <div><%= text_field :destination, :reason, :placeholder => '参集場所に向かえない理由を入力してください。' %></div>
 
     <div><%= text_field :destination, :note, :placeholder => '肩代わり報告があれば記載してください。', :maxlength => '40' %></div>
 
@@ -32,3 +26,25 @@
   </div>
 
 <% end %>
+
+<script type="text/javascript">
+  $(window).load(function() {
+    var height = $(window).height() - $("#flash").height() - $("#place").height() - $("#footer").height() - 20;
+    $("#map_canvas").height(height);
+    <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+    <% if @near_gathering_positions %>
+
+      <% if @gathering_positions["#{@predefined_position}"] %>
+        <%= "iniShelters(0, #{@predefined_position}, '#{@gathering_positions["#{@predefined_position}"]["name"]}', #{@gathering_positions["#{@predefined_position}"]["latitude"]}, #{@gathering_positions["#{@predefined_position}"]["longitude"]});".html_safe %>
+        <% count = 1 %>
+      <% else %>
+        <% count = 0 %>
+      <% end %>
+
+      <% @near_gathering_positions.each do |id, gathering_position| %>
+        <%= "iniShelters(#{count},  #{id.to_i}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
+        <% count += 1 %>
+      <% end %>
+   <% end %>
+  });
+</script>

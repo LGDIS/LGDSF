@@ -1,11 +1,5 @@
 <!-- 参集場所報告画面（モバイル） -->
 
-<% if params[:notice] %>
-  <div id="flash" style="color: green; border: green solid">
-    <%= params[:notice] %>
-  </div>
-<% end %>
-
 <%= form_tag :action => 'save_destination' do %>
 
   <%= hidden_field_tag "disaster_code", @disaster_code %>
@@ -29,24 +23,29 @@
     <% count += 1 %>
   <% end %>
 
-  <img src="http://maps.google.com/maps/api/staticmap?center=38.4344802,141.3029167
-&zoom=<%= @zoom %>&size=200x200&sensor=false
-&markers=<%= @latitude %>,<%= @longitude %>
-<% if @gathering_positions["#{@predefined_position}"] %>
-  <%= "&markers=label:1|#{@gathering_positions["#{@predefined_position}"]["latitude"]},#{@gathering_positions["#{@predefined_position}"]["longitude"]}".html_safe %>
-  <% count = 2 %>
-<% else %>
-  <% count = 1 %>
-<% end %>
-<% @near_gathering_positions.each do |id, gathering_position| %>
-  <%= "&markers=label:#{count}|#{gathering_position['latitude']},#{gathering_position['longitude']}".html_safe %>
-  <% count += 1 %>
-<% end %>
-">
+  <%
+  img_uri_part = []
+  img_uri_part << "sensor=false"
+  img_uri_part << "zoom=#{@zoom}"
+  img_uri_part << "format=jpg"
+  img_uri_part << "size=200x200"
+  img_uri_part << "language=ja"
+  img_uri_part << "center=#{@latitude},#{@longitude}"
+  img_uri_part << "markers=#{@latitude},#{@longitude}"
+  img_uri_marker_part = []
+  if pd_pos = @gathering_positions[@predefined_position.to_s]
+    img_uri_marker_part << "markers=label:#{img_uri_marker_part.size+1}|#{pd_pos['latitude']},#{pd_pos['longitude']}"
+  end
+  @near_gathering_positions.each do |id, gt_pos|
+    img_uri_marker_part << "markers=label:#{img_uri_marker_part.size+1}|#{gt_pos['latitude']},#{gt_pos['longitude']}"
+  end
+  img_uri = "http://maps.google.com/maps/api/staticmap?" + (img_uri_part + img_uri_marker_part).join('&')
+  %>
+  <img src="<%= raw img_uri -%>">
 
   <p>▼参集場所に向かうのが困難</p>
 
-  <p><%= check_box "destination", "place" %>理由を入力して下さい。</p>
+  <p><%= check_box "destination", "place" %>理由を入力してください。</p>
   <p><%= text_field :destination, :reason %></p>
 
   <p>肩代わり報告があれば記載してください。</p>

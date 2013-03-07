@@ -24,22 +24,18 @@ class StaffsController < ApplicationController
   # レイアウトの選択処理
   # 各画面で使用するレイアウトを決定する
   # ==== Args
-  # _action_ :: URL（パス）
+  # _action_ :: 画面識別子
   # ==== Return
   # レイアウト名
   # ==== Raise
   def layout_selector
     case params[:action]
-    when 'mail'
+    when 'mail'  # TODO: pending delete
       'lgdsf'
     when 'index', 'index_department'
-      'lgdsf_index'
-    when 'position_form'
-      request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_position'
-    when 'destination_form'
-      request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone_map'
+      'lgdsf_index' # PC
     else
-      request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone'
+      request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone' # Feature/Smart-Phone
     end
   end
 
@@ -49,7 +45,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def mail
-    # TODO:動作確認用メソッド（結合時には削除する）
+    # TODO:動作確認用メソッド（結合時にはlayout,Viewsと合わせて削除する）
   end
 
   # 個人特定情報送信画面
@@ -294,18 +290,19 @@ class StaffsController < ApplicationController
     @longitude = params[:longitude]
 
     begin
-      # バリデーションチェック
-      raise DestinationBlankException, I18n.t("errors.messages.destination_blank") if @destination['position'].blank? && @destination['place'].to_i == 0
+      raise DestinationBlankException, I18n.t("errors.messages.place_blank") if @destination['reason'].present? && @destination['place'].to_i == 0
+      raise DestinationBlankException, I18n.t("errors.messages.destination_blank") if (@destination['position'].blank? && @destination['place'].to_i == 0) && @destination['note'].blank?
       staff = Staff.find_by_agent_id_and_disaster_code(@agent_id, @disaster_code)
       if staff.present?
-        # 上書き
         if @destination['place'].to_i == 1
-          staff.update_attributes!(:status => false, :destination_code => '', :reason => @destination['reason'].present? ? @destination['reason'] : '')
-        else
+          # 参集場所に向かうのが困難
+          staff.update_attributes!(:status => false, :destination_code => '', :reason => @destination['reason'].to_s)
+        elsif @destination['position'].present?
+          # 参集場所指定あり
           gathering_position = @gathering_positions[@destination['position']]
-          staff.update_attributes!(:status => true, :destination_code => gathering_position['position_code'], :reason => '')
+          staff.update_attributes!(:status => true,  :destination_code => gathering_position['position_code'], :reason => '')
         end
-        # 備考をnoteテーブルに登録
+        # 肩代わり報告
         if @destination['note'].present?
           Note.create!(:note => @destination['note'], :staff_id => staff.id)
         end
