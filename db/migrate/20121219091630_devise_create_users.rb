@@ -47,6 +47,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
     # add_index :users, :unlock_token,         :unique => true
     # add_index :users, :authentication_token, :unique => true
 
+    set_table_comment(:users, "ユーザ")
     set_column_comment(:users, :id,                     "ID")
     set_column_comment(:users, :login,                  "ログイン名")
     set_column_comment(:users, :email,                  "電子メール")

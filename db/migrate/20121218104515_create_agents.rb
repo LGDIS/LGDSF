@@ -10,6 +10,7 @@ class CreateAgents < ActiveRecord::Migration
       t.timestamps
     end
 
+    set_table_comment(:agents, "職員マスタ")
     set_column_comment(:agents, :id,           "ID")
     set_column_comment(:agents, :name,         "職員名")
     set_column_comment(:agents, :mail_address, "メールアドレス")

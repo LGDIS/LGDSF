@@ -11,6 +11,7 @@ class CreateAreas < ActiveRecord::Migration
       t.timestamps
     end
 
+    set_table_comment(:areas, "地区マスタ")
     set_column_comment(:areas, :id,         "ID")
     set_column_comment(:areas, :area_code,  "地区コード（大分類）")
     set_column_comment(:areas, :name,       "地区名称（大分類）")

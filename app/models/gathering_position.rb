@@ -1,19 +1,18 @@
 # -*- coding:utf-8 -*-
-class GatheringPosition
-  include ActiveModel::AttributeMethods
+class GatheringPosition < ActiveRecord::Base
+  attr_accessible :position_code, :name, :area_dai_code, :address_code, :address, :latitude, :longitude, :remarks
 
-  attribute_method_affix :prefix => 'clear_', :suffix => '!'
-  define_attribute_methods [:id, :name, :area_dai_code, :address_code, :address, :latitude, :longitude, :remarks]
-
-  attr_accessor :id, :name, :area_dai_code, :address_code, :address, :latitude, :longitude, :remarks
-
-  # 属性の初期化処理
+  # 参集場所ハッシュ取得処理
   # ==== Args
   # ==== Return
+  # 参集場所ハッシュオブジェクト
   # ==== Raise
-  def clear_attribute!(attr)
-    send("#{attr}=", nil)
+  def self.hash_for_table
+    result = {}
+    self.order(:position_code).each do |item|
+      result[item.position_code] ||= {}
+      result[item.position_code] = item
+    end
+    return result
   end
-
-  #belongs_to :predefined_position
 end
