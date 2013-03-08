@@ -323,15 +323,11 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def main
-
-    # ActiveResource各種設定
-    settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
-
     # 職員位置確認画面のマップの中心緯度
-    @latitude  = settings["lgdsf"][Rails.env]["latitude"]
+    @latitude  = SETTINGS["index_map"]["latitude"]
 
     # 職員位置確認画面のマップの中心経度
-    @longitude = settings["lgdsf"][Rails.env]["longitude"]
+    @longitude = SETTINGS["index_map"]["longitude"]
 
     # 最新の災害番号データの取得
     new_disaster_code = Staff.maximum(:disaster_code)
