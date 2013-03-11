@@ -15,3 +15,12 @@ openam:
   idp_sso_target_url: "http://app.isk.local:8080/openam/SSORedirect/metaAlias/idp"
   idp_cert_fingerprint: "DE:XX:...EE:33"
   name_identifier_format: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+
+# LDAP server define
+ldap:
+  host: "192.168.0.1"
+  port: 389
+  base_dn: "ou=NormalUsers,dc=isk,dc=local"
+  uid_key: "UserPrincipalName" # "sAMAccountName"
+  bind_dn: "administrator@isk.local"
+  admin_password: ""

@@ -3,17 +3,23 @@ development:
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
+  ldap_auth:
+    enable: false
   external_auth:
     enable: true
 test:
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
+  ldap_auth:
+    enable: false
   external_auth:
     enable: true
 production:
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
+  ldap_auth:
+    enable: false
   external_auth:
     enable: true

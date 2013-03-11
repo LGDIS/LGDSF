@@ -21,6 +21,8 @@ ja:
       invalid_token: '認証キーが不正です。'
       timeout: 'セッションがタイムアウトしました。もう一度ログインしてください。'
       inactive: 'アカウントがアクティベートされていません。'
+      user:
+        not_found_in_database: 'ログイン名またはパスワードが正しくありません。'
     users:
       user:
         signed_in: 'ログインしました。'

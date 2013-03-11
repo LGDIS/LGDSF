@@ -86,3 +86,4 @@ gem 'omniauth-oauth2', '1.0.0' # for facebook
 gem 'omniauth-saml', '1.0.0', :git => 'git://github.com/ruvr/omniauth-saml.git'
 gem 'omniauth-twitter', '0.0.9'
 gem 'omniauth-facebook', '1.2.0'
+gem 'omniauth-ldap', '1.0.3'

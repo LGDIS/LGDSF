@@ -3,6 +3,15 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # CSRF警告メッセージを抑制
   skip_before_filter :verify_authenticity_token
 
+  # LDAPによる認可結果リダイレクトアクション
+  # ==== Args
+  # ==== Return
+  # ==== Raise
+  def ldap
+    @user = User.find_for_ldap(request.env["omniauth.auth"], current_user)
+    redirect_to_result('ldap')
+  end
+
   # Googleによる認可結果リダイレクトアクション
   # ==== Args
   # ==== Return
