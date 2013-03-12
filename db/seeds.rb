@@ -8,7 +8,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 # TODO : adminでログインするため一次的に対応（結合時に削除する）
-User.find_by_sql("insert into users (login, email, encrypted_password, created_at, updated_at, confirmed_at) values('admin', 'admin@gmail.example.com', '$2a$10$.5ug7SfHzlliJyez6laINe8YxTuWVpXKGHuKztLkwofULliX3FLsy', now(), now(), now())")
+User.find_by_sql("insert into users (login, email, encrypted_password, created_at, updated_at, confirmed_at) values('admin', 'admin@gmail.example.com', '$2a$10$iYGZzQPGW0Ig1S.bblPsaeeIicuRyXMzs/O.EcaU3vT0KRSF56E7C', now(), now(), now())")
 
 # User.create!(:login => 'testtest', :email => 'test@example.jp', :password => 'test@example.jp', :confirmed_at => Time.now)
 
