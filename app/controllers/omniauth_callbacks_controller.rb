@@ -57,7 +57,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # ==== Raise
   def redirect_to_result(provider)
     if @user && @user.persisted?
-      flash[:notice] =  I18n.t "devise.omniauth_callbacks.success", :kind => provider
+      flash[:notice] =  I18n.t("devise.omniauth_callbacks.success", :kind => I18n.t(provider))
       sign_in_and_redirect @user, :event => :authentication
     else
       session["devise.#{provider}_data"] = request.env["omniauth.auth"]

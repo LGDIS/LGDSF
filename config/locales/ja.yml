@@ -231,3 +231,9 @@ ja:
       <<: *errors
 
   label_loading: ロード中...
+
+  twitter: Twitter
+  facebook: Facebook
+  google: Google
+  openam: OpenAM
+  ldap: LDAP
