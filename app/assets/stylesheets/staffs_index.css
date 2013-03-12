@@ -32,3 +32,7 @@ ul.person_list, ul.note_list {
 ul.person_list li, ul.note_list li{
   list-style-type: none;
 }
+
+#header h1.login {
+  font-size: 4em;
+}
