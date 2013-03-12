@@ -1,14 +1,31 @@
-<%- if controller_name != 'users' %>
-  <%= link_to "ログイン", new_session_path(resource_name) %><br />
-<% end -%>
+<% if SETTINGS['external_auth']['enable'] %>
+<div id="login-form2">
+  <table>
+    <tr>
+      <td><%= link_to image_tag('google-16x16.png', :alt => "Googleアカウントでログイン"), user_omniauth_authorize_path(:google) %></td>
+      <td><%= link_to image_tag('twitter-16x16.png', :alt => "Twitterアカウントでログイン"), user_omniauth_authorize_path(:twitter) %></td>
+      <td><%= link_to image_tag('facebook-16x16.png', :alt => "Facebookアカウントでログイン"), user_omniauth_authorize_path(:facebook) %></td>
+      <!-- <td><%= link_to image_tag('openam-16x16.png', :alt => "OpenAM(SAML対応システム)経由でログイン"), user_omniauth_authorize_path(:openam) %></td> -->
+    </tr>
+  </table>
+</div>
+<% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "新規登録", new_registration_path(resource_name) %><br />
+<div id="login-form2">
+  <table>
+    <tr>
+      <td><%= link_to "新規登録", new_registration_path(resource_name) %></td>
+    </tr>
+  </table>
+</div>
 <% end -%>
-
-<%- if SETTINGS['external_auth']['enable'] %>
-<%= link_to "googleアカウントでログイン", user_omniauth_authorize_path(:google) %><br />
-<%= link_to "twitterアカウントでログイン", user_omniauth_authorize_path(:twitter) %><br />
-<%= link_to "facebookアカウントでログイン", user_omniauth_authorize_path(:facebook) %><br />
-<%= link_to "OpenAM(SAML対応システム)経由でログイン", user_omniauth_authorize_path(:openam) %><br />
+<%- if controller_name != 'users' %>
+<div id="login-form2">
+  <table>
+    <tr>
+      <td><%= link_to "ログイン", new_session_path(resource_name) %></td>
+    </tr>
+  </table>
+</div>
 <% end -%>

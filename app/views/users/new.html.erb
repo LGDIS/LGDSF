@@ -22,10 +22,6 @@
         <td></td>
         <td class="set_right"><%= submit_tag "ログイン" %></td>
       </tr>
-      <tr>
-        <td></td>
-        <td class="set_right"><%= render "devise/shared/links" %></td>
-      </tr>
     </table>
   <% end %>
 <% else %>
@@ -51,11 +47,8 @@
         <td></td>
         <td class="set_right"><%= f.submit "ログイン" %></td>
       </tr>
-      <tr>
-        <td></td>
-        <td class="set_right"><%= render "devise/shared/links" %></td>
-      </tr>
     </table>
   <% end %>
 <% end %>
 </div>
+<%= render "devise/shared/links" %></td>
