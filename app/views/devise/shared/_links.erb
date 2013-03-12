@@ -2,9 +2,15 @@
 <div id="login-form2">
   <table>
     <tr>
-      <td><%= link_to image_tag('google-16x16.png', :alt => "Googleアカウントでログイン"), user_omniauth_authorize_path(:google) %></td>
-      <td><%= link_to image_tag('twitter-16x16.png', :alt => "Twitterアカウントでログイン"), user_omniauth_authorize_path(:twitter) %></td>
-      <td><%= link_to image_tag('facebook-16x16.png', :alt => "Facebookアカウントでログイン"), user_omniauth_authorize_path(:facebook) %></td>
+      <th colspan="3">普段お使いのアカウントでログインされる場合はこちら</th>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td><%= link_to image_tag('google-16x16.png', :alt => "Googleアカウントでログイン", :size => '48x48'), user_omniauth_authorize_path(:google) %></td>
+      <td><%= link_to image_tag('twitter-16x16.png', :alt => "Twitterアカウントでログイン", :size => '48x48'), user_omniauth_authorize_path(:twitter) %></td>
+      <td><%= link_to image_tag('facebook-16x16.png', :alt => "Facebookアカウントでログイン", :size => '48x48'), user_omniauth_authorize_path(:facebook) %></td>
       <!-- <td><%= link_to image_tag('openam-16x16.png', :alt => "OpenAM(SAML対応システム)経由でログイン"), user_omniauth_authorize_path(:openam) %></td> -->
     </tr>
   </table>
@@ -15,7 +21,13 @@
 <div id="login-form2">
   <table>
     <tr>
-      <td><%= link_to "新規登録", new_registration_path(resource_name) %></td>
+      <th>アカウントを新規に登録される場合はこちら</th>
+    </tr>
+    <tr>
+      <td></td>
+    </tr>
+    <tr>
+      <td><%= button_to "新規登録", new_registration_path(resource_name), :method=>:get %></td>
     </tr>
   </table>
 </div>
@@ -24,7 +36,10 @@
 <div id="login-form2">
   <table>
     <tr>
-      <td><%= link_to "ログイン", new_session_path(resource_name) %></td>
+      <th>アカウントをお持ちの場合はこちら</th>
+    </tr>
+    <tr>
+      <td><%= button_to "ログイン", new_session_path(resource_name), :method=>:get %></td>
     </tr>
   </table>
 </div>

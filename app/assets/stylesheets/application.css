@@ -104,7 +104,8 @@ html>body #content { min-height: 600px; }
 #login-form label {font-weight: bold;}
 #login-form input#username, #login-form input#password, #login-form input#password_confirmation, #login-form input#email { width: 300px; }
 
-#login-form2 table {margin-top:3em; padding:1em; margin-left: auto; margin-right: auto; border: 2px solid #FDBF3B; background-color:#FFEBC1; width: 450px; }
+#login-form2 table {margin-top:2em; padding:1em; margin-left: auto; margin-right: auto; border: 2px solid #FDBF3B; background-color:#FFCCC1; width: 450px; }
+#login-form2 table th {text-align: left;}
 #login-form2 table td {padding: 6px; text-align: center; }
 #login-form2 label {font-weight: bold;}
 #login-form2 input#username, #login-form input#password, #login-form input#password_confirmation, #login-form input#email { width: 300px; }
