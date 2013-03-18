@@ -67,7 +67,7 @@ gem 'omniauth-oauth'
 gem 'omniauth-oauth2'
 
 # A generic SAML strategy for OmniAuth.
-gem 'omniauth-saml', '1.0.0', :git => 'git://github.com/ruvr/omniauth-saml.git'
+gem 'omniauth-saml', '1.0.0', :git => 'https://github.com/ruvr/omniauth-saml.git'
 
 # OmniAuth strategy for Twitter.
 gem 'omniauth-twitter'
