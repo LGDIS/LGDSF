@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# 避難者情報削除バッチ
+# 職員情報削除バッチ
 # ==== バッチの実行コマンド
 # rails runner Batches::StaffsDestroy.execute
 # ==== options
@@ -7,10 +7,10 @@
 
 class Batches::StaffsDestroy
   def self.execute
-    Rails.logger.info(" #{Time.now.to_s} ===== #{self.name} START ===== ")
+    puts " #{Time.now.to_s} ===== #{self.name} START ===== "
 
     Staff.destroy_all(["updated_at < ?", 1.year.ago])
 
-    Rails.logger.info(" #{Time.now.to_s} ===== #{self.name} END  ===== ")
+    puts " #{Time.now.to_s} ===== #{self.name} END  ===== "
   end
 end
