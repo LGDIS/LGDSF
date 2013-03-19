@@ -205,6 +205,7 @@ ja:
         email: メールアドレス
         password: パスワード
         password_confirmation: パスワードの確認
+        confirmation_token: 本人確認キー
       agent:
         name: 職員名
         mail_address: メールアドレス

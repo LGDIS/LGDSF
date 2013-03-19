@@ -41,7 +41,7 @@ ja:
       confirmed: 'アカウントを登録しました。'
     registrations:
       signed_up: 'ようこそ！ アカウント登録を受け付けました。'
-      signed_up_but_unconfirmed: '本人確認用のメールがあなたのEメールアドレスに送られました。メール内のリンクからアカウントを有効化さ>せてください。'
+      signed_up_but_unconfirmed: '仮登録メールを送信しました。メールの内容をご確認ください。'
       signed_up_but_inactive: 'アカウント登録を受け付けました。しかしまだ有効化されておらず、ログインできません。'
       signed_up_but_locked: 'アカウント登録を受け付けました。しかし、アカウントが凍結されているためログインできません。'
       updated: 'アカウント情報を変更しました。'
@@ -56,7 +56,7 @@ ja:
       failure: '%{kind} アカウントによる個人認証に失敗しました（%{reason}）。'
     mailer:
       confirmation_instructions:
-        subject: 'アカウントの登録方法'
+        subject: '仮登録完了メール'
       reset_password_instructions:
         subject: 'パスワードの再設定'
       unlock_instructions:

@@ -1,5 +1,9 @@
-﻿<p>Welcome <%= @resource.email %>!</p>
+<p>石巻市StaffFinderへの仮登録が完了しました。</p>
+<p></p>
 
-<p>You can confirm your account email through the link below:</p>
+<p>本人確認のため、下記URLへにアクセスしアカウントの本登録を完了させて下さい。</p>
+<% url = confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %>
+<p><%= link_to url, url %></p>
+<p></p>
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, :confirmation_token => @resource.confirmation_token) %></p>
+<p>石巻市総務部防災対策課</p>
