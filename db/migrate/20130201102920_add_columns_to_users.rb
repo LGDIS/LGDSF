@@ -7,7 +7,7 @@ class AddColumnsToUsers < ActiveRecord::Migration
     set_column_comment(:users, :provider, "認可プロバイダ名")
     set_column_comment(:users, :uid, "認可プロバイダのユーザ識別子")
 
-    remove_index :users, :column => :email
-    add_index :users, [:email, :provider, :uid], :unique => true
+    remove_index :users, :column => :login
+    add_index :users, [:login, :provider, :uid], :unique => true
   end
 end
