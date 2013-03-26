@@ -1151,3 +1151,9 @@ h2 img { vertical-align:middle; }
   color: rgb(136, 0, 0);
 }
 
+.footer {
+  clear: both;
+  padding: 1em;
+  text-align: right;
+  color: #666;
+}

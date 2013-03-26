@@ -11,46 +11,46 @@
     <!-- page specific tags -->
   </head>
   <body onload="
-    <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
-    <% if @gathering_positions %>
-      <% @gathering_positions.each do |id, gathering_position| %>
-        <%= "iniShelters(#{id.to_i - 1}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
-      <% end %>
+  <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+  <% if @gathering_positions %>
+    <% @gathering_positions.each do |id, gathering_position| %>
+      <%= "iniShelters(#{id.to_i - 1}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
     <% end %>
-    <% if @staffs %>
-      <% @staffs.each_with_index do |staff, count| %>
-        <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.status != nil %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% end %>
+  <% end %>
+  <% if @staffs %>
+    <% @staffs.each_with_index do |staff, count| %>
+      <% if staff.latitude.present? && staff.longitude.present? %>
+        <% if staff.status != nil %>
+          <% if staff.destination_code.present? %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
           <% else %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
-            <% end %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
           <% end %>
         <% else %>
-          <% if staff.status != nil %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% end %>
+          <% if staff.destination_code.present? %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
           <% else %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
-            <% end %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% if staff.status != nil %>
+          <% if staff.destination_code.present? %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
+          <% else %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
+          <% end %>
+        <% else %>
+          <% if staff.destination_code.present? %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
+          <% else %>
+            <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
-  ">
+  <% end %>
+        ">
 
     <div id="wrapper">
       <div id="wrapper2">
@@ -93,9 +93,9 @@
                 <legend onclick="toggleFieldset(this);">現在位置不明<span class="num"><%= @position_anknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @position_anknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
-                  <% end %>
+                    <% @position_anknown_staffs.each_with_index do |staff, pos| %>
+                      <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                    <% end %>
                   </ul>
                 </div>
               </fieldset>
@@ -103,13 +103,13 @@
                 <legend onclick="toggleFieldset(this);">参集先不明<span class="num"><%= @destination_anknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @destination_anknown_staffs.each_with_index do |staff, pos| %>
-                    <% if staff.status == true %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-                    <% elsif staff.status == nil %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></li>
+                    <% @destination_anknown_staffs.each_with_index do |staff, pos| %>
+                      <% if staff.status == true %>
+                        <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                      <% elsif staff.status == nil %>
+                        <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></li>
+                      <% end %>
                     <% end %>
-                  <% end %>
                   </ul>
                 </div>
               </fieldset>
@@ -117,9 +117,9 @@
                 <legend onclick="toggleFieldset(this);">参集不可<span class="num"><%= @not_gathered_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @not_gathered_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-                  <% end %>
+                    <% @not_gathered_staffs.each_with_index do |staff, pos| %>
+                      <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                    <% end %>
                   </ul>
                 </div>
               </fieldset>
@@ -138,7 +138,9 @@
 
         <div id="footer">
           <div class="bgl">
-            <div class="bgr"></div>
+            <div class="bgr">
+              <%= SETTINGS["version"] %>
+            </div>
           </div>
         </div>
       </div>
@@ -151,6 +153,5 @@
         $("#map_canvas").height(height);
       });
     </script>
-
   </body>
 </html>
