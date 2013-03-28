@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 development:
+  version: "Ver1.0.0.a"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
@@ -8,6 +9,7 @@ development:
   external_auth:
     enable: true
 test:
+  version: "Ver1.0.0.a"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
@@ -16,6 +18,7 @@ test:
   external_auth:
     enable: true
 production:
+  version: "Ver1.0.0.a"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
