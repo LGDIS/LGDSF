@@ -1150,3 +1150,11 @@ h2 img { vertical-align:middle; }
   border-color: rgb(221, 0, 0);
   color: rgb(136, 0, 0);
 }
+
+/* common footer */
+.footer {
+  clear: both;
+  padding: 1em;
+  text-align: right;
+  color: #666;
+}

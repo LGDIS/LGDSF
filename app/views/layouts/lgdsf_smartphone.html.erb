@@ -8,9 +8,9 @@
     <link href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" rel="stylesheet" type="text/css" />
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script type="text/javascript">
-    $(document).bind("mobileinit", function(){
-      $.mobile.ajaxEnabled = false; // ajaxを無効
-    });
+      $(document).bind("mobileinit", function(){
+        $.mobile.ajaxEnabled = false; // ajaxを無効
+      });
     </script>
     <script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&language=ja"></script>
@@ -24,5 +24,8 @@
       </div>
     <% end %>
     <%= yield %>
+    <div style="padding: 1em; text-align: right; color: #666;">
+      <%= SETTINGS["version"] %>
+    </div>
   </body>
 </html>

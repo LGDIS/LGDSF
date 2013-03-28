@@ -18,7 +18,7 @@
       <% latlng_present = (staff.latitude.present? && staff.longitude.present?) %>
       <%= "iniStaffs(#{count}, '#{h staff.name}', #{latlng_present ? staff.latitude : 'null'}, #{latlng_present ? staff.longitude : 'null'}, '#{staff.mail_address}', '#{staff.destination_code.present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status.nil? ? 'null' : staff.status}, '#{h staff.reason}');" %>
     <% end %>
-  ">
+        ">
 
     <div id="wrapper">
       <div id="wrapper2">
@@ -103,7 +103,9 @@
 
         <div id="footer">
           <div class="bgl">
-            <div class="bgr"></div>
+            <div class="bgr">
+              <%= SETTINGS["version"] %>
+            </div>
           </div>
         </div>
       </div>
@@ -116,6 +118,5 @@
         $("#map_canvas").height(height);
       });
     </script>
-
   </body>
 </html>
