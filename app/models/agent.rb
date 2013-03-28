@@ -1,7 +1,7 @@
-﻿class Agent < ActiveRecord::Base
+class Agent < ActiveRecord::Base
   attr_accessible :name, :mail_address, :department
 
-  has_one :staff
+  has_many :staff
 
   validates :name,
               :length => {:maximum => 64}

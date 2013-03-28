@@ -2,7 +2,7 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8" />
-    <title>Staff Finder</title>
+    <title><%= t("label_title") %></title>
     <meta name="description"/>
     <meta name="keywords" content="issue,bug,tracker" />
     <%= stylesheet_link_tag 'jquery/jquery-ui-1.8.21', 'application', :media => 'all' %>
@@ -10,45 +10,13 @@
     <%= javascript_include_tag "staffs_index" %>
     <!-- page specific tags -->
   </head>
-  <body onload="
-    <%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
-    <% if @gathering_positions %>
-      <% @gathering_positions.each do |id, gathering_position| %>
-        <%= "iniShelters(#{id.to_i - 1}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
-      <% end %>
+  <body onload="<%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
+    <% @gathering_positions.each do |id, gathering_position| %>
+      <%= "iniShelters(#{id.to_i - 1}, '#{h gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});" %>
     <% end %>
-    <% if @staffs %>
-      <% @staffs.each_with_index do |staff, count| %>
-        <% if staff.latitude.present? && staff.longitude.present? %>
-          <% if staff.status != nil %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% end %>
-          <% else %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', #{staff.latitude}, #{staff.longitude}, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
-            <% end %>
-          <% end %>
-        <% else %>
-          <% if staff.status != nil %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}');".html_safe %>
-            <% end %>
-          <% else %>
-            <% if staff.destination_code.present? %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', null, '#{staff.reason}');".html_safe %>
-            <% else %>
-              <%= "iniStaffs(#{count}, '#{staff.name}', null, null, '#{staff.mail_address}', '', null, '#{staff.reason}');".html_safe %>
-            <% end %>
-          <% end %>
-        <% end %>
-      <% end %>
+    <% @staffs.each_with_index do |staff, count| %>
+      <% latlng_present = (staff.latitude.present? && staff.longitude.present?) %>
+      <%= "iniStaffs(#{count}, '#{h staff.name}', #{latlng_present ? staff.latitude : 'null'}, #{latlng_present ? staff.longitude : 'null'}, '#{staff.mail_address}', '#{staff.destination_code.present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status.nil? ? 'null' : staff.status}, '#{h staff.reason}');" %>
     <% end %>
   ">
 
@@ -68,9 +36,10 @@
         <div id="header">
           <h1>職員位置確認</h1>
           <div id="main-menu">
-            <ul>
-              <%= yield :main_menu %>
-            </ul>
+            <%= tabs_tag(:builder => MenuTabBuilder) do |tab| %>
+              <%= tab.gatheringposition t("label_tab_gatheringposition"), root_path %>
+              <%= tab.department t("label_tab_department"), staffs_index_department_path %>
+            <% end %>
           </div>
         </div>
 
@@ -90,25 +59,21 @@
 
               <!-- 現在位置不明, 参集先不明, 参集不可 -->
               <fieldset class="collapsible collapsed">
-                <legend onclick="toggleFieldset(this);">現在位置不明<span class="num"><%= @position_anknown_staffs.size %>名</span></legend>
+                <legend onclick="toggleFieldset(this);">現在位置不明<span class="num"><%= @position_unknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @position_anknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "unknownStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                  <% @position_unknown_staffs.each_with_index do |staff, pos| %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>
               </fieldset>
               <fieldset class="collapsible collapsed">
-                <legend onclick="toggleFieldset(this);">参集先不明<span class="num"><%= @destination_anknown_staffs.size %>名</span></legend>
+                <legend onclick="toggleFieldset(this);">参集先不明<span class="num"><%= @destination_unknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @destination_anknown_staffs.each_with_index do |staff, pos| %>
-                    <% if staff.status == true %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-                    <% elsif staff.status == nil %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', null, '#{staff.reason}'); return false;".html_safe %></li>
-                    <% end %>
+                  <% @destination_unknown_staffs.each_with_index do |staff, pos| %>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}', '', #{staff.status ? staff.status : 'null'}, '#{h staff.reason}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>
@@ -118,7 +83,7 @@
                 <div style="display: none;">
                   <ul class="person_list">
                   <% @not_gathered_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{h staff.reason}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>

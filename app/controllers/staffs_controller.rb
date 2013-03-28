@@ -323,10 +323,8 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def main
-    # 職員位置確認画面のマップの中心緯度
+    # 職員位置確認画面のマップの中心
     @latitude  = SETTINGS["index_map"]["latitude"]
-
-    # 職員位置確認画面のマップの中心経度
     @longitude = SETTINGS["index_map"]["longitude"]
 
     # 最新の災害番号データの取得
@@ -334,29 +332,24 @@ class StaffsController < ApplicationController
     @staffs = Staff.all(:conditions => { :disaster_code => new_disaster_code })
 
     # 現在位置不明者作成
-    @position_anknown_staffs = []
-    @destination_anknown_staffs = []
-    @not_gathered_staffs = []
+    @position_unknown_staffs = [] # 現在位置不明
+    @destination_unknown_staffs = [] # 参集先不明
+    @not_gathered_staffs = [] # 参集不可
 
     @staffs.each do |staff|
       if staff.latitude.present? && staff.longitude.present?
         if staff.status == false
           @not_gathered_staffs.push(staff)
         elsif staff.destination_code.blank?
-          @destination_anknown_staffs.push(staff)
+          @destination_unknown_staffs.push(staff)
         end
       else
-        @position_anknown_staffs.push(staff)
+        @position_unknown_staffs.push(staff)
       end
     end
 
-    # 最新の備考データ取得
-    # TODO : 最新版だけのデータを取得する
-    all_notes = Note.all
-    @notes = []
-    all_notes.each do |note|
-      @notes.push(note) if note.present? && note.disaster_code == new_disaster_code
-    end
+    # 肩代わり報告
+    @notes = Note.joins(:staff).where(:staffs => {:disaster_code => new_disaster_code}).order("created_at DESC").limit(100)
 
     # 2点間の距離を求め、ズーム率を決定する。
     @zoom = 13
@@ -378,6 +371,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def index
+    set_tab :gatheringposition
     main
   end
 
@@ -388,6 +382,7 @@ class StaffsController < ApplicationController
   # ==== Return
   # ==== Raise
   def index_department
+    set_tab :department
     main
   end
 

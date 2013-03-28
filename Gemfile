@@ -78,6 +78,9 @@ gem 'omniauth-facebook'
 # LDAP strategy for OmniAuth.
 gem 'omniauth-ldap'
 
+# TabsOnRails is a simple Rails plugin for creating tabs and navigation menus.
+gem 'tabs_on_rails'
+
 group :test do
   # Rspec-2 meta-gem that depends on the other components.
   gem 'rspec'

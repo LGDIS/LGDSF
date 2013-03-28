@@ -35,14 +35,14 @@
     <% if @near_gathering_positions %>
 
       <% if @gathering_positions["#{@predefined_position}"] %>
-        <%= "iniShelters(0, #{@predefined_position}, '#{@gathering_positions["#{@predefined_position}"]["name"]}', #{@gathering_positions["#{@predefined_position}"]["latitude"]}, #{@gathering_positions["#{@predefined_position}"]["longitude"]});".html_safe %>
+        <%= "iniShelters(0, #{@predefined_position}, '#{h @gathering_positions["#{@predefined_position}"]["name"]}', #{@gathering_positions["#{@predefined_position}"]["latitude"]}, #{@gathering_positions["#{@predefined_position}"]["longitude"]});" %>
         <% count = 1 %>
       <% else %>
         <% count = 0 %>
       <% end %>
 
       <% @near_gathering_positions.each do |id, gathering_position| %>
-        <%= "iniShelters(#{count},  #{id.to_i}, '#{gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});".html_safe %>
+        <%= "iniShelters(#{count},  #{id.to_i}, '#{h gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});" %>
         <% count += 1 %>
       <% end %>
    <% end %>

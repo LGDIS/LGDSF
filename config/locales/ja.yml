@@ -231,6 +231,10 @@ ja:
     errors:
       <<: *errors
 
+  label_title: 石巻市StaffFinder
+  label_tab_gatheringposition: 参集場所
+  label_tab_department: 部署
+
   label_loading: ロード中...
 
   twitter: Twitter

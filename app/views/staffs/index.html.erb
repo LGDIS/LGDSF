@@ -1,40 +1,28 @@
 <!-- 職員位置確認画面（PC） -->
 
-<% content_for :main_menu do %>
-  <li><%= link_to "参集場所", {:action => "index"}, :style => "color: yellow;" %></li>
-  <li><%= link_to "部署", :action => "index_department" %></li>
-<% end %>
-
 <!-- 職員参集先情報 -->
 <% @areas.each do |area| %>
   <fieldset class="collapsible collapsed">
     <legend onclick="toggleFieldset(this);"><%= area.name %></legend>
     <div style="display: none;">
-      <% @gathering_positions.each do |id, gathering_position| %>
-        <% if area.area_code == gathering_position["area_dai_code"] %>
-          <% count = 0 %>
-          <fieldset class="collapsible collapsed">
-            <legend onclick="toggleFieldset(this);">
-              <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{id.to_i - 1}, '#{gathering_position["name"]}'); return false;".html_safe %>
-              <% @staffs.each do |staff| %>
+      <% @gathering_positions.select{|k,v| v["area_dai_code"]==area.area_code}.each do |id, gathering_position| %>
+        <fieldset class="collapsible collapsed">
+          <legend onclick="toggleFieldset(this);">
+            <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{id.to_i - 1}, '#{gathering_position["name"]}'); return false;".html_safe %>
+            <% staff_per_gathering_position = @staffs.select{|s| s.destination_code == gathering_position["position_code"]} %>
+            <span class="num"><%= staff_per_gathering_position.length %>名</span>
+          </legend>
+
+          <div style="display: none;">
+            <ul class="person_list">
+              <% @staffs.each_with_index do |staff, pos| %>
                 <% if staff.destination_code == gathering_position["position_code"] %>
-                  <% count += 1 %>
+                  <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{h @gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{h staff.reason}'); return false;".html_safe %></li>
                 <% end %>
               <% end %>
-              <span class="num"><%= count %>名</span>
-            </legend>
-
-            <div style="display: none;">
-              <ul class="person_list">
-                <% @staffs.each_with_index do |staff, pos2| %>
-                  <% if staff.destination_code == gathering_position["position_code"] %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos2}, '#{staff.name}', '#{staff.mail_address}', '#{@gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{staff.reason}'); return false;".html_safe %></li>
-                  <% end %>
-                <% end %>
-              </ul>
-            </div>
-          </fieldset>
-        <% end %>
+            </ul>
+          </div>
+        </fieldset>
       <% end %>
     </div>
   </fieldset>
