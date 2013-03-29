@@ -12,11 +12,11 @@
   </head>
   <body onload="<%= "iniMap(#{@latitude}, #{@longitude}, #{@zoom});" %>
     <% @gathering_positions.each do |id, gathering_position| %>
-      <%= "iniShelters(#{id.to_i - 1}, '#{h gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});" %>
+      <%== "iniShelters(#{id.to_i - 1}, '#{jsq gathering_position["name"]}', #{gathering_position["latitude"].to_f}, #{gathering_position["longitude"].to_f});" %>
     <% end %>
     <% @staffs.each_with_index do |staff, count| %>
       <% latlng_present = (staff.latitude.present? && staff.longitude.present?) %>
-      <%= "iniStaffs(#{count}, '#{h staff.name}', #{latlng_present ? staff.latitude : 'null'}, #{latlng_present ? staff.longitude : 'null'}, '#{staff.mail_address}', '#{staff.destination_code.present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status.nil? ? 'null' : staff.status}, '#{h staff.reason}');" %>
+      <%== "iniStaffs(#{count}, '#{jsq staff.name}', #{latlng_present ? staff.latitude : 'null'}, #{latlng_present ? staff.longitude : 'null'}, '#{staff.mail_address}', '#{jsq staff.destination_code.present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status.nil? ? 'null' : staff.status}, '#{jsq staff.reason}');" %>
     <% end %>
         ">
 
@@ -63,7 +63,7 @@
                 <div style="display: none;">
                   <ul class="person_list">
                   <% @position_unknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                    <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>
@@ -73,7 +73,7 @@
                 <div style="display: none;">
                   <ul class="person_list">
                   <% @destination_unknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}', '', #{staff.status ? staff.status : 'null'}, '#{h staff.reason}'); return false;".html_safe %></li>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status ? staff.status : 'null'}, '#{jsq staff.reason}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>
@@ -83,7 +83,7 @@
                 <div style="display: none;">
                   <ul class="person_list">
                   <% @not_gathered_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{h staff.reason}'); return false;".html_safe %></li>
+                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{jsq staff.reason}'); return false;".html_safe %></li>
                   <% end %>
                   </ul>
                 </div>

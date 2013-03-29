@@ -9,9 +9,9 @@
         <% @staffs.each_with_index do |staff, pos| %>
           <% if department.name == staff.department %>
             <% if staff.latitude.blank? || staff.longitude.blank? %>
-              <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{h staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+              <li><%== link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
             <% else %>
-              <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{h @gathering_positions[staff.destination_code].present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status}, '#{h staff.reason}'); return false;".html_safe %></li>
+              <li><%== link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '#{jsq @gathering_positions[staff.destination_code].present? ? @gathering_positions[staff.destination_code]["name"] : ""}', #{staff.status}, '#{jsq taff.reason}'); return false;".html_safe %></li>
             <% end %>
           <% end %>
         <% end %>

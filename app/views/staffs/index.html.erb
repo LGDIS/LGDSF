@@ -8,7 +8,7 @@
       <% @gathering_positions.select{|k,v| v["area_dai_code"]==area.area_code}.each do |id, gathering_position| %>
         <fieldset class="collapsible collapsed">
           <legend onclick="toggleFieldset(this);">
-            <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{id.to_i - 1}, '#{gathering_position["name"]}'); return false;".html_safe %>
+            <%= link_to gathering_position["name"], {}, :onclick=> "showShelter(#{id.to_i - 1}, '#{jsq gathering_position["name"]}'); return false;".html_safe %>
             <% staff_per_gathering_position = @staffs.select{|s| s.destination_code == gathering_position["position_code"]} %>
             <span class="num"><%= staff_per_gathering_position.length %>名</span>
           </legend>
@@ -17,7 +17,7 @@
             <ul class="person_list">
               <% @staffs.each_with_index do |staff, pos| %>
                 <% if staff.destination_code == gathering_position["position_code"] %>
-                  <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{staff.name}', '#{staff.mail_address}', '#{h @gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{h staff.reason}'); return false;".html_safe %></li>
+                  <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '#{jsq @gathering_positions[staff.destination_code]["name"]}', #{staff.status}, '#{jsq staff.reason}'); return false;".html_safe %></li>
                 <% end %>
               <% end %>
             </ul>
