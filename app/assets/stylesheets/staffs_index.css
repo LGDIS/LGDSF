@@ -3,8 +3,11 @@ html, body {
   height : 100%;
   margin : 0;
 }
+html {
+  overflow-x:hidden;
+  overflow-y:hidden;
+}
 body {
-  overflow-x: hidden;
 }
 
 html > body .sidebar #content {
@@ -16,15 +19,14 @@ html > body .sidebar #content {
 }
 .sidebar div#list {
   width:25%;
-  //height:534px;/* min-height: 600px;より */
   float:left;
   overflow-y: scroll;
   padding-top: 10px;
 }
 .sidebar div#map_canvas {
   width:75%;
-  height:534px;
   float:right;
+  //overflow-y: hidden;
 }
 
 ul.person_list, ul.note_list {
