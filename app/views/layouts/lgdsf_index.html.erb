@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="fullscreen">
   <head>
     <meta charset="utf-8" />
     <title><%= t("label_title") %></title>
@@ -109,11 +109,13 @@
     </div>
 
     <script type="text/javascript">
-      $(window).ready(function() {
+      function resizeMainItems() {
         var height = $(window).height() - $("#top-menu").outerHeight() - $("#header").outerHeight() - $("#footer").outerHeight();
         $("#list").height(height - 10);
         $("#map_canvas").height(height);
-      });
+      }
+      $(window).ready(resizeMainItems);
+      $(window).resize(resizeMainItems);
     </script>
   </body>
 </html>

@@ -3,13 +3,10 @@ html, body {
   height : 100%;
   margin : 0;
 }
-html {
+html.fullscreen {
   overflow-x:hidden;
   overflow-y:hidden;
 }
-body {
-}
-
 html > body .sidebar #content {
   width : 100%;
   height :100%;
