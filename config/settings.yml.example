@@ -8,6 +8,9 @@ development:
     enable: false
   external_auth:
     enable: true
+    google_enable: true
+    twitter_enable: true
+    facebook_enable: true
   # SMTPサーバの設定
   mail:
     address: smtp.example.com
@@ -29,6 +32,9 @@ test:
     enable: false
   external_auth:
     enable: true
+    google_enable: true
+    twitter_enable: true
+    facebook_enable: true
   # SMTPサーバの設定
   mail:
     address: smtp.example.com
@@ -50,6 +56,9 @@ production:
     enable: false
   external_auth:
     enable: true
+    google_enable: true
+    twitter_enable: true
+    facebook_enable: true
   # SMTPサーバの設定
   mail:
     address: smtp.example.com
