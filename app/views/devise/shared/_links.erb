@@ -1,4 +1,4 @@
-<% if SETTINGS['external_auth']['google_enable'] or SETTINGS['external_auth']['twitter_enable'] or SETTINGS['external_auth']['facebook_enable'] %>
+<% if SETTINGS['external_auth']['google_enable'] or SETTINGS['external_auth']['twitter_enable'] or SETTINGS['external_auth']['facebook_enable'] or SETTINGS['external_auth']['openam_enable'] %>
 <div id="login-form2">
   <table>
     <tr>
@@ -17,7 +17,9 @@
       <% if SETTINGS['external_auth']['facebook_enable'] %>
       <td><%= link_to image_tag('facebook-16x16.png', :alt => "Facebookアカウントでログイン", :size => '48x48'), user_omniauth_authorize_path(:facebook) %></td>
       <% end %>
-      <!-- <td><%= link_to image_tag('openam-16x16.png', :alt => "OpenAM(SAML対応システム)経由でログイン"), user_omniauth_authorize_path(:openam) %></td> -->
+      <% if SETTINGS['external_auth']['openam_enable'] %>
+      <td><%= link_to image_tag('openam-16x16.png', :alt => "OpenAM(SAML対応システム)経由でログイン"), user_omniauth_authorize_path(:openam) %></td>
+      <% end %>
     </tr>
   </table>
 </div>

@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
   # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
   # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_open_id(access_token, signed_in_resource=nil)
-    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['google_enable']
     raise InvalidAuthProvider, "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'google'
     loginid = access_token.info.email
     uid = access_token.uid
@@ -68,7 +68,7 @@ class User < ActiveRecord::Base
   # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
   # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_oauth(access_token, signed_in_resource=nil)
-    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless (SETTINGS['external_auth']['twitter_enable'] || SETTINGS['external_auth']['facebook_enable'])
     case access_token.provider
     when 'twitter'
       return self.authorized_user(TWITTER_IDENTIFIER, "@" + access_token.info.nickname, access_token.uid)
@@ -88,7 +88,7 @@ class User < ActiveRecord::Base
   # InvalidAuthProvider :: 想定しないプロバイダによる認可のとき
   # ExternalAuthDisabled :: 設定で機能が無効化されているとき
   def self.find_for_saml(access_token, signed_in_resource=nil)
-    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['enable']
+    raise ExternalAuthDisabled, "currently disabled sign-in via #{access_token.provider}" unless SETTINGS['external_auth']['openam_enable']
     raise InvalidAuthProvider, "illegal authorizer: #{access_token.provider}" unless access_token.provider == 'openam'
     loginid = access_token.uid
     uid = loginid
