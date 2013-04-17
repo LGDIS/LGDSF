@@ -30,22 +30,11 @@ class StaffsController < ApplicationController
   # ==== Raise
   def layout_selector
     case params[:action]
-    when 'mail'  # TODO: pending delete
-      'lgdsf'
     when 'index', 'index_department'
       'lgdsf_index' # PC
     else
       request.mobile? ? 'lgdsf_mobile' : 'lgdsf_smartphone' # Feature/Smart-Phone
     end
-  end
-
-  # 災害メール
-  # 読み込み処理
-  # ==== Args
-  # ==== Return
-  # ==== Raise
-  def mail
-    # TODO:動作確認用メソッド（結合時にはlayout,Viewsと合わせて削除する）
   end
 
   # 個人特定情報送信画面
