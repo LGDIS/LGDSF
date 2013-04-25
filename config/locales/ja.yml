@@ -231,7 +231,7 @@ ja:
     errors:
       <<: *errors
 
-  label_title: 石巻市StaffFinder
+  label_title: ××市StaffFinder
   label_tab_gatheringposition: 参集場所
   label_tab_department: 部署
 
@@ -242,3 +242,5 @@ ja:
   google: Google
   openam: OpenAM
   ldap: LDAP
+  
+  target_municipality: ××市
