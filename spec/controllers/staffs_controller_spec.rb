@@ -4,8 +4,8 @@ require 'spec_helper'
 describe StaffsController do
 
   before do
-    @gathering_positions  = Rails.cache.read("gathering_position")
-    @predefined_positions = Rails.cache.read("predefined_position")
+    @gathering_positions  = GatheringPosition.hash_for_table
+    @predefined_positions = PredefinedPosition.all
     @factory_staff = FactoryGirl.create(:staff)
     @factory_agent = FactoryGirl.create(:agent)
   end
@@ -13,12 +13,6 @@ describe StaffsController do
   describe 'layout_selector' do
     before :each do
       @controller = StaffsController.new
-    end
-    context 'メール画面のとき' do
-      it '"lgdsf"を返却すること' do
-        @controller.stub!(:params).and_return({:action => "mail"})
-        @controller.layout_selector.should == "lgdsf"
-      end
     end
     context 'index画面のとき' do
       it '"lgdsf_index"を返却すること' do
@@ -48,9 +42,9 @@ describe StaffsController do
           request = double("HTTPRequest", :mobile? => false)
           @controller.stub!(:request).and_return(request)
         end
-        it '"lgdsf_smartphone_position"を返却すること' do
+        it '"lgdsf_smartphone"を返却すること' do
           @controller.stub!(:params).and_return({:action => "position_form"})
-          @controller.layout_selector.should == "lgdsf_smartphone_position"
+          @controller.layout_selector.should == "lgdsf_smartphone"
         end
       end
     end
@@ -70,9 +64,9 @@ describe StaffsController do
           request = double("HTTPRequest", :mobile? => false)
           @controller.stub!(:request).and_return(request)
         end
-        it '"lgdsf_smartphone_map"を返却すること' do
+        it '"lgdsf_smartphone"を返却すること' do
           @controller.stub!(:params).and_return({:action => "destination_form"})
-          @controller.layout_selector.should == "lgdsf_smartphone_map"
+          @controller.layout_selector.should == "lgdsf_smartphone"
         end
       end
     end
@@ -96,20 +90,6 @@ describe StaffsController do
           @controller.stub!(:params).and_return({:action => ""})
           @controller.layout_selector.should == "lgdsf_smartphone"
         end
-      end
-    end
-  end
-
-  describe 'mail' do
-    context '正常の場合' do
-      before do
-        get :mail
-      end
-      it 'getが成功すること' do
-        response.should be_success
-      end
-      it 'テンプレートが適用されていること' do
-        response.should render_template("mail") # lgdsf
       end
     end
   end
@@ -479,11 +459,6 @@ describe StaffsController do
     context '正常の場合' do
       before do
         get :destination_form, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
-        @disaster_code = assigns[:disaster_code]
-        @agent_id = assigns[:agent_id]
-        @latitude = assigns[:latitude].to_f
-        @longitude = assigns[:longitude].to_f
-        @zoom = 13
       end
       it 'getが成功すること' do
         response.should be_success
@@ -496,116 +471,20 @@ describe StaffsController do
         get :destination_form, :agent_id => 1, :disaster_code => "20130108151823978961", :latitude => "38.43448027777777", :longitude => "141.30291666666668"
         response.should render_template("staffs/destination_form") if request.mobile? # lgdsf_smartphone
       end
-      context '2点間の距離を求め、ズーム率を決定する。' do
-        before do
-          diffs = []
-          size = 200.0
-          @gathering_positions.each do |id, gathering_position|
-            count = id.to_i-1
-            lat = gathering_position["latitude"].to_f - @latitude
-            lng = gathering_position["longitude"].to_f - @longitude
-            diffs[count] = Math::sqrt(lat * lat + lng * lng)
-            @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
-          end
+      it 'ズーム率がFixnumであること' do
+        pending
+      end
+      it '所定の参集場所の取得ができること' do
+        pending
+      end
+      context 'モバイルの場合' do
+        it '近くの参集場所が3つ取得できること' do
+          pending
         end
-        describe '@zoom' do
-          it 'ズーム率がFixnumであること' do
-            @zoom = @zoom.round - 1
-            @zoom.should be_an_instance_of(Fixnum)
-          end
-        end
-        describe '@predefined_position' do
-          it '所定の参集場所の取得ができること' do
-            @predefined_position = @predefined_positions["#{@agent_id}"]["position_code"].to_i
-            @predefined_position.should be_an_instance_of(Fixnum)
-          end
-        end
-
-        describe '@near_gathering_positions' do
-          context 'モバイルの場合' do
-            it '近くの参集場所が3つ取得できること' do
-              diffs = []
-              size = 200.0
-              @gathering_positions.each do |id, gathering_position|
-                count = id.to_i-1
-                lat = gathering_position["latitude"].to_f - @latitude
-                lng = gathering_position["longitude"].to_f - @longitude
-                diffs[count] = Math::sqrt(lat * lat + lng * lng)
-                @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
-              end
-              temps = []
-              temps = diffs.sort
-            
-              gathering_position_ids = []
-            
-              roop = 3
-            
-              i = 0
-              while i < roop
-                diffs.each_with_index do |diff, count|
-                  if temps[i] == diff
-                    if @predefined_position != (count + 1)
-                      gathering_position_ids.push(count + 1)
-                      break
-                    else
-                      roop += 1
-                      break
-                    end
-                  end
-                end
-                i += 1
-              end
-
-              @near_gathering_positions = {}
-              gathering_position_ids.each do |gathering_position_id|
-                @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
-              end
-              
-              @near_gathering_positions.size.should == 3
-            end
-          end
-          context 'スマートフォン/タブレットの場合' do
-            it '近くの参集場所が8つ取得できること' do
-              diffs = []
-              size = 350.0
-              @gathering_positions.each do |id, gathering_position|
-                count = id.to_i-1
-                lat = gathering_position["latitude"].to_f - @latitude
-                lng = gathering_position["longitude"].to_f - @longitude
-                diffs[count] = Math::sqrt(lat * lat + lng * lng)
-                @zoom = Math::log(size/diffs[count])/Math::log(2) < @zoom ? Math::log(size/diffs[count])/Math::log(2) : @zoom
-              end
-              temps = []
-              temps = diffs.sort
-              
-              gathering_position_ids = []
-              
-              roop = 8
-              
-              i = 0
-              while i < roop
-                diffs.each_with_index do |diff, count|
-                  if temps[i] == diff
-                    if @predefined_position != (count + 1)
-                      gathering_position_ids.push(count + 1)
-                      break
-                    else
-                      roop += 1
-                      break
-                    end
-                  end
-                end
-                i += 1
-              end
-
-              @near_gathering_positions = {}
-              gathering_position_ids.each do |gathering_position_id|
-                @near_gathering_positions[gathering_position_id] = @gathering_positions["#{gathering_position_id}"]
-              end
-              
-              @near_gathering_positions.size.should == 8
-            end
-          end
+      end
+      context 'スマートフォン/タブレットの場合' do
+        it '近くの参集場所が8つ取得できること' do
+          pending
         end
       end
     end
@@ -677,15 +556,12 @@ describe StaffsController do
   end
 
   describe 'index' do
- 
     login_user
-
     context '正常の場合' do
       before do
         get :index
-        settings   = YAML.load_file("#{Rails.root}/config/settings.yml")
-        @latitude  = settings["lgdsf"][Rails.env]["latitude"]
-        @longitude = settings["lgdsf"][Rails.env]["longitude"]
+        @latitude  = assigns[:latitude]
+        @longitude = assigns[:longitude]
       end
       it 'getが成功すること' do
         response.should be_success
@@ -734,10 +610,12 @@ describe StaffsController do
   end
 
   describe 'main' do
+    login_user
     pending
   end
 
   describe 'index' do
+    login_user
     it 'リクエストが成功すること' do
       get :index
       response.should be_success
@@ -745,6 +623,7 @@ describe StaffsController do
   end
 
   describe 'index_department' do
+    login_user
     it 'リクエストが成功すること' do
       get :index_department
       response.should be_success
