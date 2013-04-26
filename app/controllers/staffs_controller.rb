@@ -261,7 +261,7 @@ class StaffsController < ApplicationController
   # 参集場所報告画面
   # 書き込み処理
   # 職員の参集先情報を取得し、DBに保存する。
-  # * 参集先情報送信が成功した場合、参集先情報をDBに登録し、"送信しました"と画面上部に表示する。
+  # * 参集先情報送信が成功した場合、参集先情報をDBに登録する。
   # * 参集先情報送信が失敗した場合、"参集先情報の送信に失敗しました"と画面上部に表示する。
   # ==== Args
   # _destination_ :: 参集場所情報
@@ -302,7 +302,7 @@ class StaffsController < ApplicationController
       return
     end
 
-    redirect_to :action => :destination_form, :agent_id => @agent_id, :disaster_code => @disaster_code, :latitude => @latitude, :longitude => @longitude, :notice => "送信しました"
+    redirect_to "/position_send_success/index"
   end
 
   # 職員位置確認画面
