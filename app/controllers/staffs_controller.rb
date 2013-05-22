@@ -218,7 +218,10 @@ class StaffsController < ApplicationController
     temps = diffs.sort
 
     # 所定の参集場所の取得
-    @predefined_position = @predefined_positions[@agent_id.to_i - 1].position_code.to_i
+    predefined_position = @predefined_positions.where(:agent_id => @agent_id)
+    if predefined_position.present?
+      @predefined_position = predefined_position.first.position_code.to_i
+    end
 
     # id は配列の番号なので実際には+1した値がID
     # 所定の参集場所IDを初期値として代入しておく。
