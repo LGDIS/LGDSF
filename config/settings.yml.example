@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 development:
-  version: "v1.0.0.b"
+  version: "v1.0.0"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
@@ -24,7 +24,7 @@ development:
     host: localhost:3000
 
 test:
-  version: "v1.0.0.b"
+  version: "v1.0.0"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
@@ -48,7 +48,7 @@ test:
     host: localhost:3000
 
 production:
-  version: "v1.0.0.b"
+  version: "v1.0.0"
   index_map:
     latitude: 38.4344802
     longitude: 141.3029167
