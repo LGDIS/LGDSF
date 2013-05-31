@@ -26,6 +26,7 @@
 <% end %>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+<% if SETTINGS['account_display_enable'] %>
 <div id="login-form2">
   <table>
     <tr>
@@ -39,6 +40,7 @@
     </tr>
   </table>
 </div>
+<% end %>
 <% end -%>
 <%- if controller_name != 'users' %>
 <div id="login-form2">

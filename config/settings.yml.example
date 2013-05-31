@@ -22,7 +22,10 @@ development:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
-
+  # ログイン画面のアカウント新規登録項目の表示・非表示
+  # * true : 表示
+  # * false: 非表示
+  account_display_enable: true
 test:
   version: "v1.0.0"
   index_map:
@@ -46,7 +49,10 @@ test:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
-
+  # ログイン画面のアカウント新規登録項目の表示・非表示
+  # * true : 表示
+  # * false: 非表示
+  account_display_enable: true
 production:
   version: "v1.0.0"
   index_map:
@@ -70,3 +76,7 @@ production:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
+  # ログイン画面のアカウント新規登録項目の表示・非表示
+  # * true : 表示
+  # * false: 非表示
+  account_display_enable: true
