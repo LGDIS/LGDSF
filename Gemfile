@@ -59,6 +59,7 @@ gem 'omniauth'
 
 # OpenID strategy for OmniAuth. Using for Google.
 gem 'omniauth-openid'
+gem "ruby-openid", :git => "git://github.com/kendagriff/ruby-openid.git", :ref => "79beaa419d4754e787757f2545331509419e222e"
 
 # A generic OAuth (1.0/1.0a) strategy for OmniAuth.
 gem 'omniauth-oauth'
