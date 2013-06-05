@@ -74,9 +74,11 @@
     
     <li><a href="#method-i-index">#index</a>
     
+    <li><a href="#method-i-index_department">#index_department</a>
+    
     <li><a href="#method-i-layout_selector">#layout_selector</a>
     
-    <li><a href="#method-i-mail">#mail</a>
+    <li><a href="#method-i-main">#main</a>
     
     <li><a href="#method-i-position_form">#position_form</a>
     
@@ -133,9 +135,23 @@
   
     <li><a href="./ApplicationHelper.html">ApplicationHelper</a>
   
+    <li><a href="./Area.html">Area</a>
+  
+    <li><a href="./Department.html">Department</a>
+  
+    <li><a href="./GatheringPosition.html">GatheringPosition</a>
+  
+    <li><a href="./MenuTabBuilder.html">MenuTabBuilder</a>
+  
     <li><a href="./Note.html">Note</a>
   
     <li><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a>
+  
+    <li><a href="./PositionSendSuccessController.html">PositionSendSuccessController</a>
+  
+    <li><a href="./PredefinedPosition.html">PredefinedPosition</a>
+  
+    <li><a href="./RegistrationsController.html">RegistrationsController</a>
   
     <li><a href="./Shelters.html">Shelters</a>
   
@@ -143,7 +159,7 @@
   
     <li><a href="./Staffs.html">Staffs</a>
   
-    <li><a href="./User.html">User</a>
+    <li><a href="./StaffsHelper.html">StaffsHelper</a>
   
     <li><a href="./UsersController.html">UsersController</a>
   
@@ -217,7 +233,7 @@
 
           
           <div class="method-source-code" id="destination_form-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 199</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 184</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">destination_form</span>
 
   <span class="ruby-comment"># Auの場合、sessionを渡し、sessionを削除する</span>
@@ -254,7 +270,10 @@
   <span class="ruby-identifier">temps</span> = <span class="ruby-identifier">diffs</span>.<span class="ruby-identifier">sort</span>
 
   <span class="ruby-comment"># 所定の参集場所の取得</span>
-  <span class="ruby-ivar">@predefined_position</span> = <span class="ruby-ivar">@predefined_positions</span>[<span class="ruby-node">&quot;#{@agent_id}&quot;</span>][<span class="ruby-string">&quot;position_code&quot;</span>].<span class="ruby-identifier">to_i</span>
+  <span class="ruby-identifier">predefined_position</span> = <span class="ruby-ivar">@predefined_positions</span>.<span class="ruby-identifier">where</span>(<span class="ruby-value">:agent_id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@agent_id</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">predefined_position</span>.<span class="ruby-identifier">present?</span>
+    <span class="ruby-ivar">@predefined_position</span> = <span class="ruby-identifier">predefined_position</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">position_code</span>.<span class="ruby-identifier">to_i</span>
+  <span class="ruby-keyword">end</span>
 
   <span class="ruby-comment"># id は配列の番号なので実際には+1した値がID</span>
   <span class="ruby-comment"># 所定の参集場所IDを初期値として代入しておく。</span>
@@ -314,7 +333,7 @@
 
         <div class="method-description">
           
-          <p>職員位置確認画面 初期処理 最新の災害の職員の参集先情報をGoogle Map上に表示する。</p>
+          <p>職員位置確認画面 初期処理（参集場所） 最新の災害の職員の参集先情報をGoogle Map上に表示する。</p>
 
 <h4 id="method-i-index-label-Args">Args</h4>
 
@@ -325,50 +344,10 @@
 
           
           <div class="method-source-code" id="index-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 327</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 364</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">index</span>
-
-  <span class="ruby-comment"># ActiveResource各種設定</span>
-  <span class="ruby-identifier">settings</span>   = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_file</span>(<span class="ruby-node">&quot;#{Rails.root}/config/settings.yml&quot;</span>)
-
-  <span class="ruby-comment"># 職員位置確認画面のマップの中心緯度</span>
-  <span class="ruby-ivar">@latitude</span>  = <span class="ruby-identifier">settings</span>[<span class="ruby-string">&quot;lgdsf&quot;</span>][<span class="ruby-constant">Rails</span>.<span class="ruby-identifier">env</span>][<span class="ruby-string">&quot;latitude&quot;</span>]
-
-  <span class="ruby-comment"># 職員位置確認画面のマップの中心経度</span>
-  <span class="ruby-ivar">@longitude</span> = <span class="ruby-identifier">settings</span>[<span class="ruby-string">&quot;lgdsf&quot;</span>][<span class="ruby-constant">Rails</span>.<span class="ruby-identifier">env</span>][<span class="ruby-string">&quot;longitude&quot;</span>]
-
-  <span class="ruby-comment"># 最新の災害番号データの取得</span>
-  <span class="ruby-identifier">new_disaster_code</span> = <span class="ruby-constant">Staff</span>.<span class="ruby-identifier">maximum</span>(<span class="ruby-value">:disaster_code</span>)
-  <span class="ruby-ivar">@staffs</span> = <span class="ruby-constant">Staff</span>.<span class="ruby-identifier">all</span>(<span class="ruby-value">:conditions</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-value">:disaster_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">new_disaster_code</span> })
-
-  <span class="ruby-comment"># 部署名取得</span>
-  <span class="ruby-ivar">@departments</span> = [<span class="ruby-string">&quot;部署不明&quot;</span>]
-  <span class="ruby-identifier">agents</span> = <span class="ruby-constant">Agent</span>.<span class="ruby-identifier">all</span>
-  <span class="ruby-identifier">agents</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">agent</span><span class="ruby-operator">|</span>
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">agent</span>.<span class="ruby-identifier">department</span>.<span class="ruby-identifier">present?</span>
-      <span class="ruby-ivar">@departments</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">agent</span>.<span class="ruby-identifier">department</span>) <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@departments</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">agent</span>.<span class="ruby-identifier">department</span>)
-    <span class="ruby-keyword">end</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-comment"># 最新の備考データ取得</span>
-  <span class="ruby-comment"># TODO : 最新版だけのデータを取得する</span>
-  <span class="ruby-identifier">all_notes</span> = <span class="ruby-constant">Note</span>.<span class="ruby-identifier">all</span>
-  <span class="ruby-ivar">@notes</span> = []
-  <span class="ruby-identifier">all_notes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">note</span><span class="ruby-operator">|</span>
-    <span class="ruby-ivar">@notes</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">note</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">note</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">note</span>.<span class="ruby-identifier">disaster_code</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">new_disaster_code</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-comment"># 2点間の距離を求め、ズーム率を決定する。</span>
-  <span class="ruby-ivar">@zoom</span> = <span class="ruby-value">13</span>
-  <span class="ruby-ivar">@gathering_positions</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">id</span>, <span class="ruby-identifier">gathering_position</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">lat</span> = <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">&quot;latitude&quot;</span>].<span class="ruby-identifier">to_f</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@latitude</span>
-    <span class="ruby-identifier">lng</span> = <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">&quot;longitude&quot;</span>].<span class="ruby-identifier">to_f</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@longitude</span>
-    <span class="ruby-identifier">count</span> = <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_i</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>
-    <span class="ruby-identifier">diff</span> = <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">sqrt</span>(<span class="ruby-identifier">lat</span> * <span class="ruby-identifier">lat</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">lng</span> * <span class="ruby-identifier">lng</span>)
-    <span class="ruby-ivar">@zoom</span> = <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">534.0</span><span class="ruby-operator">/</span><span class="ruby-identifier">diff</span>)<span class="ruby-operator">/</span><span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">2</span>) <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@zoom</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">534.0</span><span class="ruby-operator">/</span><span class="ruby-identifier">diff</span>)<span class="ruby-operator">/</span><span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">2</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@zoom</span>
-  <span class="ruby-keyword">end</span>
-  <span class="ruby-ivar">@zoom</span> = <span class="ruby-ivar">@zoom</span>.<span class="ruby-identifier">round</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
-
+  <span class="ruby-identifier">set_tab</span> <span class="ruby-value">:gatheringposition</span>
+  <span class="ruby-identifier">main</span>
 <span class="ruby-keyword">end</span></pre>
           </div><!-- index-source -->
           
@@ -378,6 +357,43 @@
 
         
       </div><!-- index-method -->
+
+    
+      <div id="method-i-index_department" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">index_department</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>職員位置確認画面 初期処理（部署） 最新の災害の職員の参集先情報をGoogle Map上に表示する。</p>
+
+<h4 id="method-i-index_department-label-Args">Args</h4>
+
+<h4 id="method-i-index_department-label-Return">Return</h4>
+
+<h4 id="method-i-index_department-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="index_department-source">
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 375</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">index_department</span>
+  <span class="ruby-identifier">set_tab</span> <span class="ruby-value">:department</span>
+  <span class="ruby-identifier">main</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- index_department-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- index_department-method -->
 
     
       <div id="method-i-layout_selector" class="method-detail ">
@@ -396,7 +412,7 @@
 <h4 id="method-i-layout_selector-label-Args">Args</h4>
 <dl class="rdoc-list note-list"><dt><em>action</em> 
 <dd>
-<p>URL（パス）</p>
+<p>画面識別子</p>
 </dd></dl>
 
 <h4 id="method-i-layout_selector-label-Return">Return</h4>
@@ -411,16 +427,10 @@
             <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 30</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">layout_selector</span>
   <span class="ruby-keyword">case</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:action</span>]
-  <span class="ruby-keyword">when</span> <span class="ruby-string">'mail'</span>
-    <span class="ruby-string">'lgdsf'</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-string">'index'</span>
-    <span class="ruby-string">'lgdsf_index'</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-string">'position_form'</span>
-    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">mobile?</span> <span class="ruby-operator">?</span> <span class="ruby-string">'lgdsf_mobile'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'lgdsf_smartphone_position'</span>
-  <span class="ruby-keyword">when</span> <span class="ruby-string">'destination_form'</span>
-    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">mobile?</span> <span class="ruby-operator">?</span> <span class="ruby-string">'lgdsf_mobile'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'lgdsf_smartphone_map'</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'index'</span>, <span class="ruby-string">'index_department'</span>
+    <span class="ruby-string">'lgdsf_index'</span> <span class="ruby-comment"># PC</span>
   <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">mobile?</span> <span class="ruby-operator">?</span> <span class="ruby-string">'lgdsf_mobile'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'lgdsf_smartphone'</span>
+    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">mobile?</span> <span class="ruby-operator">?</span> <span class="ruby-string">'lgdsf_mobile'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'lgdsf_smartphone'</span> <span class="ruby-comment"># Feature/Smart-Phone</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div><!-- layout_selector-source -->
@@ -433,10 +443,10 @@
       </div><!-- layout_selector-method -->
 
     
-      <div id="method-i-mail" class="method-detail ">
+      <div id="method-i-main" class="method-detail ">
         
         <div class="method-heading">
-          <span class="method-name">mail</span><span
+          <span class="method-name">main</span><span
             class="method-args">()</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
@@ -444,29 +454,67 @@
 
         <div class="method-description">
           
-          <p>災害メール 読み込み処理</p>
+          <p>職員位置確認画面 初期処理（共通処理） 最新の災害の職員の参集先情報をGoogle Map上に表示する。</p>
 
-<h4 id="method-i-mail-label-Args">Args</h4>
+<h4 id="method-i-main-label-Args">Args</h4>
 
-<h4 id="method-i-mail-label-Return">Return</h4>
+<h4 id="method-i-main-label-Return">Return</h4>
 
-<h4 id="method-i-mail-label-Raise">Raise</h4>
+<h4 id="method-i-main-label-Raise">Raise</h4>
           
 
           
-          <div class="method-source-code" id="mail-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 50</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">mail</span>
-  <span class="ruby-comment"># TODO:動作確認用メソッド（結合時には削除する）</span>
+          <div class="method-source-code" id="main-source">
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 316</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">main</span>
+  <span class="ruby-comment"># 職員位置確認画面のマップの中心</span>
+  <span class="ruby-ivar">@latitude</span>  = <span class="ruby-constant">SETTINGS</span>[<span class="ruby-string">&quot;index_map&quot;</span>][<span class="ruby-string">&quot;latitude&quot;</span>]
+  <span class="ruby-ivar">@longitude</span> = <span class="ruby-constant">SETTINGS</span>[<span class="ruby-string">&quot;index_map&quot;</span>][<span class="ruby-string">&quot;longitude&quot;</span>]
+
+  <span class="ruby-comment"># 最新の災害番号データの取得</span>
+  <span class="ruby-identifier">new_disaster_code</span> = <span class="ruby-constant">Staff</span>.<span class="ruby-identifier">maximum</span>(<span class="ruby-value">:disaster_code</span>)
+  <span class="ruby-ivar">@staffs</span> = <span class="ruby-constant">Staff</span>.<span class="ruby-identifier">all</span>(<span class="ruby-value">:conditions</span> =<span class="ruby-operator">&gt;</span> { <span class="ruby-value">:disaster_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">new_disaster_code</span> })
+
+  <span class="ruby-comment"># 現在位置不明者作成</span>
+  <span class="ruby-ivar">@position_unknown_staffs</span> = [] <span class="ruby-comment"># 現在位置不明</span>
+  <span class="ruby-ivar">@destination_unknown_staffs</span> = [] <span class="ruby-comment"># 参集先不明</span>
+  <span class="ruby-ivar">@not_gathered_staffs</span> = [] <span class="ruby-comment"># 参集不可</span>
+
+  <span class="ruby-ivar">@staffs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">staff</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">latitude</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">longitude</span>.<span class="ruby-identifier">present?</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">status</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">false</span>
+        <span class="ruby-ivar">@not_gathered_staffs</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">staff</span>)
+      <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">destination_code</span>.<span class="ruby-identifier">blank?</span>
+        <span class="ruby-ivar">@destination_unknown_staffs</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">staff</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-ivar">@position_unknown_staffs</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">staff</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># 肩代わり報告</span>
+  <span class="ruby-ivar">@notes</span> = <span class="ruby-constant">Note</span>.<span class="ruby-identifier">joins</span>(<span class="ruby-value">:staff</span>).<span class="ruby-identifier">where</span>(<span class="ruby-value">:staffs</span> =<span class="ruby-operator">&gt;</span> {<span class="ruby-value">:disaster_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">new_disaster_code</span>}).<span class="ruby-identifier">order</span>(<span class="ruby-string">&quot;created_at DESC&quot;</span>).<span class="ruby-identifier">limit</span>(<span class="ruby-value">100</span>)
+
+  <span class="ruby-comment"># 2点間の距離を求め、ズーム率を決定する。</span>
+  <span class="ruby-ivar">@zoom</span> = <span class="ruby-value">13</span>
+  <span class="ruby-ivar">@gathering_positions</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">id</span>, <span class="ruby-identifier">gathering_position</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">lat</span> = <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">&quot;latitude&quot;</span>].<span class="ruby-identifier">to_f</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@latitude</span>
+    <span class="ruby-identifier">lng</span> = <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">&quot;longitude&quot;</span>].<span class="ruby-identifier">to_f</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@longitude</span>
+    <span class="ruby-identifier">count</span> = <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_i</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>
+    <span class="ruby-identifier">diff</span> = <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">sqrt</span>(<span class="ruby-identifier">lat</span> * <span class="ruby-identifier">lat</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">lng</span> * <span class="ruby-identifier">lng</span>)
+    <span class="ruby-ivar">@zoom</span> = <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">534.0</span><span class="ruby-operator">/</span><span class="ruby-identifier">diff</span>)<span class="ruby-operator">/</span><span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">2</span>) <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@zoom</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">534.0</span><span class="ruby-operator">/</span><span class="ruby-identifier">diff</span>)<span class="ruby-operator">/</span><span class="ruby-constant">Math</span><span class="ruby-operator">::</span><span class="ruby-identifier">log</span>(<span class="ruby-value">2</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@zoom</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@zoom</span> = <span class="ruby-ivar">@zoom</span>.<span class="ruby-identifier">round</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+
 <span class="ruby-keyword">end</span></pre>
-          </div><!-- mail-source -->
+          </div><!-- main-source -->
           
         </div>
 
         
 
         
-      </div><!-- mail-method -->
+      </div><!-- main-method -->
 
     
       <div id="method-i-position_form" class="method-detail ">
@@ -498,7 +546,7 @@
 
           
           <div class="method-source-code" id="position_form-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 119</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 104</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">position_form</span>
   <span class="ruby-ivar">@disaster_code</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:disaster_code</span>]
   <span class="ruby-ivar">@agent_id</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:agent_id</span>]
@@ -539,7 +587,7 @@
           
           <p>参集場所報告画面 書き込み処理 職員の参集先情報を取得し、DBに保存する。</p>
 <ul><li>
-<p>参集先情報送信が成功した場合、参集先情報をDBに登録し、“送信しました”と画面上部に表示する。</p>
+<p>参集先情報送信が成功した場合、参集先情報をDBに登録する。</p>
 </li><li>
 <p>参集先情報送信が失敗した場合、“参集先情報の送信に失敗しました”と画面上部に表示する。</p>
 </li></ul>
@@ -569,7 +617,7 @@
 
           
           <div class="method-source-code" id="save_destination-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 288</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 276</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">save_destination</span>
   <span class="ruby-ivar">@destination</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:destination</span>]
   <span class="ruby-ivar">@agent_id</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:agent_id</span>]
@@ -578,18 +626,19 @@
   <span class="ruby-ivar">@longitude</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:longitude</span>]
 
   <span class="ruby-keyword">begin</span>
-    <span class="ruby-comment"># バリデーションチェック</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">DestinationBlankException</span>, <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-string">&quot;errors.messages.destination_blank&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'position'</span>].<span class="ruby-identifier">blank?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'place'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">DestinationBlankException</span>, <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-string">&quot;errors.messages.place_blank&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'reason'</span>].<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'place'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">DestinationBlankException</span>, <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-string">&quot;errors.messages.destination_blank&quot;</span>) <span class="ruby-keyword">if</span> (<span class="ruby-ivar">@destination</span>[<span class="ruby-string">'position'</span>].<span class="ruby-identifier">blank?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'place'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'note'</span>].<span class="ruby-identifier">blank?</span>
     <span class="ruby-identifier">staff</span> = <span class="ruby-constant">Staff</span>.<span class="ruby-identifier">find_by_agent_id_and_disaster_code</span>(<span class="ruby-ivar">@agent_id</span>, <span class="ruby-ivar">@disaster_code</span>)
     <span class="ruby-keyword">if</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">present?</span>
-      <span class="ruby-comment"># 上書き</span>
       <span class="ruby-keyword">if</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'place'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
-        <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">update_attributes!</span>(<span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">false</span>, <span class="ruby-value">:destination_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">''</span>, <span class="ruby-value">:reason</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'reason'</span>].<span class="ruby-identifier">present?</span> <span class="ruby-operator">?</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'reason'</span>] <span class="ruby-operator">:</span> <span class="ruby-string">''</span>)
-      <span class="ruby-keyword">else</span>
+        <span class="ruby-comment"># 参集場所に向かうのが困難</span>
+        <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">update_attributes!</span>(<span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">false</span>, <span class="ruby-value">:destination_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">''</span>, <span class="ruby-value">:reason</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'reason'</span>].<span class="ruby-identifier">to_s</span>)
+      <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'position'</span>].<span class="ruby-identifier">present?</span>
+        <span class="ruby-comment"># 参集場所指定あり</span>
         <span class="ruby-identifier">gathering_position</span> = <span class="ruby-ivar">@gathering_positions</span>[<span class="ruby-ivar">@destination</span>[<span class="ruby-string">'position'</span>]]
-        <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">update_attributes!</span>(<span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>, <span class="ruby-value">:destination_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">'position_code'</span>], <span class="ruby-value">:reason</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">''</span>)
+        <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">update_attributes!</span>(<span class="ruby-value">:status</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>,  <span class="ruby-value">:destination_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">gathering_position</span>[<span class="ruby-string">'position_code'</span>], <span class="ruby-value">:reason</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">''</span>)
       <span class="ruby-keyword">end</span>
-      <span class="ruby-comment"># 備考をnoteテーブルに登録</span>
+      <span class="ruby-comment"># 肩代わり報告</span>
       <span class="ruby-keyword">if</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'note'</span>].<span class="ruby-identifier">present?</span>
         <span class="ruby-constant">Note</span>.<span class="ruby-identifier">create!</span>(<span class="ruby-value">:note</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@destination</span>[<span class="ruby-string">'note'</span>], <span class="ruby-value">:staff_id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">staff</span>.<span class="ruby-identifier">id</span>)
       <span class="ruby-keyword">end</span>
@@ -600,7 +649,7 @@
     <span class="ruby-keyword">return</span>
   <span class="ruby-keyword">end</span>
 
-  <span class="ruby-identifier">redirect_to</span> <span class="ruby-value">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">:destination_form</span>, <span class="ruby-value">:agent_id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@agent_id</span>, <span class="ruby-value">:disaster_code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@disaster_code</span>, <span class="ruby-value">:latitude</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@latitude</span>, <span class="ruby-value">:longitude</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@longitude</span>, <span class="ruby-value">:notice</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;送信しました&quot;</span>
+  <span class="ruby-identifier">redirect_to</span> <span class="ruby-string">&quot;/position_send_success/index&quot;</span>
 <span class="ruby-keyword">end</span></pre>
           </div><!-- save_destination-source -->
           
@@ -646,7 +695,7 @@
 
           
           <div class="method-source-code" id="save_position-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 147</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 132</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">save_position</span>
   <span class="ruby-comment"># Auの場合、sessionを渡す。</span>
   <span class="ruby-keyword">if</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">mobile</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Jpmobile</span><span class="ruby-operator">::</span><span class="ruby-constant">Mobile</span><span class="ruby-operator">::</span><span class="ruby-constant">Au</span>)
@@ -732,7 +781,7 @@
 
           
           <div class="method-source-code" id="save_send-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 81</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 66</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">save_send</span>
   <span class="ruby-ivar">@disaster_code</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:disaster_code</span>]
 
@@ -798,7 +847,7 @@
 
           
           <div class="method-source-code" id="send_form-source">
-            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 61</span>
+            <pre><span class="ruby-comment"># File app/controllers/staffs_controller.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">send_form</span>
   <span class="ruby-ivar">@disaster_code</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">:disaster_code</span>]
   <span class="ruby-comment"># モバイルの場合は、モバイル用のviewに切替える</span>
@@ -827,7 +876,7 @@
 
 <footer id="validator-badges">
   <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.1.
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.2.
   <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
 </footer>
 

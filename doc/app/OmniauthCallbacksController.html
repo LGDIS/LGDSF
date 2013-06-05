@@ -74,6 +74,10 @@
     
     <li><a href="#method-i-google">#google</a>
     
+    <li><a href="#method-i-ldap">#ldap</a>
+    
+    <li><a href="#method-i-openam">#openam</a>
+    
     <li><a href="#method-i-twitter">#twitter</a>
     
   </ul>
@@ -121,9 +125,23 @@
   
     <li><a href="./ApplicationHelper.html">ApplicationHelper</a>
   
+    <li><a href="./Area.html">Area</a>
+  
+    <li><a href="./Department.html">Department</a>
+  
+    <li><a href="./GatheringPosition.html">GatheringPosition</a>
+  
+    <li><a href="./MenuTabBuilder.html">MenuTabBuilder</a>
+  
     <li><a href="./Note.html">Note</a>
   
     <li><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a>
+  
+    <li><a href="./PositionSendSuccessController.html">PositionSendSuccessController</a>
+  
+    <li><a href="./PredefinedPosition.html">PredefinedPosition</a>
+  
+    <li><a href="./RegistrationsController.html">RegistrationsController</a>
   
     <li><a href="./Shelters.html">Shelters</a>
   
@@ -131,7 +149,7 @@
   
     <li><a href="./Staffs.html">Staffs</a>
   
-    <li><a href="./User.html">User</a>
+    <li><a href="./StaffsHelper.html">StaffsHelper</a>
   
     <li><a href="./UsersController.html">UsersController</a>
   
@@ -190,7 +208,7 @@
 
           
           <div class="method-source-code" id="facebook-source">
-            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 27</span>
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 36</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">facebook</span>
   <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_oauth</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
   <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'facebook'</span>)
@@ -227,7 +245,7 @@
 
           
           <div class="method-source-code" id="google-source">
-            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 9</span>
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">google</span>
   <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_open_id</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
   <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'google'</span>)
@@ -240,6 +258,80 @@
 
         
       </div><!-- google-method -->
+
+    
+      <div id="method-i-ldap" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">ldap</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>LDAPによる認可結果リダイレクトアクション</p>
+
+<h4 id="method-i-ldap-label-Args">Args</h4>
+
+<h4 id="method-i-ldap-label-Return">Return</h4>
+
+<h4 id="method-i-ldap-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="ldap-source">
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 9</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">ldap</span>
+  <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_ldap</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
+  <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'ldap'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- ldap-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- ldap-method -->
+
+    
+      <div id="method-i-openam" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">openam</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>OpenAMによる認可結果リダイレクトアクション</p>
+
+<h4 id="method-i-openam-label-Args">Args</h4>
+
+<h4 id="method-i-openam-label-Return">Return</h4>
+
+<h4 id="method-i-openam-label-Raise">Raise</h4>
+          
+
+          
+          <div class="method-source-code" id="openam-source">
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 45</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">openam</span>
+  <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_saml</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
+  <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'openam'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- openam-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- openam-method -->
 
     
       <div id="method-i-twitter" class="method-detail ">
@@ -264,7 +356,7 @@
 
           
           <div class="method-source-code" id="twitter-source">
-            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 18</span>
+            <pre><span class="ruby-comment"># File app/controllers/omniauth_callbacks_controller.rb, line 27</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">twitter</span>
   <span class="ruby-ivar">@user</span> = <span class="ruby-constant">User</span>.<span class="ruby-identifier">find_for_oauth</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">env</span>[<span class="ruby-string">&quot;omniauth.auth&quot;</span>], <span class="ruby-identifier">current_user</span>)
   <span class="ruby-identifier">redirect_to_result</span>(<span class="ruby-string">'twitter'</span>)
@@ -288,7 +380,7 @@
 
 <footer id="validator-badges">
   <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.1.
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.2.
   <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
 </footer>
 
