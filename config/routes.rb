@@ -10,7 +10,7 @@ Lgdsf::Application.routes.draw do
   match '/staffs/save_position'
   match '/staffs/destination' => 'staffs#destination_form'
   match '/staffs/save_destination'
-  match '/staffs/send/:disaster_code' => 'staffs#send_form', :as => "staffs_send"
+  match '/staffs/send' => 'staffs#send_form', :as => "staffs_send"
   match '/staffs/save_send'
   match '/position_send_success/index' => 'position_send_success#index'
 end

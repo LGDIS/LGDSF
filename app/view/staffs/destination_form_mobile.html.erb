@@ -1,0 +1,55 @@
+<!-- 参集場所報告画面（モバイル） -->
+
+<%= form_tag :action => 'save_destination' do %>
+
+  <%= hidden_field_tag "agent_id", @agent_id %>
+  <%= hidden_field_tag "latitude", @latitude %>
+  <%= hidden_field_tag "longitude", @longitude %>
+
+  <p>参集場所（これから向かう場所）を選択してください。</p>
+
+  <% if @gathering_positions["#{@predefined_position}"] %>
+    <% count = 2 %>
+    <p>▼所定の参集場所</p>
+    <p><%= radio_button "destination", "position", "#{@predefined_position}" %>(1) <%= @gathering_positions["#{@predefined_position}"]["name"] %></p>
+  <% else %>
+    <% count = 1 %>
+  <% end %>
+
+  <p>▼近くの参集場所</p>
+  <% @near_gathering_positions.each do |id, gathering_position| %>
+    <p><%= radio_button "destination", "position", "#{id.to_i}" %><%="(#{count}) #{gathering_position["name"]}"%></p>
+    <% count += 1 %>
+  <% end %>
+
+  <%
+  img_uri_part = []
+  img_uri_part << "sensor=false"
+  img_uri_part << "zoom=#{@zoom}"
+  img_uri_part << "format=jpg"
+  img_uri_part << "size=200x200"
+  img_uri_part << "language=ja"
+  img_uri_part << "center=#{@latitude},#{@longitude}"
+  img_uri_part << "markers=#{@latitude},#{@longitude}"
+  img_uri_marker_part = []
+  if pd_pos = @gathering_positions[@predefined_position.to_s]
+    img_uri_marker_part << "markers=label:#{img_uri_marker_part.size+1}|#{pd_pos['latitude']},#{pd_pos['longitude']}"
+  end
+  @near_gathering_positions.each do |id, gt_pos|
+    img_uri_marker_part << "markers=label:#{img_uri_marker_part.size+1}|#{gt_pos['latitude']},#{gt_pos['longitude']}"
+  end
+  img_uri = "http://maps.google.com/maps/api/staticmap?" + (img_uri_part + img_uri_marker_part).join('&')
+  %>
+  <img src="<%= raw img_uri -%>">
+
+  <p>▼参集場所に向かうのが困難</p>
+
+  <p><%= check_box "destination", "place" %>理由を入力してください。</p>
+  <p><%= text_field :destination, :reason %></p>
+
+  <p>肩代わり報告があれば記載してください。</p>
+  <p><%= text_field :destination, :note, :size => '30', :maxlength => '40' %></p>
+
+  <%= submit_tag "送信" %>
+
+<% end %>

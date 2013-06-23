@@ -26,6 +26,19 @@ development:
   # * true : 表示
   # * false: 非表示
   account_display_enable: true
+  # 表示対象となる外部配信先のIDを設定
+  # LGDISに設定した「外部配信先設定値」のうち、
+  # 位置情報登録で利用する設定のIDを指定する
+  # 注：基本的に０号～３号配備のIDを設定します
+  delivery_place_id:
+    - 2
+    - 3
+    - 4
+    - 5
+  # user_path作成用文字列
+  user_path_code: xxxxxxxxxxxx
+  # project_id 取得元のURL
+  project_id_url: http://127.0.0.1:8080/
 test:
   version: "v1.0.0"
   index_map:
@@ -53,6 +66,19 @@ test:
   # * true : 表示
   # * false: 非表示
   account_display_enable: true
+  # 表示対象となる外部配信先のIDを設定
+  # LGDISに設定した「外部配信先設定値」のうち、
+  # 位置情報登録で利用する設定のIDを指定する
+  # 注：基本的に０号～３号配備のIDを設定します
+  delivery_place_id:
+    - 2
+    - 3
+    - 4
+    - 5
+  # user_path作成用文字列
+  user_path_code: xxxxxxxxxxxx
+  # project_id 取得元のURL
+  project_id_url: http://127.0.0.1:8080/
 production:
   version: "v1.0.0"
   index_map:
@@ -80,3 +106,16 @@ production:
   # * true : 表示
   # * false: 非表示
   account_display_enable: true
+  # 表示対象となる外部配信先のIDを設定
+  # LGDISに設定した「外部配信先設定値」のうち、
+  # 位置情報登録で利用する設定のIDを指定する
+  # 注：基本的に０号～３号配備のIDを設定します
+  delivery_place_id:
+    - 2
+    - 3
+    - 4
+    - 5
+  # user_path作成用文字列
+  user_path_code: xxxxxxxxxxxx
+  # project_id 取得元のURL
+  project_id_url: http://127.0.0.1:8080/

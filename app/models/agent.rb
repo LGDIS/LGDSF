@@ -1,5 +1,5 @@
 class Agent < ActiveRecord::Base
-  attr_accessible :name, :mail_address, :department
+  attr_accessible :name, :mail_address, :department, :path
 
   has_many :staff
 
@@ -8,5 +8,7 @@ class Agent < ActiveRecord::Base
   validates :mail_address,
               :length => {:maximum => 256}
   validates :department,
+              :length => {:maximum => 64}
+  validates :path,
               :length => {:maximum => 64}
 end

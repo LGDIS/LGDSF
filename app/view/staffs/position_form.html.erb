@@ -1,0 +1,31 @@
+<!-- 位置情報送信画面（スマートフォン/タブレット） -->
+
+<p>下記のボタンから、現在位置を送信してください。</p>
+
+<%= form_tag :action => 'save_position', :onSubmit => "return checkPosition(@latitude, @longitude);" do %>
+  <%= hidden_field_tag "agent_id", @agent_id %>
+  <%= hidden_field_tag "latitude", @latitude %>
+  <%= hidden_field_tag "longitude", @longitude %>
+  <%= submit_tag '現在位置を送信', :id => 'send' %>
+<% end %>
+
+<p>※ボタン押下後に、確認を求められますが、全て承諾してください。</p>
+<p>※メールアドレス入力を省略するには、このページをブックマークしてください。</p>
+
+<script type="text/javascript">
+  $(window).load(function() {
+    if( navigator.geolocation ){
+      var getPosition = function(position){
+        $("#latitude").attr("value", position.coords.latitude);
+        $("#longitude").attr("value", position.coords.longitude);
+      };
+      var errorCallback = function(errors){
+        alert(errors.code + ":" + errors.message);
+      };
+      navigator.geolocation.getCurrentPosition(getPosition, errorCallback, {enableHighAccuracy: true});
+    } else {
+      alert('このブラウザは位置情報に対応していません。');
+      return false;
+    }
+  });
+</script>

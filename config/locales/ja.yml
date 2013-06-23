@@ -126,6 +126,8 @@ ja:
       position_blank: "現在位置の取得に失敗しました"
       destination_blank: "参集場所を選択してください"
       place_blank: "参集場所に向かうのが困難な場合に理由を入力してください"
+      project_id_blank: "プロジェクトが存在しないため位置情報を登録できません。このエラーは参集メール受信前に登録を行うと発生する場合があります。"
+      project_connect_error: "LGDISへの接続に失敗しました。"
     template:
       body: 次の項目を確認してください。
       header:
@@ -242,5 +244,5 @@ ja:
   google: Google
   openam: OpenAM
   ldap: LDAP
-  
+
   target_municipality: ××市
