@@ -112,6 +112,8 @@ platforms :mri_20 do
   gem "iconv"
 end
 
+gem 'multi_json','1.7.6'
+
 # Load Local Gemfile
 local_gemfile = File.join(File.dirname(__FILE__), "Gemfile.local")
 if File.exists?(local_gemfile)
@@ -124,3 +126,4 @@ Dir.glob File.expand_path("../plugins/*/Gemfile", __FILE__) do |file|
   puts "Loading #{file} ..." if $DEBUG # `ruby -d` or `bundle -v`
   instance_eval File.read(file)
 end
+[rails@lgdis00 LGDSF]$ 
