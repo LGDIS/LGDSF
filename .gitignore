@@ -17,3 +17,4 @@ config/api_key.yml
 config/database.yml
 config/settings.yml
 config/unicorn.rb
+public/assets/*
