@@ -282,7 +282,7 @@ class StaffsController < ApplicationController
 
       # LGDIFにHTTPでアクセスし、プロジェクトIDを取得する
       begin
-        url = SETTINGS["project_id_url"] + "/redmine/delivery_project/getproject"
+        url = SETTINGS["project_id_url"] + "/delivery_project/getproject"
         first = true
         SETTINGS["delivery_place_id"].each do |id|
           if first
