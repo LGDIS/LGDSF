@@ -118,4 +118,4 @@ production:
   # user_path作成用文字列
   user_path_code: xxxxxxxxxxxx
   # project_id 取得元のURL
-  project_id_url: http://127.0.0.1:8080/
+  project_id_url: http://127.0.0.1:8080
