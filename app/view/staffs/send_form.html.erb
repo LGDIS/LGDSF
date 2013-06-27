@@ -1,8 +1,0 @@
-<!-- 個人特定情報送信画面（スマートフォン/タブレット） -->
-
-<p>この端末のメールアドレスを入力し、送信してください。</p>
-
-<%= form_tag :action => 'save_send' do %>
-  <p><%= text_field_tag :mail, '', :placeholder => 'メールアドレスを入力して下さい。', :size => 30, :maxlength => '256' %></p>
-  <%= submit_tag 'メールアドレスを送信', :id => 'send' %>
-<% end %>
