@@ -324,10 +324,12 @@ class StaffsController < ApplicationController
       staff = Staff.find_by_agent_id_and_disaster_code(agent.id, disaster_code)
       reason_str = ''
       position_code_str = ''
+      dest_flg = true
 
       if @destination['place'].to_i == 1
         # 参集場所に向かうのが困難
         reason_str = @destination['reason'].to_s
+        dest_flg = false
       elsif @destination['position'].present?
         # 参集場所指定あり
         gathering_position = @gathering_positions[@destination['position']]
@@ -336,12 +338,12 @@ class StaffsController < ApplicationController
 
       if staff.present?
         # 更新の場合
-        staff.update_attributes!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status  => true, :destination_code => position_code_str, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
-
+        staff.update_attributes!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status  => dest_flg, :destination_code => position_code_str, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
       else
         # 新規の場合
-        staff = Staff.create!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status =>false, :destination_code => position_code_str, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
+        staff = Staff.create!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status => dest_flg, :destination_code => position_code_str, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
       end
+
       # 肩代わり報告
       if @destination['note'].present?
         Note.create!(:note => @destination['note'], :staff_id => staff.id)
