@@ -340,7 +340,7 @@ class StaffsController < ApplicationController
 
       else
         # 新規の場合
-        staff = Staff.create!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status =>false, :destination_code => gathering_position, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
+        staff = Staff.create!(:name => agent.name, :agent_id => agent.id, :disaster_code => disaster_code, :status =>false, :destination_code => position_code_str, :reason => reason_str, :latitude => @latitude, :longitude => @longitude)
       end
       # 肩代わり報告
       if @destination['note'].present?
