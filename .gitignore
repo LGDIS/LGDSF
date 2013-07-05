@@ -18,3 +18,4 @@ config/database.yml
 config/settings.yml
 config/unicorn.rb
 public/assets/*
+lib/batches/*.csv
