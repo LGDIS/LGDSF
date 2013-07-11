@@ -8,10 +8,11 @@
 
 * area.csv : 地区マスタ。参集場所の区分に使用する。
 * department.csv : 部署マスタ。
+* agent.csv : 職員マスタ。
 * gathering_position.csv : 参集場所マスタ。
 * predefined_position.csv : 所定の参集場所マスタ。職員毎の所定の参集場所を設定。
 
-上記のファイルをlib/bathchesに配置する。
+上記のファイルをlib/bathchesに配置する。左記フォルダにファイルを配置しない場合は、マスタは作成・更新されません。
 
 ## ２．マスタデータを投入する
 
