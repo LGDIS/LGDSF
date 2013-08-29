@@ -31,6 +31,7 @@ namespace :register do
     if File.exists?(file)
       CSV.open(file, "r", {:headers => :first_row, :encoding => "utf-8"}) do |csv|
         klass.destroy_all
+        ActiveRecord::Base.connection.execute(%{SELECT setval('agents_id_seq', 1, FALSE)}) if filename == "agent.csv"
         csv.each do |row|
           if block_given?
             yield row
