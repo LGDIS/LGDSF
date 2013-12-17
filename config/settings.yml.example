@@ -22,6 +22,7 @@ development:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
+    sender_name: 石巻市役所総務部危機対策課
   # ログイン画面のアカウント新規登録項目の表示・非表示
   # * true : 表示
   # * false: 非表示
@@ -62,6 +63,7 @@ test:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
+    sender_name: 石巻市役所総務部危機対策課
   # ログイン画面のアカウント新規登録項目の表示・非表示
   # * true : 表示
   # * false: 非表示
@@ -102,6 +104,7 @@ production:
     enable_starttls_auto: true
     sender: saitai@example.com
     host: localhost:3000
+    sender_name: 石巻市役所総務部危機対策課
   # ログイン画面のアカウント新規登録項目の表示・非表示
   # * true : 表示
   # * false: 非表示

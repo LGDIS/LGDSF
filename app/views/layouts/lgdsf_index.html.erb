@@ -62,8 +62,10 @@
                 <legend onclick="toggleFieldset(this);">現在位置不明<span class="num"><%= @position_unknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @position_unknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                  <% @staffs.each_with_index do |staff, pos| %>
+                    <% if @position_unknown_staffs.include?(pos) %>
+                      <li><%= link_to staff.name, {}, :onclick=> "showUnknownStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}'); return false;".html_safe %></li>
+                    <% end %>
                   <% end %>
                   </ul>
                 </div>
@@ -72,8 +74,10 @@
                 <legend onclick="toggleFieldset(this);">参集先不明<span class="num"><%= @destination_unknown_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @destination_unknown_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status ? staff.status : 'null'}, '#{jsq staff.reason}'); return false;".html_safe %></li>
+                  <% @staffs.each_with_index do |staff, pos| %>
+                    <% if @destination_unknown_staffs.include?(pos) %>
+                      <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status ? staff.status : 'null'}, '#{jsq staff.reason}'); return false;".html_safe %></li>
+                    <% end %>
                   <% end %>
                   </ul>
                 </div>
@@ -82,8 +86,10 @@
                 <legend onclick="toggleFieldset(this);">参集不可<span class="num"><%= @not_gathered_staffs.size %>名</span></legend>
                 <div style="display: none;">
                   <ul class="person_list">
-                  <% @not_gathered_staffs.each_with_index do |staff, pos| %>
-                    <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{jsq staff.reason}'); return false;".html_safe %></li>
+                  <% @staffs.each_with_index do |staff, pos| %>
+                    <% if @not_gathered_staffs.include?(pos) %>
+                      <li><%= link_to staff.name, {}, :onclick=> "showStaff(#{pos}, '#{jsq staff.name}', '#{staff.mail_address}', '', #{staff.status}, '#{jsq staff.reason}'); return false;".html_safe %></li>
+                    <% end %>
                   <% end %>
                   </ul>
                 </div>

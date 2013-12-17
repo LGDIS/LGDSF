@@ -378,15 +378,15 @@ class StaffsController < ApplicationController
     @destination_unknown_staffs = [] # 参集先不明
     @not_gathered_staffs = [] # 参集不可
 
-    @staffs.each do |staff|
+    @staffs.each_with_index do |staff, pos|
       if staff.latitude.present? && staff.longitude.present?
         if staff.status == false
-          @not_gathered_staffs.push(staff)
+          @not_gathered_staffs.push(pos)
         elsif staff.destination_code.blank?
-          @destination_unknown_staffs.push(staff)
+          @destination_unknown_staffs.push(pos)
         end
       else
-        @position_unknown_staffs.push(staff)
+        @position_unknown_staffs.push(pos)
       end
     end
 
